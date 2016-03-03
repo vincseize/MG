@@ -1670,15 +1670,15 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
 
     # PARAMS MODIFIABLES ############################################################################################
 
-    A7refPos_X              = None # X origin a7 ref - None for not Used
-    A7refPos_Y              = None # Y origin a7 ref - None for not Used
-    offset_X                = 6 # 4 # relative to X origin a7 ref - can be negative
-    offset_Y                = 3 #  0 # relative to Y origin a7 ref - can be negative
-    ecart_a7_X              = 3    #  3 # X space between streams a7  
+    A7refPos_X              = None #  X origin a7 ref - None for not Used
+    A7refPos_Y              = None #  Y origin a7 ref - None for not Used
+    offset_X                = 6    #  4 # relative to X origin a7 ref - can be negative
+    offset_Y                = 3    #  0 # relative to Y origin a7 ref - can be negative
+    ecart_a7_X              = 'Auto' #  3 # X space between streams a7  , if = 'Auto', space depends of A7 name longer
     ecart_a7_Y              = None #  2 # Y space between streams a7
 
-    n_A7_perColumn          = None # max n streams horizontally - None for not Used
-    n_A7_perRow             = None #  6     # max n streams vertically
+    n_A7_perColumn          = None #  6 # max n streams vertically 
+    n_A7_perRow             = None #  6 # max n streams horizontally - None for not Used
     X_space_betweenColumns  = 2
 
     quinconce               = None #  True False # boolean, decale les a7 une fois sur 2
@@ -1748,6 +1748,7 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
     if autoload == 'True':
         autoLoadA7ref       = True # in 2 variables because this script can be call external  
 
+    _Longest = [0]
 
     # Functions ###################################################################################################
 
@@ -1812,6 +1813,26 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
     #======================================================================
     #========= set position .a7 Downstreams
     #======================================================================
+
+    #========= R&D for auto-ecart, check longest name for ecart optimal
+    if str(ecart_a7_X).upper() == 'AUTO':         
+        longestName = []
+        for pa in StreamProtoList:
+            A7_infos = __PIPEIN_GRAPH.getA7_infos(pa,False)  # True False optional for verbose Mode
+            a_name   = A7_infos['a_name'] 
+            l = len(str(a_name))
+            longestName.append(l)
+        try:
+            longestName = max(longestName)
+        except:
+            pass
+        _Longest.append(longestName)
+        nLetters = int(max(_Longest))
+        autoEcart_X = (nLetters/10)*2
+        params['ecart_a7_X'] = autoEcart_X
+        params['X_space_betweenGroup'] = autoEcart_X
+
+    #========= set position .a7 Downstreams
     n_streams = len(StreamProtoList)
     __PIPEIN_GRAPH.move_StreamProtoList(n_streams,StreamProtoList,layout,A7refPos,params)
     #========= apply and refresh graph
@@ -1865,13 +1886,13 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
 
     A7refPos_X              = None # X origin a7 ref - None for not Used
     A7refPos_Y              = None # Y origin a7 ref - None for not Used
-    offset_X                = 6 # 4 # relative to X origin a7 ref - can be negative
+    offset_X                = 8 # 4 # relative to X origin a7 ref - can be negative
     offset_Y                = 3 #  0 # relative to Y origin a7 ref - can be negative
-    ecart_a7_X              = 4    #  3 # X space between streams a7  
+    ecart_a7_X              = 'Auto' #  3 # X space between streams a7  , if = 'Auto', space depends of A7 name longer 
     ecart_a7_Y              = None #  2 # Y space between streams a7
 
-    n_A7_perColumn          = None # max n streams horizontally - None for not Used
-    n_A7_perRow             = None #  6     # max n streams vertically
+    n_A7_perColumn          = None #  6 # max n streams vertically 
+    n_A7_perRow             = None #  6 # max n streams horizontally - None for not Used
     X_space_betweenColumns  = 3
 
     quinconce               = None #  True False # boolean, decale les a7 une fois sur 2
@@ -1947,7 +1968,6 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
 
         A7pos = None
         layout      = protoGraph.GetLayout()
-        longest = [0]
 
         if typeStreams == 'GetDownstreams':
             Filters = {'type': ['.*']}                
@@ -1966,12 +1986,12 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
                 A7pos.append(Y_posRef) 
             StreamProtoList = __PIPEIN_GRAPH.GetStreams(typeStreams,protoGraph,layout,assetProto,Filters,A7pos)      
 
-        # move upstream
+        # move upstream, to do better
         for pa in StreamProtoList:            
             if A7pos != None: # todo better
                 # X_pos = A7pos[0]-2
                 X_pos = A7pos[0]-(2+1.2)
-                Y_pos = A7pos[1]                    
+                Y_pos = A7pos[1]+0.2                    
                 layout.SetPos(pa, (X_pos,Y_pos) )
 
 
@@ -2028,6 +2048,25 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     #======================================================================
     #========= set position .a7 Downstreams
     #======================================================================
+
+    #========= R&D for auto-ecart, check longest name for ecart optimal
+    if str(ecart_a7_X).upper() == 'AUTO':         
+        longestName = []
+        for pa in StreamProtoList:
+            A7_infos = __PIPEIN_GRAPH.getA7_infos(pa,False)  # True False optional for verbose Mode
+            a_name   = A7_infos['a_name'] 
+            l = len(str(a_name))
+            longestName.append(l)
+        try:
+            longestName = max(longestName)
+        except:
+            pass
+        _Longest.append(longestName)
+        nLetters = int(max(_Longest))
+        autoEcart_X = (nLetters/10)*2
+        params['ecart_a7_X'] = autoEcart_X
+        params['X_space_betweenGroup'] = autoEcart_X
+    #========= set position .a7 Downstreams   
     n_streams = len(StreamProtoList)
     __PIPEIN_GRAPH.move_StreamProtoList(n_streams,StreamProtoList,layout,A7refPos,params)
     #========= apply and refresh graph
@@ -2040,7 +2079,7 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     longestName = []  
     selection   = protoGraph.GetSelection()
 
-    # check longest name for ecart optimal
+    #========= R&D for auto-ecart, check longest name for ecart optimal
     for pa in StreamProtoList:
         l = len(str(pa))
         longestName.append(l)
@@ -2050,7 +2089,6 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
         pass
     _Longest.append(longestName)
     nLetters = int(max(_Longest))
-    # print nLetters
 
     for pa in selection: 
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
@@ -2063,8 +2101,7 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
         if str(nm_asset) != str(A7RefPath):
             result = showStream(protoGraph,pa,'GetUpstreams',catFamily,A7posRef)  # protoGraph,assetProto,typeStreams,catFamily,A7posRef=None
 
-
-
+    # to do better
     # for pa in StreamProtoList:   
     #     A7pos         = __PIPEIN_GRAPH.getPosition(pa,layout)         
     #     X_pos         = A7pos[0]-2
