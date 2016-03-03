@@ -122,7 +122,7 @@ class __PIPEIN_GRAPH__():
     # debug_getSelected = 'getSelected'    
 
     def __init__(self,graphName,verbose=None):
-        self.verbose 		  = verbose
+        self.verbose 		= verbose
         self.graphName 		= graphName
         self.protoGraph		= ink.proto.Graph( self.graphName )
     
@@ -151,7 +151,8 @@ class __PIPEIN_GRAPH__():
 
     def saveGraph(self,graphPath,debug=False):
         ''' save Graph '''
-        protoGraph.Write(graphPath, comment='', private=False)
+        result = self.protoGraph.Write(graphPath, comment='', private=False)
+        return result
 
 
     def getPosition(self,asset,layout):
@@ -165,12 +166,9 @@ class __PIPEIN_GRAPH__():
 
 
     def moveAsset(self,layout,sel,X,Y):
-        # layout = self.protoGraph.GetLayout()
         layout.SetPos( sel, (X, Y) )
-        # self.protoGraph.Show()
         self.protoGraph.Apply()
         result = self.protoGraph.Show(update=True)  # todo, to understand update = true
-
         return result
 
 
@@ -183,7 +181,6 @@ class __PIPEIN_GRAPH__():
         for asset in assetList:	
             assetName = asset.GetNomen() # all asset Infos
             result.append(assetName)
-
         # return assetList, self.verbose # todo , to understand return Objects
         return assetList, result, self.verbose
 
@@ -494,10 +491,8 @@ class __PIPEIN_GRAPH__():
         return StreamProtoList
 
 
-    # def move_StreamProtoList(self,n_streams,StreamProtoList,layout,A7refPos,X_space_betweenGroup,X_space_betweenColumns,n_col_byGroup,quinconce_X,params_get=None):
     def move_StreamProtoList(self,n_streams,StreamProtoList,layout,A7refPos,params_get):
         ''' UI stream a7 re-organisation '''
-
 
         # PARAMS MODIFIABLES ###########################################################################################
 
@@ -509,14 +504,14 @@ class __PIPEIN_GRAPH__():
 
         n_A7_perColumn          = 6    # max n streams  vertically   - None for not Used
         n_A7_perRow             = None # max n streams horizontally  - None for not Used
-        X_space_betweenColumns  = ecart_a7_X*1.5
+        X_space_betweenColumns  = 7
 
         quinconce               = False # boolean, decale les a7 une fois sur 2
         quinconce_X             = 0.5 # x offset, 0.5/-0.5 left-right, min max
         quinconce_start         = 0 # switch first quinconce_X value to modulo 0.5 to -0.5
 
         n_col_byGroup           = 2 # n column by a7 grouped - None for not Used
-        X_space_betweenGroup    = ecart_a7_X*2 # subjectif, to do better in relation with n assets, n group etc 
+        X_space_betweenGroup    = 10 # subjectif, to do better in relation with n assets, n group etc 
         n_groups_grouped        = None # todo paquet de groups  - None for not Used
 
         # DON T TOUCH =========================================================
@@ -573,15 +568,15 @@ class __PIPEIN_GRAPH__():
 
         ################################################################################################################
 
-        #------------------------------------------------- gestion n a7 per col
+        #------------------------------------------------------------------------------------ gestion n a7 per col
         tb_n_column = []
         for i in range(n_streams): 
             tb_n_column.append(params['n_A7_perColumn']*i)
-        #---------------------------------------------- gestion n col per group
+        #--------------------------------------------------------------------------------- gestion n col per group
         tb_n_group = []
         for i in range(n_streams): 
             tb_n_group.append(params['n_col_byGroup']*i)
-        #------------------------------------------------------- init variables
+        #------------------------------------------------------------------------------------------ init variables
         n               = 0
         inc_X           = 0
         inc_Y           = 0
@@ -592,39 +587,39 @@ class __PIPEIN_GRAPH__():
         if params['quinconce'] == False:
             quinconce_X = 0 
 
-        # BOUCLE sur liste a7 =================================================
+        # BOUCLE sur liste a7 =========================================================================================
 
         for pa in StreamProtoList:
             
-            #------------------------------------- a7 pos not used at this time            
+            #------------------------------------------------------------------------ a7 pos not used at this time            
             A7Pos             = self.getPosition(pa,layout)
             A7Pos_X           = A7Pos[0]
             A7Pos_Y           = A7Pos[1]
 
-            #-------------------------------------------------------- quinconce
+            #------------------------------------------------------------------------------------------- quinconce
             if quinconce == True:
                 q = params['quinconce_X']
                 quinconce_X = q * -1
 
-            #----------------------------------------------------- apply offset 
+            #---------------------------------------------------------------------------------------- apply offset 
             X_move_RelToA7    = A7refPos_X + params['offset_X'] + inc_X + quinconce_X
             Y_move_RelToA7    = A7refPos_Y + params['offset_Y'] + inc_Y
             layout.SetPos(pa, (X_move_RelToA7, Y_move_RelToA7) )
 
-            #--------------------------------------------------- Incrementation 
+            #-------------------------------------------------------------------------------------- Incrementation 
             n += 1
             inc_Y = inc_Y + params['ecart_a7_Y']
 
-            #---------------------------------------------------n a7 per Column
+            #------------------------------------------------------------------------------------- n a7 per Column
             if n in tb_n_column :
                 inc_Y = 0
-                inc_X = inc_X + params['ecart_a7_X']
+                inc_X = inc_X + params['ecart_a7_X'] + params['X_space_betweenColumns'] 
                 inc_n_column += 1
-                #----------------------------------------------- gestion Groups
+                #---------------------------------------------------------------------------------- gestion Groups
                 if inc_n_column in tb_n_group:
-                    inc_X = inc_X + params['ecart_a7_X']
+                    inc_X = inc_X + params['ecart_a7_X'] + params['X_space_betweenGroup'] 
 
-        #---------------------------------------------------------------- Apply 
+        #-------------------------------------- Apply ---------------------------------------------------------------#
 
         protoGraph.Show()
         protoGraph.Apply()
@@ -1600,7 +1595,7 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
-                pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
 
     #========= set position layout.a7 Upstreams
         moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
@@ -1630,7 +1625,7 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
     if str(SaveGraph) == 'False' :
         print 'You can Save ' , GraphName, 'in ', pathGraphSave
     if str(SaveGraph) == 'True' :
-        saveGraph(pathGraphSave)
+        __PIPEIN_GRAPH.saveGraph(pathGraphSave)
         print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
 
 
@@ -1677,21 +1672,21 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
 
     A7refPos_X              = None # X origin a7 ref - None for not Used
     A7refPos_Y              = None # Y origin a7 ref - None for not Used
-    offset_X                = None # 4 # relative to X origin a7 ref - can be negative
-    offset_Y                = None #  0 # relative to Y origin a7 ref - can be negative
-    ecart_a7_X              = None #  3 # X space between streams a7  
+    offset_X                = 6 # 4 # relative to X origin a7 ref - can be negative
+    offset_Y                = 3 #  0 # relative to Y origin a7 ref - can be negative
+    ecart_a7_X              = 3    #  3 # X space between streams a7  
     ecart_a7_Y              = None #  2 # Y space between streams a7
 
-    n_A7_perColumn          = None  # max n streams horizontally - None for not Used
+    n_A7_perColumn          = None # max n streams horizontally - None for not Used
     n_A7_perRow             = None #  6     # max n streams vertically
-    X_space_betweenColumns  = None #  ecart_a7_X*1.5
+    X_space_betweenColumns  = 2
 
     quinconce               = None #  True False # boolean, decale les a7 une fois sur 2
     quinconce_X             = None #  0.5 # x offset, 0.5/-0.5 left-right, min max
     quinconce_start         = None #  0 # switch first quinconce_X value to modulo 0.5 to -0.5
 
     n_col_byGroup           = None #  2 # n column by a7 grouped
-    X_space_betweenGroup    = None #  ecart_a7_X*2 # subjectif, to do better in relation with n assets, n group etc 
+    X_space_betweenGroup    = 2    #  ecart_a7_X*2 # subjectif, to do better in relation with n assets, n group etc 
     n_groups_grouded        = None # todo paquet de groups  - None for not Used
 
     # DONT TOUCH ###################################################################################################
@@ -1699,42 +1694,42 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
     params = {}
     
     if A7refPos_X != None :
-        params['A7refPos_X'] = A7refPos_X
+        params['A7refPos_X']                    = A7refPos_X
     if A7refPos_Y != None :
-        params['A7refPos_Y'] = A7refPos_Y
+        params['A7refPos_Y']                    = A7refPos_Y
     if offset_X != None :
-        params['offset_X'] = offset_X
+        params['offset_X']                      = offset_X
     if offset_Y != None :
-        params['offset_Y'] = offset_Y
+        params['offset_Y']                      = offset_Y
     if ecart_a7_X != None :
-        params['ecart_a7_X'] = ecart_a7_X
+        params['ecart_a7_X']                    = ecart_a7_X
     if ecart_a7_Y != None :
-        params['ecart_a7_Y'] = ecart_a7_Y
+        params['ecart_a7_Y']                    = ecart_a7_Y
 
     if n_A7_perColumn != None :
-        params['n_A7_perColumn'] = n_A7_perColumn
+        params['n_A7_perColumn']                = n_A7_perColumn
     if n_A7_perRow != None :
-        params['n_A7_perRow'] = n_A7_perRow
+        params['n_A7_perRow']                   = n_A7_perRow
     if X_space_betweenColumns != None :
-        params['X_space_betweenColumns'] = X_space_betweenColumns
+        params['X_space_betweenColumns']        = X_space_betweenColumns
 
     if quinconce != None :
-        params['quinconce'] = quinconce
+        params['quinconce']                     = quinconce
     if quinconce_X != None :
-        params['quinconce_X'] = quinconce_X
+        params['quinconce_X']                   = quinconce_X
     if quinconce_start != None :
-        params['quinconce_start'] = quinconce_start
+        params['quinconce_start']               = quinconce_start
 
     if n_col_byGroup != None :
-        params['n_col_byGroup'] = n_col_byGroup
+        params['n_col_byGroup']                 = n_col_byGroup
     if X_space_betweenGroup != None :
-        params['X_space_betweenGroup'] = X_space_betweenGroup
+        params['X_space_betweenGroup']          = X_space_betweenGroup
     if n_groups_grouded != None :
-        params['n_groups_grouded'] = n_groups_grouded
+        params['n_groups_grouded']              = n_groups_grouded
 
     #=========
 
-    catFamily               = []
+    catFamily = []
     if _cat != None :
       cat = _cat[0]
       for a in _catFamily:
@@ -1832,7 +1827,6 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
         print '[ OK ] You can save : ' + myG
 
 
-
 # #=========================== UI
 
 K92_LAYOUT_BuildCameraModelZator.__author__             = 'cpottier'
@@ -1871,21 +1865,21 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
 
     A7refPos_X              = None # X origin a7 ref - None for not Used
     A7refPos_Y              = None # Y origin a7 ref - None for not Used
-    offset_X                = None # 4 # relative to X origin a7 ref - can be negative
-    offset_Y                = None #  0 # relative to Y origin a7 ref - can be negative
-    ecart_a7_X              = None #  3 # X space between streams a7  
+    offset_X                = 6 # 4 # relative to X origin a7 ref - can be negative
+    offset_Y                = 3 #  0 # relative to Y origin a7 ref - can be negative
+    ecart_a7_X              = 4    #  3 # X space between streams a7  
     ecart_a7_Y              = None #  2 # Y space between streams a7
 
-    n_A7_perColumn          = None  # max n streams horizontally - None for not Used
+    n_A7_perColumn          = None # max n streams horizontally - None for not Used
     n_A7_perRow             = None #  6     # max n streams vertically
-    X_space_betweenColumns  = None #  ecart_a7_X*1.5
+    X_space_betweenColumns  = 3
 
     quinconce               = None #  True False # boolean, decale les a7 une fois sur 2
     quinconce_X             = None #  0.5 # x offset, 0.5/-0.5 left-right, min max
     quinconce_start         = None #  0 # switch first quinconce_X value to modulo 0.5 to -0.5
 
     n_col_byGroup           = None #  2 # n column by a7 grouped
-    X_space_betweenGroup    = None #  ecart_a7_X*2 # subjectif, to do better in relation with n assets, n group etc 
+    X_space_betweenGroup    = 3    #  ecart_a7_X*2 # subjectif, to do better in relation with n assets, n group etc 
     n_groups_grouded        = None # todo paquet de groups  - None for not Used
 
     # DONT TOUCH ###################################################################################################
@@ -1893,41 +1887,42 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     params = {}
     
     if A7refPos_X != None :
-        params['A7refPos_X'] = A7refPos_X
+        params['A7refPos_X']                = A7refPos_X
     if A7refPos_Y != None :
-        params['A7refPos_Y'] = A7refPos_Y
+        params['A7refPos_Y']                = A7refPos_Y
     if offset_X != None :
-        params['offset_X'] = offset_X
+        params['offset_X']                  = offset_X
     if offset_Y != None :
-        params['offset_Y'] = offset_Y
+        params['offset_Y']                  = offset_Y
     if ecart_a7_X != None :
-        params['ecart_a7_X'] = ecart_a7_X
+        params['ecart_a7_X']                = ecart_a7_X
     if ecart_a7_Y != None :
-        params['ecart_a7_Y'] = ecart_a7_Y
+        params['ecart_a7_Y']                = ecart_a7_Y
 
     if n_A7_perColumn != None :
-        params['n_A7_perColumn'] = n_A7_perColumn
+        params['n_A7_perColumn']            = n_A7_perColumn
     if n_A7_perRow != None :
-        params['n_A7_perRow'] = n_A7_perRow
+        params['n_A7_perRow']               = n_A7_perRow
     if X_space_betweenColumns != None :
-        params['X_space_betweenColumns'] = X_space_betweenColumns
+        params['X_space_betweenColumns']    = X_space_betweenColumns
 
     if quinconce != None :
-        params['quinconce'] = quinconce
+        params['quinconce']                 = quinconce
     if quinconce_X != None :
-        params['quinconce_X'] = quinconce_X
+        params['quinconce_X']               = quinconce_X
     if quinconce_start != None :
-        params['quinconce_start'] = quinconce_start
+        params['quinconce_start']           = quinconce_start
 
     if n_col_byGroup != None :
-        params['n_col_byGroup'] = n_col_byGroup
+        params['n_col_byGroup']             = n_col_byGroup
     if X_space_betweenGroup != None :
-        params['X_space_betweenGroup'] = X_space_betweenGroup
+        params['X_space_betweenGroup']      = X_space_betweenGroup
     if n_groups_grouded != None :
-        params['n_groups_grouded'] = n_groups_grouded
+        params['n_groups_grouded']          = n_groups_grouded
 
     #=========
-    catFamily               = []
+
+    catFamily = []
     if _cat != None :
       cat = _cat[0]
       for a in _catFamily:
@@ -1945,33 +1940,39 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     if autoload == 'True':
         autoLoadA7ref       = True # in 2 variables because this script can be call external  
 
+    _Longest = [0]
+
     def showStream(protoGraph,assetProto,typeStreams,catFamily,A7posRef=None):
         ''' show a7 streams '''
 
         A7pos = None
         layout      = protoGraph.GetLayout()
+        longest = [0]
+
         if typeStreams == 'GetDownstreams':
             Filters = {'type': ['.*']}                
             family = ['CHARS']
             family.append(catFamily[0])
             Filters['family'] = family  #  Ordre Important pour family filters 1-CHARS 2-MAIN etc
-         
             StreamProtoList = __PIPEIN_GRAPH.GetStreams(typeStreams,protoGraph,layout,assetProto,Filters)
+
         if typeStreams == 'GetUpstreams':
             Filters = {'type': ['Actor','Skin']}
             if A7posRef != None:
                 X_posRef = A7posRef[0] - 0.1
-                Y_posRef = A7posRef[1] + 0.2
+                Y_posRef = A7posRef[1] + 0.6
                 A7pos = []    
                 A7pos.append(X_posRef) 
                 A7pos.append(Y_posRef) 
-            StreamProtoList = __PIPEIN_GRAPH.GetStreams(typeStreams,protoGraph,layout,assetProto,Filters,A7pos)           
-            # move upstream
-            for pa in StreamProtoList:            
-                if A7pos != None: # todo better
-                    X_pos = A7pos[0]-2
-                    Y_pos = A7pos[1]                    
-                    layout.SetPos(pa, (X_pos,Y_pos) )
+            StreamProtoList = __PIPEIN_GRAPH.GetStreams(typeStreams,protoGraph,layout,assetProto,Filters,A7pos)      
+
+        # move upstream
+        for pa in StreamProtoList:            
+            if A7pos != None: # todo better
+                # X_pos = A7pos[0]-2
+                X_pos = A7pos[0]-(2+1.2)
+                Y_pos = A7pos[1]                    
+                layout.SetPos(pa, (X_pos,Y_pos) )
 
 
 
@@ -2015,11 +2016,11 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     #======================================================================
     #========= get  Refa7 position
     #======================================================================
-            A7refPos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+            A7refPos = __PIPEIN_GRAPH.getPosition(pa,layout)
     #======================================================================
     #========= show .a7 Downstreams
     #======================================================================  
-            StreamProtoList     = showStream(protoGraph,ProtoA7,'GetDownstreams',catFamily)
+            StreamProtoList = showStream(protoGraph,ProtoA7,'GetDownstreams',catFamily)
     #========= apply and refresh graph
             protoGraph.Show()
             protoGraph.Apply()
@@ -2035,8 +2036,22 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     protoGraph.SelectAll()
     #======================================================================
     #========= show childrens Skin Upstreams
-    #======================================================================   
+    #====================================================================== 
+    longestName = []  
     selection   = protoGraph.GetSelection()
+
+    # check longest name for ecart optimal
+    for pa in StreamProtoList:
+        l = len(str(pa))
+        longestName.append(l)
+    try:
+        longestName = max(longestName)
+    except:
+        pass
+    _Longest.append(longestName)
+    nLetters = int(max(_Longest))
+    # print nLetters
+
     for pa in selection: 
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
         nm_asset      = A7_infos['nm_asset']
@@ -2046,12 +2061,17 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
         A7posRef.append(position[0])
         A7posRef.append(position[1])
         if str(nm_asset) != str(A7RefPath):
-            StreamProtoList = showStream(protoGraph,pa,'GetUpstreams',catFamily,A7posRef)  # protoGraph,assetProto,typeStreams,catFamily,A7posRef=None
+            result = showStream(protoGraph,pa,'GetUpstreams',catFamily,A7posRef)  # protoGraph,assetProto,typeStreams,catFamily,A7posRef=None
+
+
+
     # for pa in StreamProtoList:   
     #     A7pos         = __PIPEIN_GRAPH.getPosition(pa,layout)         
     #     X_pos         = A7pos[0]-2
     #     Y_pos         = A7pos[1]                    
     #     layout.SetPos(pa, (X_pos,Y_pos) )
+
+
     #========= apply and refresh graph
     protoGraph.Show()
     protoGraph.Apply()
