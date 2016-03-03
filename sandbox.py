@@ -472,13 +472,6 @@ class __PIPEIN_GRAPH__():
             StreamProtoList = protoGraph.GetDownstreams( assetProto, niFilter=niFilters)
         if typeStreams == 'GetUpstreams':
             StreamProtoList = protoGraph.GetUpstreams( assetProto, niFilter=niFilters)
-        # if typeStreams == 'GetUpstreams':
-        #     for pa in StreamProtoList:            
-        #         if A7pos != None: # todo better
-        #             X_pos = A7pos[0]-2
-        #             Y_pos = A7pos[1]                    
-        #             layout.SetPos(pa, (X_pos,Y_pos) )
-
         #---------------------------------------------------------
         #------ apply graph
         #---------------------------------------------------------
@@ -618,17 +611,33 @@ class __PIPEIN_GRAPH__():
                 #---------------------------------------------------------------------------------- gestion Groups
                 if inc_n_column in tb_n_group:
                     inc_X = inc_X + params['ecart_a7_X'] + params['X_space_betweenGroup'] 
-
         #-------------------------------------- Apply ---------------------------------------------------------------#
-
         protoGraph.Show()
         protoGraph.Apply()
         protoGraph.SelectAll()
 
 
+    def get_autoEcart_X(self,StreamProtoList,params):
+        ''' Get Auto Ecart X '''
 
+        longest = []
+        longestName = []
+        for pa in StreamProtoList:
+            A7_infos = self.getA7_infos(pa,False)  # True False optional for verbose Mode
+            a_name   = A7_infos['a_name'] 
+            l = len(str(a_name))
+            longestName.append(l)
+        try:
+            longestName = max(longestName)
+        except:
+            pass
+        longest.append(longestName)
+        nLetters = float(max(longest))
+        autoEcart_X = ( nLetters / 10. ) * 3.  
+        params['ecart_a7_X'] = autoEcart_X
+        params['X_space_betweenGroup'] = autoEcart_X*1.1 
 
-
+        return params
 
 
 
@@ -1748,8 +1757,6 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
     if autoload == 'True':
         autoLoadA7ref       = True # in 2 variables because this script can be call external  
 
-    _Longest = [0]
-
     # Functions ###################################################################################################
 
     def showStream(protoGraph,assetProto,typeStreams,catFamily,A7posRef=None):
@@ -1816,21 +1823,7 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
 
     #========= R&D for auto-ecart, check longest name for ecart optimal
     if str(ecart_a7_X).upper() == 'AUTO':         
-        longestName = []
-        for pa in StreamProtoList:
-            A7_infos = __PIPEIN_GRAPH.getA7_infos(pa,False)  # True False optional for verbose Mode
-            a_name   = A7_infos['a_name'] 
-            l = len(str(a_name))
-            longestName.append(l)
-        try:
-            longestName = max(longestName)
-        except:
-            pass
-        _Longest.append(longestName)
-        nLetters = int(max(_Longest))
-        autoEcart_X = (nLetters/10)*2
-        params['ecart_a7_X'] = autoEcart_X
-        params['X_space_betweenGroup'] = autoEcart_X
+        params = __PIPEIN_GRAPH.get_autoEcart_X(StreamProtoList,params)
 
     #========= set position .a7 Downstreams
     n_streams = len(StreamProtoList)
@@ -1961,8 +1954,6 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     if autoload == 'True':
         autoLoadA7ref       = True # in 2 variables because this script can be call external  
 
-    _Longest = [0]
-
     def showStream(protoGraph,assetProto,typeStreams,catFamily,A7posRef=None):
         ''' show a7 streams '''
 
@@ -2050,22 +2041,9 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     #======================================================================
 
     #========= R&D for auto-ecart, check longest name for ecart optimal
-    if str(ecart_a7_X).upper() == 'AUTO':         
-        longestName = []
-        for pa in StreamProtoList:
-            A7_infos = __PIPEIN_GRAPH.getA7_infos(pa,False)  # True False optional for verbose Mode
-            a_name   = A7_infos['a_name'] 
-            l = len(str(a_name))
-            longestName.append(l)
-        try:
-            longestName = max(longestName)
-        except:
-            pass
-        _Longest.append(longestName)
-        nLetters = int(max(_Longest))
-        autoEcart_X = (nLetters/10)*2
-        params['ecart_a7_X'] = autoEcart_X
-        params['X_space_betweenGroup'] = autoEcart_X
+    if str(ecart_a7_X).upper() == 'AUTO': 
+        params = __PIPEIN_GRAPH.get_autoEcart_X(StreamProtoList,params)
+
     #========= set position .a7 Downstreams   
     n_streams = len(StreamProtoList)
     __PIPEIN_GRAPH.move_StreamProtoList(n_streams,StreamProtoList,layout,A7refPos,params)
@@ -2080,15 +2058,7 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
     selection   = protoGraph.GetSelection()
 
     #========= R&D for auto-ecart, check longest name for ecart optimal
-    for pa in StreamProtoList:
-        l = len(str(pa))
-        longestName.append(l)
-    try:
-        longestName = max(longestName)
-    except:
-        pass
-    _Longest.append(longestName)
-    nLetters = int(max(_Longest))
+    # to do for upstreams ? 
 
     for pa in selection: 
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
