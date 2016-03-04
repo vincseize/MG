@@ -135,6 +135,10 @@ class __PIPEIN_GRAPH__():
             return False
         return None  
 
+
+    #-------------------------- Graph
+
+
     def _GetPointOrig(self, gridUnit = None ):
         if not self._IsAppQT():
             import ink.ui.view
@@ -149,10 +153,108 @@ class __PIPEIN_GRAPH__():
         return ( 0, 0 )
 
 
-    def saveGraph(self,graphPath,debug=False):
-        ''' save Graph '''
+    def saveGraph(self,graphPath,verbose=False):
+        ''' save Graph with path 
+            -> control if really graphPath isfile 
+        '''
         result = self.protoGraph.Write(graphPath, comment='', private=False)
+        if os.path.isfile(fname):
+            pass
+        else :
+            print graphPath + 'Saving FAILED !!!'
+
         return result
+
+
+    def getGraph_infos(self,pa,verbose=False):
+        ''' 
+            for GraphBuilder 
+            todo : new class only for Builder toolz
+        '''
+
+        check = str(pa).split('_')[2] # todo better with filter
+        MASTER      = check.split('-')[0]
+        SEQUENCE    = str(pa).split('_')[1]
+        SHOT        = 'None'
+        CATEGORY    = 'None'
+
+        try:
+            checkShot = str(pa).split('_P')[1] # todo better with filter
+            SHOT = 'P'+checkShot[0:4]
+        except:
+            pass
+        try:
+            checkShot = str(pa).split('_Z')[1] # todo better with filter
+            SHOT = 'Z'+checkShot[0:4]
+        except:
+            pass
+
+        if verbose == True:
+            print MASTER, SEQUENCE, SHOT, CATEGORY
+
+        return  MASTER, SEQUENCE, SHOT, CATEGORY
+
+
+
+
+    #------------------------- Layout
+
+
+    def gettTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,CATEGORY,SEQUENCE,SHOT,verbose=True):
+        ''' 
+            for GraphBuilder 
+            todo : new class only for Builder toolz
+        '''
+        # case Layout
+        if len(a_types) == 1 and a_types[0] == 'Layout' and 'PREVIZ' not in str(nm_asset):
+            type_layout = 'Layout'
+            check_clips = '-Layout_Clip'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+SEQUENCE+'/'+SEQUENCE+'_'+MASTER+'.inkGraph'
+
+        # case Previz
+        if len(a_types) == 1 and a_types[0] == 'Layout' and 'PREVIZ' in str(nm_asset):
+            type_layout = 'Previz'
+            check_clips = '-Layout_Clip'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/PREVIZ/'+SEQUENCE+'/'+SEQUENCE+'_'+MASTER+'.inkGraph'
+
+        # case Anim 
+        if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' not in str(nm_asset):
+            type_layout = 'Anim'
+            check_clips = '-Anim_Clip'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+PROJECT+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
+
+        # case Usecase
+        if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' in str(nm_asset):
+            type_layout = 'Usecase'
+            check_clips = '-Anim_Clip'
+            tmp = str(pa).split('USECASE_')[1] # todo better with filter
+            SEQUENCE = tmp.split('_')[0]
+            tmp2 = tmp.split('_')[1]
+            SHOT = tmp2.split('-')[0]
+
+            # Prov, premiere pass to do better
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+CATEGORY+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph' 
+
+            # Assets # sample 1
+            # USECASE/MANI/Test101/Anim/USECASE_MANI_Test101-Anim.a7 
+            # Assets # sample 2
+            # USECASE/LOOKDEV/BathroomOffset/Anim/USECASE_LOOKDEV_BathroomOffset-Anim.a7 
+
+            # Graphs # sample 1
+            # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/TERTIARY/MANI/ManI_Test101.inkGraph # private 
+            # Graphs # sample 2
+            # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/LOOKDEV/BathroomOffset.inkGraph 
+
+        if verbose==True:
+            print type_layout, check_clips, pathGraphSave, SHOT
+
+        return type_layout, check_clips, pathGraphSave, SHOT
+
+
+
+    #------------------------ A7
+
+
 
 
     def getPosition(self,asset,layout):
@@ -1492,89 +1594,43 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
 
     #========= Retrieve Type Graph
     for pa in selection: 
-        A7_infos = __PIPEIN_GRAPH.getA7_infos(pa)
+        A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
         nm_asset      = A7_infos['nm_asset']
         a_types       = A7_infos['a_types']
-
+        ProtoA7       = pa
+        GraphName     = str(nm_asset)
         #========= retrieve graphname
         try:
-            check = str(pa).split('_')[2] # todo better with filter
-            MASTER      = check.split('-')[0]
-            SEQUENCE    = str(pa).split('_')[1]
-            SHOT        = 'None'
-            CATEGORY    = 'None'
 
-            try:
-                checkShot = str(pa).split('_P')[1] # todo better with filter
-                SHOT = 'P'+checkShot[0:4]
-            except:
-                pass
-            try:
-                checkShot = str(pa).split('_Z')[1] # todo better with filter
-                SHOT = 'Z'+checkShot[0:4]
-            except:
-                pass
-
-            GraphName = str(nm_asset)  
+            result = __PIPEIN_GRAPH.getGraph_infos(pa,True)
+            MASTER      = result[0]
+            SEQUENCE    = result[1]
+            SHOT        = result[2]
+            CATEGORY    = result[3]
 
             #========= get a7 position
             layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
             layA7Pos_X = layA7Pos[0]
             layA7Pos_Y = layA7Pos[1]
 
-            #========= retrieve protoA7
-            ProtoA7 = pa
 
         except:
-            pass
+            __PIPEIN_GRAPH.getA7_infos(pa,True)
+            raise Exception('Error retrieving MASTER SEQUENCE SHOT CATEGORY infos !!!')
 
         #========= determine cases
         try:
-            # case Layout
-            if len(a_types) == 1 and a_types[0] == 'Layout' and 'PREVIZ' not in str(nm_asset):
-                type_layout = 'Layout'
-                check_clips = '-Layout_Clip'
-                pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+SEQUENCE+'/'+SEQUENCE+'_'+MASTER+'.inkGraph'
 
-            # case Previz
-            if len(a_types) == 1 and a_types[0] == 'Layout' and 'PREVIZ' in str(nm_asset):
-                type_layout = 'Previz'
-                check_clips = '-Layout_Clip'
-                pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/PREVIZ/'+SEQUENCE+'/'+SEQUENCE+'_'+MASTER+'.inkGraph'
+            result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,CATEGORY,SEQUENCE,SHOT)
 
-            # case Anim 
-            if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' not in str(nm_asset):
-                type_layout = 'Anim'
-                check_clips = '-Anim_Clip'
-                pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+PROJECT+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
-
-            # case Usecase
-            if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' in str(nm_asset):
-                type_layout = 'Usecase'
-                check_clips = '-Anim_Clip'
-                tmp = str(pa).split('USECASE_')[1] # todo better with filter
-                SEQUENCE = tmp.split('_')[0]
-                tmp2 = tmp.split('_')[1]
-                SHOT = tmp2.split('-')[0]
-
-                # Prov, premiere pass to do better
-                pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+CATEGORY+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph' 
-
-                # Assets # sample 1
-                # USECASE/MANI/Test101/Anim/USECASE_MANI_Test101-Anim.a7 
-                # Assets # sample 2
-                # USECASE/LOOKDEV/BathroomOffset/Anim/USECASE_LOOKDEV_BathroomOffset-Anim.a7 
-
-                # Graphs # sample 1
-                # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/TERTIARY/MANI/ManI_Test101.inkGraph # private 
-                # Graphs # sample 2
-                # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/LOOKDEV/BathroomOffset.inkGraph 
+            type_layout      = result[0]
+            check_clips      = result[1]
+            pathGraphSave    = result[2]
+            SHOT             = result[3]
 
             if SHOT == 'None':
-                print pathGraphSave
-                raise Exception('Shot == None !')
-
-
+                print 'Shot == None !'
+                
         except:
             pass
 
@@ -1657,7 +1713,233 @@ K91_GRAPH_Organizer.__paramsType__        = {
 
 
 
-def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
+
+
+
+
+# #===========================================================================================================================  TEST
+
+
+def K91_MULTI_GRAPH_OrganiZator(SaveGraph='False'):
+    ''' 
+    | /
+    | \ Tool - Last update 01-03-2016
+    ----------------------------------------------------------------------
+      - Organize MULTI Context Layout 
+      - todo :
+            - tout
+    ----------------------------------------------------------------------
+
+
+    '''
+
+    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
+    selection   = protoGraph.GetSelection()
+    type_layout = None 
+
+    if not selection:
+        raise Exception('Please select All a7 !')
+
+
+    fname = '/u/gri/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
+    # pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
+
+
+    for pa in selection:  
+
+        A7_infos = __PIPEIN_GRAPH.getA7_infos(pa)
+        nm_asset      = A7_infos['nm_asset']
+
+
+        protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+        # protoGraph.Write('/u/gri/Users/'+USER+'/Presets/Graphs/totoX.inkGraph', comment='', private=False)
+
+
+        protoGraph.Add(nm_asset)
+
+        protoGraph.Write(fname, comment='', private=True)
+        if os.path.isfile(fname):
+            print fname + 'Saved !!!'
+        else :
+            print fname + 'Saving FAILED !!!'
+
+
+    # #========= Retrieve Type Graph
+    # n = 0
+    # for pa in selection:  
+
+
+    #     A7_infos = __PIPEIN_GRAPH.getA7_infos(pa)
+    #     nm_asset      = A7_infos['nm_asset']
+    #     a_types       = A7_infos['a_types']
+            # ProtoA7 = pa
+    #     #========= retrieve graphname
+    #     try:
+                # result = __PIPEIN_GRAPH.getGraph_infos(pa,True)
+                # MASTER      = result[0]
+                # SEQUENCE    = result[1]
+                # SHOT        = result[2]
+                # CATEGORY    = result[3]
+
+
+
+    #         #========= get a7 position
+    #         layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+    #         layA7Pos_X = layA7Pos[0]
+    #         layA7Pos_Y = layA7Pos[1]
+
+    #         #========= retrieve protoA7
+    #         ProtoA7 = pa
+
+    #     except:
+    #         pass
+
+
+
+    #     #========= determine cases
+    #     try:
+            # result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,CATEGORY,SEQUENCE,SHOT)
+
+            # type_layout      = result[0]
+            # check_clips      = result[1]
+            # pathGraphSave    = result[2]
+            # SHOT             = result[3]
+
+
+    #         if SHOT == 'None':
+    #             print pathGraphSave
+    #             raise Exception('Shot == None !')
+
+
+    #     except:
+    #         pass
+
+
+    #     layA7Pos    = __PIPEIN_GRAPH.getPosition(ProtoA7,layout)
+    #     layA7Pos_X  = layA7Pos[0]
+    #     layA7Pos_Y  = layA7Pos[1]
+
+    #     Filters = {'family': ['.*'] , 'type': ['.*']}  
+    #     StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,ProtoA7,Filters)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #     n += 1
+    #     gName = 'GRAPHNAME_'+str(n)
+    #     g   = ink.proto.Graph(str(gName))
+    #     nm_asset = pa.GetNomen()
+    #     g.Add(nm_asset)
+    #     g.Apply()
+    #     g.Show()
+    #     g.SelectAll()
+
+    #     pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/'+gName+'.inkGraph'
+    #     # __PIPEIN_GRAPH.saveGraph(pathGraphLocal)
+    #     g.Write(pathGraphLocal, comment='', private=False)
+    #     print gName , 'Have been saved ', 'in ', pathGraphLocal, ' !!!'
+
+
+
+
+
+
+
+
+
+
+
+    # print '------------------------'
+
+    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_1' )
+    # protoGraph.SelectAll()
+    # for pa in protoGraph: 
+    #     print 'GRAPHNAME_1'
+    #     print pa  
+
+    # print '------------------------'
+
+    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_2' )
+    # protoGraph.SelectAll()
+    # for pa in protoGraph: 
+    #     print 'GRAPHNAME_2'
+    #     print pa   
+
+    # print '------------------------'
+
+    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_3' )
+    # protoGraph.SelectAll()
+    # for pa in protoGraph: 
+    #     print 'GRAPHNAME_3'
+    #     print pa   
+
+    # print '------------------------'
+
+    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_4' )
+    # protoGraph.SelectAll()
+    # for pa in protoGraph: 
+    #     print 'GRAPHNAME_4'
+    #     print pa   
+
+    # print '------------------------'
+
+
+    # for protoA in userSelectionList: 
+    #     nmAssetSelectionne = protoA.GetNomen()
+    #     AssetSelectionne  = mygraph.Add (nmAssetSelectionne)
+    #     ## GetPath
+    #     Path = __ImportLinuxPath(AssetSelectionne, 'rnd')
+    #     print Path
+    #     result +=  __searchAndReplaceInFile(Path,SEARCH_REPLACE)
+        
+    # result += mygraph.Apply()
+
+# #=========================== UI
+
+K91_MULTI_GRAPH_OrganiZator.__author__            = 'cpottier'
+K91_MULTI_GRAPH_OrganiZator.__textColor__         = '#6699ff'
+K91_MULTI_GRAPH_OrganiZator.__paramsType__        = {
+'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
+}
+
+
+# #===========================================================================================================================  Fin TEST
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def K92_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
     | \ Tool - Last update 01-03-2016
@@ -1843,9 +2125,9 @@ def K92_LAYOUT_BuildCameraModelZator(autoload='True',autosave='True',save_privat
 
 # #=========================== UI
 
-K92_LAYOUT_BuildCameraModelZator.__author__             = 'cpottier'
-K92_LAYOUT_BuildCameraModelZator.__textColor__          = '#6699ff'
-K92_LAYOUT_BuildCameraModelZator.__paramsType__         = {
+K92_LAYOUT_BuildCameraModel.__author__             = 'cpottier'
+K92_LAYOUT_BuildCameraModel.__textColor__          = '#6699ff'
+K92_LAYOUT_BuildCameraModel.__paramsType__         = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'save_private'            :  ( 'bool', 'True' , ['True', 'False']  ),
@@ -1854,7 +2136,7 @@ K92_LAYOUT_BuildCameraModelZator.__paramsType__         = {
 
 
 
-def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
+def K93_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
     | \ Tool - Last update 01-03-2016
@@ -2097,18 +2379,14 @@ def K93_LAYOUT_BuildHumanShapeZator(autoload='True',autosave='True',save_private
 
 # #=========================== UI
 
-K93_LAYOUT_BuildHumanShapeZator.__author__            = 'cpottier'
-K93_LAYOUT_BuildHumanShapeZator.__textColor__         = '#6699ff'
-K93_LAYOUT_BuildHumanShapeZator.__paramsType__        = {
+K93_LAYOUT_BuildHumanShape.__author__            = 'cpottier'
+K93_LAYOUT_BuildHumanShape.__textColor__         = '#6699ff'
+K93_LAYOUT_BuildHumanShape.__paramsType__        = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'save_private'            :  ( 'bool', 'True' , ['True', 'False']  ),
 'cat'                     :  ( 'enum', 'MAIN',['MAIN', 'SECONDARY', 'TERTIARY'] )
 }
-
-
-
-
 
 
 
