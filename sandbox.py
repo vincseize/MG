@@ -157,11 +157,21 @@ class __PIPEIN_GRAPH__():
         ''' save Graph with path 
             -> control if really graphPath isfile 
         '''
+
+        # protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
+        # protoGraphM.Write(str(protoGraphName), private=True)
+
+        self.protoGraph.GetSelection()
+        self.protoGraph.Apply()
         result = self.protoGraph.Write(graphPath, comment='', private=False)
-        if os.path.isfile(fname):
+
+
+
+        if os.path.isfile(graphPath):
+            print graphPath , 'Have been saved !!!'
             pass
         else :
-            print graphPath + 'Saving FAILED !!!'
+            print graphPath + '\n\nSaving FAILED !!!'
 
         return result
 
@@ -199,8 +209,8 @@ class __PIPEIN_GRAPH__():
 
     #------------------------- Layout
 
-
-    def gettTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,CATEGORY,SEQUENCE,SHOT,verbose=True):
+                          # pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,True
+    def gettTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,verbose=False):
         ''' 
             for GraphBuilder 
             todo : new class only for Builder toolz
@@ -246,7 +256,10 @@ class __PIPEIN_GRAPH__():
             # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/LOOKDEV/BathroomOffset.inkGraph 
 
         if verbose==True:
-            print type_layout, check_clips, pathGraphSave, SHOT
+            print 'type_layout : ' + type_layout
+            print 'check_clips : ' + check_clips
+            print 'pathGraphSave : ' + pathGraphSave
+            print 'SHOT : ' + SHOT
 
         return type_layout, check_clips, pathGraphSave, SHOT
 
@@ -786,7 +799,7 @@ def K01_SAMPLE_1():
   
 #=========================== UI
 K01_SAMPLE_1.__position__            = 1                       # order of the tool in th category
-K01_SAMPLE_1.__category__            = 'A_FIRST SAMPLES'       # comment this line to understand default category
+K01_SAMPLE_1.__category__            = 'B - FIRST SAMPLES'       # comment this line to understand default category
 K01_SAMPLE_1.__author__              = 'Karlova' 
 
 
@@ -803,7 +816,7 @@ def K01_SAMPLE_2():
 K01_SAMPLE_2.__position__            = 2							                                 # todo to understand
 #K01_SAMPLE_2.__toolDesc__           = ( 002, 'kroumch', 'audioIcon.png', 'Pipe', '' )	 # todo to understand
 K01_SAMPLE_2.__icon__                = 'pipe/createGraphOccLight.png'
-K01_SAMPLE_2.__category__            = 'A_FIRST SAMPLES'
+K01_SAMPLE_2.__category__            = 'B - FIRST SAMPLES'
 K01_SAMPLE_2.__author__              = 'Le Baron Rouge'
 K01_SAMPLE_2.__shortText__           = 'Icon Title'					                           # Text write on Icon Tool
 
@@ -821,7 +834,7 @@ def K02_UI_CONSTRUCT(Action1='Var_Name', Action2=0, Action3=0, Action4=True, Act
   '''
   
 #=========================== UI
-K02_UI_CONSTRUCT.__category__         = 'B - UI'
+K02_UI_CONSTRUCT.__category__         = 'C - UI'
 K02_UI_CONSTRUCT.__author__           = 'cpottier'
 K02_UI_CONSTRUCT.__textColor__        = '#7cfc00'
 K02_UI_CONSTRUCT.__paramsType__       = {
@@ -843,7 +856,7 @@ def K03_UI_CONSTRUCT_QT(Action1='Var_Name'):
 
 
 #=========================== UI
-K03_UI_CONSTRUCT_QT.__category__         = 'B - UI'
+K03_UI_CONSTRUCT_QT.__category__         = 'C - UI'
 K03_UI_CONSTRUCT_QT.__author__           = 'cpottier'
 K03_UI_CONSTRUCT_QT.__textColor__        = '#7cfcaa'
 K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxQt'
@@ -942,7 +955,7 @@ def K04_GET_SELECTED_ASSETS_INFOS(AllAssetInfos=True):
   
 #=========================== UI
 # K04_GET_SELECTED_ASSETS_INFOS.__position__         = 4
-K04_GET_SELECTED_ASSETS_INFOS.__category__         = 'C - ASSET INFOS'
+K04_GET_SELECTED_ASSETS_INFOS.__category__         = 'D - ASSET INFOS'
 K04_GET_SELECTED_ASSETS_INFOS.__author__           = 'cpottier'
 K04_GET_SELECTED_ASSETS_INFOS.__paramsType__        = {  
    'AllAssetInfos'       :  ( 'bool', 'True' , ['True', 'Minimal']  )
@@ -991,7 +1004,7 @@ def K05_UI_ADD_ASSET_FROM_PATH(selected='False'):
   protoGraph.Apply()
 
 #=========================== UI
-K05_UI_ADD_ASSET_FROM_PATH.__category__         = 'D - ASSET INTERACTION'
+K05_UI_ADD_ASSET_FROM_PATH.__category__         = 'E - ASSET INTERACTION'
 K05_UI_ADD_ASSET_FROM_PATH.__author__           = 'cpottier'
 K05_UI_ADD_ASSET_FROM_PATH.__paramsType__        = {  
    'selected'       :  ( 'bool', 'True' , ['True', 'False']  )
@@ -1025,7 +1038,7 @@ def K06_UI_ADD_ASSET_FROM_NEWLIB():
 
 
 #=========================== UI
-K06_UI_ADD_ASSET_FROM_NEWLIB.__category__         = 'D - ASSET INTERACTION'
+K06_UI_ADD_ASSET_FROM_NEWLIB.__category__         = 'E - ASSET INTERACTION'
 K06_UI_ADD_ASSET_FROM_NEWLIB.__author__           = 'cpottier'
 
 
@@ -1104,7 +1117,7 @@ def K07_UI_CLONE_ASSET():
   protoGraph.Apply()
 
 #=========================== UI
-K07_UI_CLONE_ASSET.__category__         = 'D - ASSET INTERACTION'
+K07_UI_CLONE_ASSET.__category__         = 'E - ASSET INTERACTION'
 K07_UI_CLONE_ASSET.__author__           = 'cpottier'
 
 
@@ -1150,61 +1163,204 @@ def K08_UI_ASSETS_MOVE():
     protoGraph.Apply()
 
 #=========================== UI
-K08_UI_ASSETS_MOVE.__category__         = 'D - ASSET INTERACTION'
+K08_UI_ASSETS_MOVE.__category__         = 'E - ASSET INTERACTION'
 K08_UI_ASSETS_MOVE.__author__           = 'cpottier'
 
 
 def K09_UI_ADD_MOVE_ASSET_REL_TO_ANOTHER():
-  ''' 
-  - MOVE ASSET RELATIVE TO SELECTED ASSET
-  '''
+    ''' 
+    - MOVE ASSET RELATIVE TO SELECTED ASSET
+    '''
 
-  move_X = 0
-  move_Y = -2
+    move_X = 0
+    move_Y = -2
 
-  protoGraph = ink.proto.Graph('Default')
-  layout = protoGraph.GetLayout()
-  selection  = protoGraph.GetSelection( nomen.Filter())
+    protoGraph = ink.proto.Graph('Default')
+    layout = protoGraph.GetLayout()
+    selection  = protoGraph.GetSelection( nomen.Filter())
         
-  if not selection:
-    raise Exception('Please select an asset !')  
+    if not selection:
+        raise Exception('Please select an asset !')  
 
-  if selection:
-    for pa in selection:
-      nmChar = pa.GetNomen()
-      myname    = nmChar.GetName()
-      myfamily  = nmChar.GetFamilies()
-      myVar     = nmChar.GetVar()
-      myTypes   = nmChar.GetTypes()
-      myVersion = nmChar.GetVersion()
+    if selection:
+        for pa in selection:
+            nmChar = pa.GetNomen()
+            myname    = nmChar.GetName()
+            myfamily  = nmChar.GetFamilies()
+            myVar     = nmChar.GetVar()
+            myTypes   = nmChar.GetTypes()
+            myVersion = nmChar.GetVersion()
 
-      A7toMove        = nomen.Nomen.NewLib( lib='LIB', name='A7toMoveRelative', family=['MATERIALS'], types='Maps', stage='' )
-      A7toMoveProto   = protoGraph.Add(A7toMove)
-      A7toMoveProto.AddFile('mgs')  # un fichier msg minimal est a associer obligatoirement
+            A7toMove        = nomen.Nomen.NewLib( lib='LIB', name='A7toMoveRelative', family=['MATERIALS'], types='Maps', stage='' )
+            A7toMoveProto   = protoGraph.Add(A7toMove)
+            A7toMoveProto.AddFile('mgs')  # un fichier msg minimal est a associer obligatoirement
 
-      # get ref a7 position
-      layout.LoadGraphPos([pa])
-      selPos = layout.GetPoint([selection[0]], direction='M') # todo, to understand M, B, T options
-      sel_X = selPos[0]
-      sel_Y = selPos[1]
+            # get ref a7 position
+            layout.LoadGraphPos([pa])
+            selPos = layout.GetPoint([selection[0]], direction='M') # todo, to understand M, B, T options
+            sel_X = selPos[0]
+            sel_Y = selPos[1]
 
-      # move position
-      # layout.SetPos(A7toMoveProto, (move_X+sel_X,move_Y+sel_Y))  # to move it relative to Absolute 0 0 graph origin
-      protoGraph.Show()
-      protoGraph.Apply()
+            # move position
+            # layout.SetPos(A7toMoveProto, (move_X+sel_X,move_Y+sel_Y))  # to move it relative to Absolute 0 0 graph origin
+            protoGraph.Show()
+            protoGraph.Apply()
 
-  protoGraph.Show()
-  protoGraph.Apply()
+    protoGraph.Show()
+    protoGraph.Apply()
 
 
 #=========================== UI
-K09_UI_ADD_MOVE_ASSET_REL_TO_ANOTHER.__category__         = 'D - ASSET INTERACTION'
+K09_UI_ADD_MOVE_ASSET_REL_TO_ANOTHER.__category__         = 'E - ASSET INTERACTION'
 K09_UI_ADD_MOVE_ASSET_REL_TO_ANOTHER.__author__           = 'cpottier'
+
+
+#===========================================================================================================================  F - SAVE GRAPH
+
+
+def K10_SAVE_GRAPH():
+    ''' 
+    - SAVE GRAPH
+        nothing todo : auto add A7 au pif, and save graph
+        -> PRIVATE : sample1 with name, sample2 with path
+        -> PUBLIC : use your path, see code, change code
+    '''
+
+    protoGraph     = ink.proto.Graph( graphs.DEFAULT )
+    # protoGraph = ink.proto.Graph('Default')
+    layout      = protoGraph.GetLayout()
+
+    # You can't save an empty protograph
+
+    A7auPif        = nomen.Nomen.NewLib( lib='LIB', name='A7fromNewLib', family=['MATERIALS'], types='Maps', stage='' )
+    A7auPifProto   = protoGraph.Add(A7auPif)
+    A7auPifProto.AddFile('mgs')  # un fichier msg minimal est a associer obligatoirement
+    protoGraph.Show()
+    protoGraph.Apply()
+
+    # graph A7 to be saved need to be select ? 
+    for proto in protoGraph:
+        protoGraph.SetSelection([proto])
+        protoGraph.Show()
+        protoGraph.Apply()
+    # selection again hack, todo find why
+    proto = protoGraph.List()[0]
+    protoGraph.SetSelection([proto])
+    protoGraph.Show()
+    protoGraph.Apply()
+
+    protoGraphName = 'mySample1'
+    # will save 
+    # /u/gri/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
+    protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
+    protoGraph.Write(str(protoGraphName), private=True)
+
+    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    if os.path.isfile(graphPath):
+        print 'Private mySample1 [OK]'
+        print graphPath , 'Have been saved !!!'
+        pass
+    else :
+        print graphPath + '\n\nSaving FAILED !!!'
+
+
+    protoGraphName = 'mySample2'
+    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    # will save 
+    # /u/gri/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
+    protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
+    protoGraph.Write(graphPath, private=True)
+
+    if os.path.isfile(graphPath):
+        print 'Private mySample2 [OK]'
+        print graphPath , 'Have been saved !!!'
+        pass
+    else :
+        print graphPath + '\n\nSaving FAILED !!!'
+
+#=========================== UI
+K10_SAVE_GRAPH.__category__         = 'F - SAVE GRAPH'
+K10_SAVE_GRAPH.__author__           = 'cpottier'
+
+
+
+
+
+def K11_SAVE_SELECTION_IN_NEW_GRAPH():
+    ''' 
+    - SAVE SELECTION IN NEW PRIVATE PROTOGRAPH
+
+    You need to import and select some assets of them
+
+    That will save an new grapg with your selected assets
+    mySample3_select.inkGraph into Private Graphs
+
+    '''
+
+    protoGraph     = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
+    protoGraphName = 'mySample3_select'
+    protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
+    protoGraph.Write(str(protoGraphName), private=True)
+
+    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    if os.path.isfile(graphPath):
+        print 'Private sample_select [OK]'
+        print graphPath , 'Have been saved !!!'
+        pass
+    else :
+        print graphPath + '\n\nSaving FAILED !!!'
+
+
+#=========================== UI
+K11_SAVE_SELECTION_IN_NEW_GRAPH.__category__         = 'F - SAVE GRAPH'
+K11_SAVE_SELECTION_IN_NEW_GRAPH.__author__           = 'cpottier'
+
+
+
+
+def K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH():
+    ''' 
+    - SAVE IN DIFERRENT PROTOGRAPH
+
+    You need to import and select all assets
+
+    That will save an new graph for each asset
+    mySample_several_1(2,3...).inkGraph into Private Graphs
+
+    '''
+
+    protoGraph     = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
+    protoGraphName = 'mySample3_select'
+    protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
+    protoGraph.Write(str(protoGraphName), private=True)
+
+    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    if os.path.isfile(graphPath):
+        print 'Private sample_select [OK]'
+        print graphPath , 'Have been saved !!!'
+        pass
+    else :
+        print graphPath + '\n\nSaving FAILED !!!'
+
+
+#=========================== UI
+K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH.__category__         = 'F - SAVE GRAPH'
+K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH.__author__           = 'cpottier'
+
+
+
+
+
+
+
+
 
 #===========================================================================================================================  CLASS CRUD
 
 
-def K10_CLASS_CRUD(getAssetsInfos1='True',getAssetsInfos2='Wip',assetToAdd='LIB/MATERIALS/Paint/Maps/Paint-Maps.a7',addA7='True',findA7='True',XNAMEX='XNAMEX-Shading_Shots_Scout.a7', shotList='', castType='Actor', castStage='Ok', shotType='Anim', libName='LIB', familyList='CHARS,PROPS,SETS', update=True, select=True):
+def K20_CLASS_CRUD(getAssetsInfos1='True',getAssetsInfos2='Wip',assetToAdd='LIB/MATERIALS/Paint/Maps/Paint-Maps.a7',addA7='True',findA7='True',XNAMEX='XNAMEX-Shading_Shots_Scout.a7', shotList='', castType='Actor', castStage='Ok', shotType='Anim', libName='LIB', familyList='CHARS,PROPS,SETS', update=True, select=True):
   ''' 
   CLASS GENERIC - LAST UPDATE 21-01-2016
       - CRUD () CREATE READ UPDATE DELETE ) WIP
@@ -1262,10 +1418,10 @@ def K10_CLASS_CRUD(getAssetsInfos1='True',getAssetsInfos2='Wip',assetToAdd='LIB/
 
 
 #=========================== UI
-K10_CLASS_CRUD.__category__         = 'X - TOOLZ'
-K10_CLASS_CRUD.__author__           = 'cpottier'
-K10_CLASS_CRUD.__textColor__        = '#6699ff'
-K10_CLASS_CRUD.__paramsType__        = {
+K20_CLASS_CRUD.__category__         = 'X - TOOLZ'
+K20_CLASS_CRUD.__author__           = 'cpottier'
+K20_CLASS_CRUD.__textColor__        = '#6699ff'
+K20_CLASS_CRUD.__paramsType__        = {
     # 'XNAMEX'        :  ( 'str' , 'XNAMEX-Shading_Shots_Scout.a7')
    'getAssetsInfos1'        :  ( 'bool', 'False' , ['True', 'False']  ),
    'getAssetsInfos2'        :  ( 'bool', 'False' , ['Wip', 'Wip']  ),   
@@ -1276,7 +1432,118 @@ K10_CLASS_CRUD.__paramsType__        = {
 }
 
 
-def K90_SETS_AddScout(save_after='True'): 
+
+# #===========================================================================================================================  PART LAST , GOODIES
+
+
+
+def K80_GOODIES(UserConnected0,UserConnected1,Projet,sendMail_wip='False'):
+    ''' 
+    run action will print :
+    - USER INFOS
+    
+    - SEND MAIL TO YOURSELF WIP
+    - SHOW HIDE UI ELEMENT WIP
+    - ENABLE DISABLED ELEMENT UI WIP
+
+    - Bug : 
+
+      # todo ask dev dpt , bug plantage thread pyqt
+
+      # send-mail: warning: valid_hostname: misplaced delimiter: .macguff.fr                                                                   
+      # send-mail: fatal: file /etc/postfix/main.cf: parameter myhostname: bad parameter value: .macguff.fr                                    
+      # QObject::connect: Cannot queue arguments of type 'QTextCursor'                                                                               
+      # (Make sure 'QTextCursor' is registered using qRegisterMetaType().)                                                                           
+      # QObject::connect: Cannot queue arguments of type 'QTextBlock'                                                                                 
+      # (Make sure 'QTextBlock' is registered using qRegisterMetaType().)                                                                               
+      # QObject::setParent: Cannot set parent, new parent is in a different thread
+      # QPixmap: It is not safe to use pixmaps outside the GUI thread
+
+    '''
+
+
+    # Classe de connection
+    CONNECT_USER_INFOS = _CONNECT_USER_INFOS()
+    
+    
+    ######====================================================
+    ###### SEND MAIL FROM CLASS SAMPLE
+    ######==================================================== 
+
+
+    # todo , external lib
+
+    mail_from = MAIL_USER
+    mail_to = MAIL_USER
+    mail_subject = 'Hello Happy taxes payers!'
+    mail_content = []
+    mail_content.append('You know what i m happy ...')
+    mail_content.append('Droopy, Cordially')
+
+    SENDMAIL = _SENDMAIL(mail_from,mail_to,mail_subject,'mailContent : You know what i m happy ...')
+    result = SENDMAIL.sendmail()
+    print result
+
+
+
+    if sendMail_wip is 'TrueX': # Checkbox is checked 
+        MyLog = open('/tmp/tmpMail', 'w')
+        for line in mail_content :
+            MyLog.write(line)
+            MyLog.close()
+
+        # todo , bug plantage thread pyqt
+
+        # send-mail: warning: valid_hostname: misplaced delimiter: .macguff.fr                                                                   
+        # send-mail: fatal: file /etc/postfix/main.cf: parameter myhostname: bad parameter value: .macguff.fr                                    
+        # QObject::connect: Cannot queue arguments of type 'QTextCursor'                                                                               
+        # (Make sure 'QTextCursor' is registered using qRegisterMetaType().)                                                                           
+        # QObject::connect: Cannot queue arguments of type 'QTextBlock'                                                                                 
+        # (Make sure 'QTextBlock' is registered using qRegisterMetaType().)                                                                               
+        # QObject::setParent: Cannot set parent, new parent is in a different thread
+        # QPixmap: It is not safe to use pixmaps outside the GUI thread
+
+        cmd = 'mail '+mail_to+' -s "'+mail_subject+'" < /tmp/tmpMail';
+        os.system(cmd)
+
+  
+
+#=========================== UI
+# K80_GOODIES.__position__         = 4
+K80_GOODIES.__category__         = 'Z - GOODIES'
+K80_GOODIES.__author__           = 'cpottier'
+K80_GOODIES.__paramsType__        = {  
+    'UserConnected0'        :  ( 'str' , ink.io.ConnectUserInfo()[0]),
+    'UserConnected1'        :  ( 'str' , ink.io.ConnectUserInfo()[1]),
+    'Projet'        :  ( 'str' , ink.io.ConnectUserInfo()[2]),
+    'sendMail_wip'       :  ( 'bool', 'False' , ['True', 'False']  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ###################################################################################################### FIN GOODIES
+
+
+
+
+
+
+
+
+
+#===============================================================================================  PIPE IN TOOLZ
+
+def AK00_SETS_AddScout(save_after='True'): 
     ''' 
     | /
     | \ Tool - Last update 05-02-2016
@@ -1423,16 +1690,17 @@ def K90_SETS_AddScout(save_after='True'):
 
 #=========================== UI
 
-K90_SETS_AddScout.__author__           = 'cpottier'
-K90_SETS_AddScout.__textColor__        = '#6699ff'
-K90_SETS_AddScout.__paramsType__        = {
+AK00_SETS_AddScout.__category__             = 'A - PIPE-IN TOOLZ'
+AK00_SETS_AddScout.__author__            = 'cpottier'
+AK00_SETS_AddScout.__textColor__         = '#6699ff'
+AK00_SETS_AddScout.__paramsType__        = {
 'save_after'            :  ( 'bool', 'True' , ['True', 'False']  )    
 
 }
 
 
 
-def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False'): 
+def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraphM=None): 
     ''' 
     | /
     | \ Tool - Last update 02-03-2016
@@ -1464,7 +1732,8 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
 
     layA7Pos_X          = None
     layA7Pos_Y          = None
-    ecart               = int(graphs.__GetArgStr(int(x_ecart)))
+    # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
+    ecart               =  2
     ecartClip_Y         =  1
 
     ######################################################################
@@ -1584,6 +1853,12 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
 
     #============================================================================================================== end functions
 
+    # if protoGraphM != None:
+    #     protoGraph = protoGraphM 
+    # else:
+    #     protoGraph  = ink.proto.Graph( graphs.DEFAULT )        
+
+
     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
     selection   = protoGraph.GetSelection()
@@ -1597,21 +1872,20 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
         nm_asset      = A7_infos['nm_asset']
         a_types       = A7_infos['a_types']
-        ProtoA7       = pa
         GraphName     = str(nm_asset)
         #========= retrieve graphname
         try:
 
-            result = __PIPEIN_GRAPH.getGraph_infos(pa,True)
+            result = __PIPEIN_GRAPH.getGraph_infos(pa)
             MASTER      = result[0]
             SEQUENCE    = result[1]
             SHOT        = result[2]
             CATEGORY    = result[3]
 
             #========= get a7 position
-            layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
-            layA7Pos_X = layA7Pos[0]
-            layA7Pos_Y = layA7Pos[1]
+            # layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+            # layA7Pos_X = layA7Pos[0]
+            # layA7Pos_Y = layA7Pos[1]
 
 
         except:
@@ -1621,7 +1895,7 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
         #========= determine cases
         try:
 
-            result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,CATEGORY,SEQUENCE,SHOT)
+            result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT)
 
             type_layout      = result[0]
             check_clips      = result[1]
@@ -1632,29 +1906,32 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
                 print 'Shot == None !'
                 
         except:
+            # result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,True)
             pass
 
     #========= Retrieve a7 Downstreams and Upstreams
 
         if str(show_neighbours)=='True':
 
-            layout.SetPos(ProtoA7, (0,0) )
+            layout.SetPos(pa, (0,0) )
 
             protoGraph.Show()
             protoGraph.Apply()
             protoGraph.SelectAll()
 
-            layA7Pos    = __PIPEIN_GRAPH.getPosition(ProtoA7,layout)
+            layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
             layA7Pos_X  = layA7Pos[0]
             layA7Pos_Y  = layA7Pos[1]
 
-            Filters = {'family': ['.*'] , 'type': ['.*']}  
-            StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,ProtoA7,Filters)
-            StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,ProtoA7,Filters)
+            # FiltersDownstreams = {'family': ['.*'] , 'type': ['.*']}  
+            FiltersDownstreams = {'family': ['.*'] , 'type': ['Layout','Clip']} 
+            StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,pa,FiltersDownstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
+            FiltersUpstreams = {'family': ['.*'] , 'type': ['.*']}             
+            StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
 
     #========= select a7 Upstreams for positioning
         assetClips = []
-        UpStreamProtoList = protoGraph.GetUpstreams( ProtoA7 )
+        UpStreamProtoList = protoGraph.GetUpstreams( pa )
         for us in UpStreamProtoList:
             assetClips.append(us)
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
@@ -1668,10 +1945,10 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
     if organize_Downstreams == 'True':
         assetClips = []
         assetClipsByName = []
-        DownStreamProtoList = protoGraph.GetDownstreams( ProtoA7 )
+        niFilters = __PIPEIN_GRAPH._Filters(FiltersDownstreams)
+        DownStreamProtoList = protoGraph.GetDownstreams( pa, niFilter=niFilters )
         for ds in DownStreamProtoList:
-            # if '-Layout_Clip' in str(ds): # to do better, with filter 'Clip'
-            if str(check_clips) in str(ds): # to do better, with filter 'Clip'
+            if str(check_clips) in str(ds):
                 assetClipsByName.append(ds)
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
@@ -1686,20 +1963,28 @@ def K91_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organiz
     #======================================================================
     # SAVE LAYOUT GRAPH
     #======================================================================
-    print '\nK91_GRAPH_Organizer is Happy :)\n'
+    print '\nAK01_GRAPH_Organizer is Happy :)\n'
     if str(SaveGraph) == 'False' :
         print 'You can Save ' , GraphName, 'in ', pathGraphSave
     if str(SaveGraph) == 'True' :
-        __PIPEIN_GRAPH.saveGraph(pathGraphSave)
-        print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
+        # __PIPEIN_GRAPH.saveGraph(pathGraphSave)
+        # print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
 
+
+
+        protoGraph.Write(pathGraphSave, comment='', private=False)
+        if os.path.isfile(pathGraphSave):
+            print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
+        else :
+            print pathGraphSave , ' saving FAILED  !!!'
 
 
 #=========================== UI
 
-K91_GRAPH_Organizer.__author__           = 'cpottier'
-K91_GRAPH_Organizer.__textColor__        = '#6699ff'
-K91_GRAPH_Organizer.__paramsType__        = {
+AK01_GRAPH_Organizer.__category__         = 'A - PIPE-IN TOOLZ'
+AK01_GRAPH_Organizer.__author__           = 'cpottier'
+AK01_GRAPH_Organizer.__textColor__        = '#6699ff'
+AK01_GRAPH_Organizer.__paramsType__       = {
 # 'sep'                       :  ('') ,
 # 'master_layout'             :  ( 'bool', 'True' , ['True', 'False']  ) ,  # todo switch layout/anim
 # 'master_anim'               :  ( 'bool', 'False' , ['True', 'False']  ) , # todo switch layout/anim
@@ -1713,6 +1998,373 @@ K91_GRAPH_Organizer.__paramsType__        = {
 
 
 
+def AK01_MULTI_GRAPH_OrganiZator(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',SaveGraph='False'):
+    ''' 
+    | /
+    | \ Tool - Last update 07-03-2016
+    ----------------------------------------------------------------------
+      - Organize MULTI Context Layout 
+      - todo :
+            - tout
+    ---------------------------------------------------------
+    -------------
+
+
+    '''
+
+
+    # MODIFIABLE #########################################################
+    # Nask relative with Layout.a7
+    X_move_nask         =  0
+    Y_move_nask         = -1.5
+    ecart_nask          =  3
+    # for debug or tests
+    pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
+
+    # DONT TOUCH #########################################################
+    MASTER              = None
+    SEQUENCE            = None
+
+    layA7Pos_X          = None
+    layA7Pos_Y          = None
+    # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
+    ecart               = 2
+    ecartClip_Y         = 1
+
+    ######################################################################
+
+    def moveClipA7s(protoGraph,stream,assetClips,layout,layA7Pos_X,layA7Pos_Y):
+        '''   '''
+        layout    = protoGraph.GetLayout()
+        inc_Y     = 0
+        # infos nomenclature clip_p0340sub etc -> varNomenClips = ['sub', 'trailer', 'tr', 'vi']
+        for pa in assetClips:
+            clipA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+            clipA7Pos_X           = clipA7Pos[0]
+            clipA7Pos_Y           = layA7Pos_Y + inc_Y
+            X_move_naskRelToLayA7 = ecart*2
+            if str(stream) == 'Upstreams':
+                X_move_naskRelToLayA7 = -abs(X_move_naskRelToLayA7)
+            Y_move_naskRelToLayA7     = clipA7Pos_Y
+            layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+            inc_Y = inc_Y + ecartClip_Y
+        #========= Apply 
+        protoGraph.Show()
+        protoGraph.Apply()
+        protoGraph.SelectAll()
+
+
+    def LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,X,Y,X_move_nask,Y_move_nask,ecart,type_layout):
+        ''' add Nask/timing,casting,stereo | Stereo/stereo_session '''
+
+        layout = protoGraph.GetLayout()
+
+        #======================================================================
+        #========= add Nask/timing,casting,stereo | 
+        #======================================================================
+
+        assetList = []
+        
+        if str(type_layout) == 'Layout':
+            assetList = ['Casting','Timing','Stereo']
+            path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
+
+        if str(type_layout) == 'Anim':
+            assetList = ['Casting','Timing']
+            path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
+
+        if str(type_layout) == 'Previz':
+            assetList = ['Casting','Timing','Stereo']
+            path = 'PREVIZ/'+SEQUENCE+'/EDIT/NasK/PREVIZ_'+SEQUENCE+'_EDIT-NasK_'
+
+        if str(type_layout) == 'Usecase':
+            assetList = ['Casting','Timing']
+            path = 'USECASE/'+CATEGORY+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
+
+        #=========
+        for Name in assetList:
+            A7path = path+Name+'.a7'
+            __PIPEIN_GRAPH.add_A7('dirPath',A7path) # _type, A7(str,list,dic), A7Select[optional], A7position[optional]
+
+        #======================================================================
+        #========= add Stereo/stereo_session
+        #======================================================================
+        if str(type_layout) == 'Layout':
+            A7path = PROJECT+'/'+SEQUENCE+'/EDIT/Stereo/'+PROJECT+'_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
+            __PIPEIN_GRAPH.add_A7('dirPath',A7path)
+        if str(type_layout) == 'Previz':
+            A7path = 'PREVIZ/'+SEQUENCE+'/EDIT/Stereo/PREVIZ_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
+            __PIPEIN_GRAPH.add_A7('dirPath',A7path)
+        # if str(type_layout) == 'Usecase':
+        #     A7path = 'USECASE/'+SEQUENCE+'/EDIT/Stereo/USECASE_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
+        #     __PIPEIN_GRAPH.add_A7('dirPath',A7path)
+        # #========= Apply 
+        # protoGraph.Show()
+        # protoGraph.Apply()
+        # protoGraph.SelectAll()
+        #======================================================================
+        #========= move for friendly user layout
+        #======================================================================
+        A7add = protoGraph.List()
+        for a in A7add:
+            try:
+                if str(assetList[0]) in str(a):
+                    X_move_naskRelToLayA7 = X + X_move_nask
+                    Y_move_naskRelToLayA7 = Y + Y_move_nask
+                    layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+            except:
+                pass
+            try:
+                if str(assetList[1]) in str(a):
+                    X_move_naskRelToLayA7 = X + X_move_nask
+                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*2)
+                    layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+            except:
+                pass
+            try:
+                if str(assetList[2]) in str(a) and 'NasK' in str(a):
+                    X_move_naskRelToLayA7 = X + ecart_nask
+                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*3)
+                    layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+            except:
+                pass
+            try:
+                if str(assetList[2]) in str(a) and 'NasK' not in str(a):
+                    X_move_naskRelToLayA7 = X - ecart_nask
+                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*3)
+                    layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+            except:
+                pass
+
+        #======================================================================
+        #========= Apply 
+        #======================================================================
+        protoGraph.Show()
+        protoGraph.Apply()
+        protoGraph.SelectAll()
+
+
+    #============================================================================================================== end functions
+
+    type_layout = None 
+    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
+
+
+
+    selection   = protoGraph.GetSelection()
+    if not selection:
+        raise Exception('Please select All a7 !')
+
+
+    listA7Ref = []
+
+
+
+    for pa in selection:  
+
+        listA7Ref.append(pa)
+
+        #======================================================================
+        #========= move Ref A7
+        #======================================================================
+        layout.SetPos(pa, (0, 0) )
+        protoGraph.Show()
+        protoGraph.Apply()
+        protoGraph.SelectAll()
+        #======================================================================
+
+
+    lenA7Ref = len(listA7Ref)
+
+
+
+
+    #========= Retrieve Type Graph
+    n = 0
+    # for l in listA7Ref:  
+    for pa in protoGraph:
+
+        protoGraph.SetSelection([pa])
+        protoGraph.Show()
+        protoGraph.Apply()
+
+        # unselectall to do 
+
+      # proto = protoGraph.List()[0]
+      # protoGraph.SetSelection([proto])
+
+        # pa = listA7Ref[n]
+        # SetSelection
+
+        # assetList to unselect after writing each graph
+        assetList_toDeselect = []
+
+        # #======================================================================
+        # #========= move Ref A7
+        # #======================================================================
+        # layout.SetPos(pa, (0, 0) )
+        # #======================================================================
+
+
+
+        n += 1
+        protoGraphName = 'GRAPHNAME_'+str(n)
+        protoGraphM     = ink.proto.Graph(str(protoGraphName))
+        layout          = protoGraphM.GetLayout()
+        # print protoGraphName
+
+        A7_infos = __PIPEIN_GRAPH.getA7_infos(pa)
+        nm_asset      = A7_infos['nm_asset']
+        a_types       = A7_infos['a_types']
+        GraphName     = str(nm_asset)
+
+        #========= retrieve graphname
+        try:
+            result = __PIPEIN_GRAPH.getGraph_infos(pa)
+            MASTER      = result[0]
+            SEQUENCE    = result[1]
+            SHOT        = result[2]
+            CATEGORY    = result[3]
+
+        except:
+            __PIPEIN_GRAPH.getA7_infos(pa,True)
+            raise Exception('Error retrieving MASTER SEQUENCE SHOT CATEGORY infos !!!')
+
+        #========= determine cases
+        try:
+
+            result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT)
+            type_layout      = result[0]
+            check_clips      = result[1]
+            pathGraphSave    = result[2]
+            SHOT             = result[3]
+
+            if SHOT == 'None':
+                print 'Shot == None !'
+                
+        except:
+            pass
+
+
+        #========= Retrieve a7 Downstreams and Upstreams
+        layout.SetPos(pa, (0,0) )
+
+        # protoGraphM.Show()
+        # protoGraphM.Apply()
+        # protoGraphM.SelectAll()
+
+        layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+        layA7Pos_X  = layA7Pos[0]
+        layA7Pos_Y  = layA7Pos[1]
+
+        Filters = {'family': ['.*'] , 'type': ['.*']}  
+        StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraphM,layout,pa,Filters)
+        StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraphM,layout,pa,Filters)
+
+        # protoGraphM.Show()
+        # protoGraphM.Apply()
+        # protoGraphM.SelectAll()
+
+
+
+        #========= select a7 Upstreams for positioning
+        assetClips = []
+        UpStreamProtoList = protoGraph.GetUpstreams( pa )
+        for us in UpStreamProtoList:
+            assetClips.append(us)
+            if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
+                A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
+                a_catFamily      = A7_infos_us['a_catFamily']
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
+
+            # populating assetList to unselect
+            assetList_toDeselect.append(us)
+
+        #========= set position layout.a7 Upstreams
+        moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
+        #========= select a7 Downstreams  for positioning
+        if organize_Downstreams == 'True':
+            assetClips = []
+            assetClipsByName = []
+            DownStreamProtoList = protoGraph.GetDownstreams( pa )
+            for ds in DownStreamProtoList:
+                # if '-Layout_Clip' in str(ds): # to do better, with filter 'Clip'
+                if str(check_clips) in str(ds): # to do better, with filter 'Clip'
+                    assetClipsByName.append(ds)
+
+            # populating assetList to unselect
+            assetList_toDeselect.append(ds)
+
+            # re order list , by path Name and not InK object logical
+            assetClips = sorted(assetClipsByName, reverse=True)
+
+        #========= set position clip.a7 Downstreams
+            moveClipA7s(protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y)
+
+        #======================================================================
+        #========= add, set position .a7 timing,casting,stereo, stereo_session
+        #======================================================================
+        LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart,type_layout)
+
+        #======================================================================
+        # SAVE LAYOUT GRAPH
+        #======================================================================
+
+        # print '\nAK01_GRAPH_Organizer is Happy :)\n'
+        # if str(SaveGraph) == 'False' :
+        #     print 'You can Save ' , GraphName, 'in ', pathGraphSave
+        # if str(SaveGraph) == 'True' :
+        #     __PIPEIN_GRAPH.saveGraph(pathGraphSave)
+
+
+
+        # pathGraphSave = '/u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/MAIN/GRINCH/testKarlova_'+str(protoGraphName)+'.inkGraph'
+
+
+        # pathGraphSave = '/u/gri/Users/cpottier/Presets/Graphs/testKarlova_'+str(protoGraphName)+'.inkGraph'
+                       # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/MAIN/GRINCH/testKarlova_GRAPHNAME_3.inkGraph
+        # __PIPEIN_GRAPH.saveGraph(pathGraphSave)
+
+        assetList_toDeselect.append(pa)
+        protoGraph.SetSelection(assetList_toDeselect, selectionMode = ink.proto.SEL_ADD, clearBeforeOp = ink.proto.SEL_CLEAR)
+        print assetList_toDeselect
+
+
+        if str(SaveGraph) == 'True':
+            protoGraph.GetSelection(withLayout=False)     # withLayout est à False par defaut
+            protoGraph.Write(str(protoGraphName), private=True)
+
+
+
+
+
+        #======================================================================
+        # Unselect pa
+        #======================================================================
+
+
+        assetList_toDeselect.append(pa)
+        # protoGraph.SetSelection(assetList_toDeselect, selectionMode = ink.proto.SEL_DELETE, clearBeforeOp = ink.proto.SEL_NOCLEAR)
+        protoGraph.SetSelection(assetList_toDeselect, selectionMode = ink.proto.SEL_DELETE, clearBeforeOp = ink.proto.SEL_CLEAR)
+        protoGraph.Apply()
+
+# #=========================== UI
+
+AK01_MULTI_GRAPH_OrganiZator.__category__          = 'A - PIPE-IN TOOLZ'
+AK01_MULTI_GRAPH_OrganiZator.__author__            = 'cpottier'
+AK01_MULTI_GRAPH_OrganiZator.__textColor__         = '#6699ff'
+AK01_MULTI_GRAPH_OrganiZator.__paramsType__        = {
+'show_neighbours'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
+'organize_Upstreams'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
+'organize_Downstreams'     :  ( 'bool', 'True' , ['True', 'False']  ) ,
+'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
+}
+
+
+
+
+
 
 
 
@@ -1720,202 +2372,99 @@ K91_GRAPH_Organizer.__paramsType__        = {
 # #===========================================================================================================================  TEST
 
 
-def K91_MULTI_GRAPH_OrganiZator(SaveGraph='False'):
-    ''' 
-    | /
-    | \ Tool - Last update 01-03-2016
-    ----------------------------------------------------------------------
-      - Organize MULTI Context Layout 
-      - todo :
-            - tout
-    ----------------------------------------------------------------------
 
 
-    '''
 
-    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
-    layout      = protoGraph.GetLayout()
-    selection   = protoGraph.GetSelection()
-    type_layout = None 
 
-    if not selection:
-        raise Exception('Please select All a7 !')
 
 
-    fname = '/u/gri/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
-    # pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
+# def AK01_MULTI_GRAPH_OrganiZator2(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraph=None):
+#     ''' 
+#     | /
+#     | \ Tool - Last update 01-03-2016
+#     ----------------------------------------------------------------------
+#       - Organize MULTI Context Layout 
+#       - todo :
+#             - tout
+#     ----------------------------------------------------------------------
 
 
-    for pa in selection:  
+#     '''
 
-        A7_infos = __PIPEIN_GRAPH.getA7_infos(pa)
-        nm_asset      = A7_infos['nm_asset']
 
 
-        protoGraph  = ink.proto.Graph( graphs.DEFAULT )
-        # protoGraph.Write('/u/gri/Users/'+USER+'/Presets/Graphs/totoX.inkGraph', comment='', private=False)
 
 
-        protoGraph.Add(nm_asset)
+#     # MODIFIABLE #########################################################
+#     # Nask relative with Layout.a7
+#     X_move_nask         =  0
+#     Y_move_nask         = -1.5
+#     ecart_nask          =  3
+#     # for debug or tests
+#     pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
 
-        protoGraph.Write(fname, comment='', private=True)
-        if os.path.isfile(fname):
-            print fname + 'Saved !!!'
-        else :
-            print fname + 'Saving FAILED !!!'
+#     # DONT TOUCH #########################################################
+#     MASTER              = None
+#     SEQUENCE            = None
 
+#     layA7Pos_X          = None
+#     layA7Pos_Y          = None
+#     ecart               = int(graphs.__GetArgStr(int(x_ecart)))
+#     ecartClip_Y         =  1
 
-    # #========= Retrieve Type Graph
-    # n = 0
-    # for pa in selection:  
+#     #####################################################################
 
 
-    #     A7_infos = __PIPEIN_GRAPH.getA7_infos(pa)
-    #     nm_asset      = A7_infos['nm_asset']
-    #     a_types       = A7_infos['a_types']
-            # ProtoA7 = pa
-    #     #========= retrieve graphname
-    #     try:
-                # result = __PIPEIN_GRAPH.getGraph_infos(pa,True)
-                # MASTER      = result[0]
-                # SEQUENCE    = result[1]
-                # SHOT        = result[2]
-                # CATEGORY    = result[3]
+#     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+#     layout      = protoGraph.GetLayout()
+#     selection   = protoGraph.GetSelection()
+#     type_layout = None 
 
+#     if not selection:
+#         raise Exception('Please select All a7 !')
 
+#     n = 0
+#     for pa in selection:  
 
-    #         #========= get a7 position
-    #         layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
-    #         layA7Pos_X = layA7Pos[0]
-    #         layA7Pos_Y = layA7Pos[1]
 
-    #         #========= retrieve protoA7
-    #         ProtoA7 = pa
+#         n += 1
+#         protoGraphName = 'GRAPHNAME_'+str(n)
+#         protoGraphM     = ink.proto.Graph(str(protoGraphName))
+#         # layout          = protoGraphM.GetLayout()
+#         print protoGraphName, protoGraphM
 
-    #     except:
-    #         pass
+#         # AK01_GRAPH_Organizer(show_neighbours,organize_Upstreams,organize_Downstreams,x_ecart,SaveGraph,protoGraphM)
+#         AK01_GRAPH_Organizer(show_neighbours,organize_Upstreams,organize_Downstreams,x_ecart,SaveGraph,protoGraph)
 
 
 
-    #     #========= determine cases
-    #     try:
-            # result = __PIPEIN_GRAPH.gettTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,CATEGORY,SEQUENCE,SHOT)
 
-            # type_layout      = result[0]
-            # check_clips      = result[1]
-            # pathGraphSave    = result[2]
-            # SHOT             = result[3]
 
 
-    #         if SHOT == 'None':
-    #             print pathGraphSave
-    #             raise Exception('Shot == None !')
 
 
-    #     except:
-    #         pass
 
 
-    #     layA7Pos    = __PIPEIN_GRAPH.getPosition(ProtoA7,layout)
-    #     layA7Pos_X  = layA7Pos[0]
-    #     layA7Pos_Y  = layA7Pos[1]
 
-    #     Filters = {'family': ['.*'] , 'type': ['.*']}  
-    #     StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,ProtoA7,Filters)
 
+# # #=========================== UI
 
+# AK01_MULTI_GRAPH_OrganiZator2.__category__          = 'A - PIPE-IN TOOLZ'
+# AK01_MULTI_GRAPH_OrganiZator2.__author__            = 'cpottier'
+# AK01_MULTI_GRAPH_OrganiZator2.__textColor__         = '#6699ff'
+# AK01_MULTI_GRAPH_OrganiZator2.__paramsType__        = {
+# 'show_neighbours'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
+# 'organize_Upstreams'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
+# 'organize_Downstreams'     :  ( 'bool', 'True' , ['True', 'False']  ) ,
+# 'x_ecart'                   :  ( 'enum', '2',['-6','-3','-2', '-1', '1', '2', '3', '6', '9'] ) ,
+# 'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
+# }
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-    #     n += 1
-    #     gName = 'GRAPHNAME_'+str(n)
-    #     g   = ink.proto.Graph(str(gName))
-    #     nm_asset = pa.GetNomen()
-    #     g.Add(nm_asset)
-    #     g.Apply()
-    #     g.Show()
-    #     g.SelectAll()
-
-    #     pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/'+gName+'.inkGraph'
-    #     # __PIPEIN_GRAPH.saveGraph(pathGraphLocal)
-    #     g.Write(pathGraphLocal, comment='', private=False)
-    #     print gName , 'Have been saved ', 'in ', pathGraphLocal, ' !!!'
-
-
-
-
-
-
-
-
-
-
-
-    # print '------------------------'
-
-    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_1' )
-    # protoGraph.SelectAll()
-    # for pa in protoGraph: 
-    #     print 'GRAPHNAME_1'
-    #     print pa  
-
-    # print '------------------------'
-
-    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_2' )
-    # protoGraph.SelectAll()
-    # for pa in protoGraph: 
-    #     print 'GRAPHNAME_2'
-    #     print pa   
-
-    # print '------------------------'
-
-    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_3' )
-    # protoGraph.SelectAll()
-    # for pa in protoGraph: 
-    #     print 'GRAPHNAME_3'
-    #     print pa   
-
-    # print '------------------------'
-
-    # protoGraph  = ink.proto.Graph( 'GRAPHNAME_4' )
-    # protoGraph.SelectAll()
-    # for pa in protoGraph: 
-    #     print 'GRAPHNAME_4'
-    #     print pa   
-
-    # print '------------------------'
-
-
-    # for protoA in userSelectionList: 
-    #     nmAssetSelectionne = protoA.GetNomen()
-    #     AssetSelectionne  = mygraph.Add (nmAssetSelectionne)
-    #     ## GetPath
-    #     Path = __ImportLinuxPath(AssetSelectionne, 'rnd')
-    #     print Path
-    #     result +=  __searchAndReplaceInFile(Path,SEARCH_REPLACE)
-        
-    # result += mygraph.Apply()
-
-# #=========================== UI
-
-K91_MULTI_GRAPH_OrganiZator.__author__            = 'cpottier'
-K91_MULTI_GRAPH_OrganiZator.__textColor__         = '#6699ff'
-K91_MULTI_GRAPH_OrganiZator.__paramsType__        = {
-'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
-}
 
 
 # #===========================================================================================================================  Fin TEST
@@ -1939,7 +2488,7 @@ K91_MULTI_GRAPH_OrganiZator.__paramsType__        = {
 
 
 
-def K92_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
+def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
     | \ Tool - Last update 01-03-2016
@@ -2118,16 +2667,16 @@ def K92_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='Tr
         myGraph = myGraphLocal        
     if str(autosave) == 'True':
         __PIPEIN_GRAPH.saveGraph(myGraph)
-        print myGraph + ' SAVED !!!'
     if str(autosave) == 'False':
         print '[ OK ] You can save : ' + myG
 
 
 # #=========================== UI
 
-K92_LAYOUT_BuildCameraModel.__author__             = 'cpottier'
-K92_LAYOUT_BuildCameraModel.__textColor__          = '#6699ff'
-K92_LAYOUT_BuildCameraModel.__paramsType__         = {
+AK02_LAYOUT_BuildCameraModel.__category__           = 'A - PIPE-IN TOOLZ'
+AK02_LAYOUT_BuildCameraModel.__author__             = 'cpottier'
+AK02_LAYOUT_BuildCameraModel.__textColor__          = '#6699ff'
+AK02_LAYOUT_BuildCameraModel.__paramsType__         = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'save_private'            :  ( 'bool', 'True' , ['True', 'False']  ),
@@ -2136,7 +2685,7 @@ K92_LAYOUT_BuildCameraModel.__paramsType__         = {
 
 
 
-def K93_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
+def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
     | \ Tool - Last update 01-03-2016
@@ -2379,9 +2928,10 @@ def K93_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='Tru
 
 # #=========================== UI
 
-K93_LAYOUT_BuildHumanShape.__author__            = 'cpottier'
-K93_LAYOUT_BuildHumanShape.__textColor__         = '#6699ff'
-K93_LAYOUT_BuildHumanShape.__paramsType__        = {
+AK03_LAYOUT_BuildHumanShape.__category__          = 'A - PIPE-IN TOOLZ'
+AK03_LAYOUT_BuildHumanShape.__author__            = 'cpottier'
+AK03_LAYOUT_BuildHumanShape.__textColor__         = '#6699ff'
+AK03_LAYOUT_BuildHumanShape.__paramsType__        = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'save_private'            :  ( 'bool', 'True' , ['True', 'False']  ),
@@ -2391,89 +2941,6 @@ K93_LAYOUT_BuildHumanShape.__paramsType__        = {
 
 
 
-# #===========================================================================================================================  PART LAST , GOODIES
-
-def K80_GOODIES(UserConnected0,UserConnected1,Projet,sendMail_wip='False'):
-    ''' 
-    run action will print :
-    - USER INFOS
-    
-    - SEND MAIL TO YOURSELF WIP
-    - SHOW HIDE UI ELEMENT WIP
-    - ENABLE DISABLED ELEMENT UI WIP
-
-    - Bug : 
-
-      # todo ask dev dpt , bug plantage thread pyqt
-
-      # send-mail: warning: valid_hostname: misplaced delimiter: .macguff.fr                                                                   
-      # send-mail: fatal: file /etc/postfix/main.cf: parameter myhostname: bad parameter value: .macguff.fr                                    
-      # QObject::connect: Cannot queue arguments of type 'QTextCursor'                                                                               
-      # (Make sure 'QTextCursor' is registered using qRegisterMetaType().)                                                                           
-      # QObject::connect: Cannot queue arguments of type 'QTextBlock'                                                                                 
-      # (Make sure 'QTextBlock' is registered using qRegisterMetaType().)                                                                               
-      # QObject::setParent: Cannot set parent, new parent is in a different thread
-      # QPixmap: It is not safe to use pixmaps outside the GUI thread
-
-    '''
-
-
-    # Classe de connection
-    CONNECT_USER_INFOS = _CONNECT_USER_INFOS()
-    
-    
-    ######====================================================
-    ###### SEND MAIL FROM CLASS SAMPLE
-    ######==================================================== 
-
-
-    # todo , external lib
-
-    mail_from = MAIL_USER
-    mail_to = MAIL_USER
-    mail_subject = 'Hello Happy taxes payers!'
-    mail_content = []
-    mail_content.append('You know what i m happy ...')
-    mail_content.append('Droopy, Cordially')
-
-    SENDMAIL = _SENDMAIL(mail_from,mail_to,mail_subject,'mailContent : You know what i m happy ...')
-    result = SENDMAIL.sendmail()
-    print result
-
-
-
-    if sendMail_wip is 'TrueX': # Checkbox is checked 
-        MyLog = open('/tmp/tmpMail', 'w')
-        for line in mail_content :
-            MyLog.write(line)
-            MyLog.close()
-
-        # todo , bug plantage thread pyqt
-
-        # send-mail: warning: valid_hostname: misplaced delimiter: .macguff.fr                                                                   
-        # send-mail: fatal: file /etc/postfix/main.cf: parameter myhostname: bad parameter value: .macguff.fr                                    
-        # QObject::connect: Cannot queue arguments of type 'QTextCursor'                                                                               
-        # (Make sure 'QTextCursor' is registered using qRegisterMetaType().)                                                                           
-        # QObject::connect: Cannot queue arguments of type 'QTextBlock'                                                                                 
-        # (Make sure 'QTextBlock' is registered using qRegisterMetaType().)                                                                               
-        # QObject::setParent: Cannot set parent, new parent is in a different thread
-        # QPixmap: It is not safe to use pixmaps outside the GUI thread
-
-        cmd = 'mail '+mail_to+' -s "'+mail_subject+'" < /tmp/tmpMail';
-        os.system(cmd)
-
-  
-
-#=========================== UI
-# K80_GOODIES.__position__         = 4
-K80_GOODIES.__category__         = 'Z - GOODIES'
-K80_GOODIES.__author__           = 'cpottier'
-K80_GOODIES.__paramsType__        = {  
-    'UserConnected0'        :  ( 'str' , ink.io.ConnectUserInfo()[0]),
-    'UserConnected1'        :  ( 'str' , ink.io.ConnectUserInfo()[1]),
-    'Projet'        :  ( 'str' , ink.io.ConnectUserInfo()[2]),
-    'sendMail_wip'       :  ( 'bool', 'False' , ['True', 'False']  )
-}
 
 
 
@@ -2487,7 +2954,34 @@ K80_GOODIES.__paramsType__        = {
 
 
 
-# ###################################################################################################### FIN GOODIES
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   
