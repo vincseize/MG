@@ -1690,7 +1690,7 @@ def AK00_SETS_AddScout(save_after='True'):
 
 #=========================== UI
 
-AK00_SETS_AddScout.__category__             = 'A - PIPE-IN TOOLZ'
+AK00_SETS_AddScout.__category__          = 'A - PIPE-IN TOOLZ'
 AK00_SETS_AddScout.__author__            = 'cpottier'
 AK00_SETS_AddScout.__textColor__         = '#6699ff'
 AK00_SETS_AddScout.__paramsType__        = {
@@ -1703,7 +1703,7 @@ AK00_SETS_AddScout.__paramsType__        = {
 def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraphM=None): 
     ''' 
     | /
-    | \ Tool - Last update 02-03-2016
+    | \ Tool - Last update 05-03-2016
       ----------------------------------------------------------------------
       - Organize Context Layout for layout, anim, previz, usecase 
       -> get streams      
@@ -1785,7 +1785,11 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
 
         if str(type_layout) == 'Usecase':
             assetList = ['Casting','Timing']
-            path = 'USECASE/'+CATEGORY+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
+            path = 'USECASE/'+SEQUENCE+'/EDIT/NasK/USECASE_'+SEQUENCE+'_EDIT-NasK_'
+
+            # USECASE/PIGA/EDIT/NasK/USECASE_PIGA_EDIT-NasK_Casting.a7 
+
+        print path
 
         #=========
         for Name in assetList:
@@ -1924,7 +1928,10 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
             layA7Pos_Y  = layA7Pos[1]
 
             # FiltersDownstreams = {'family': ['.*'] , 'type': ['.*']}  
-            FiltersDownstreams = {'family': ['.*'] , 'type': ['Layout','Clip']} 
+            if str(type_layout) == 'Usecase' or str(type_layout) == 'Anim':
+                FiltersDownstreams = {'family': ['.*'] , 'type': ['Anim','Clip']} 
+            if str(type_layout) == 'Previz' or str(type_layout) == 'Layout':
+                FiltersDownstreams = {'family': ['.*'] , 'type': ['Layout','Clip']} 
             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,pa,FiltersDownstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
             FiltersUpstreams = {'family': ['.*'] , 'type': ['.*']}             
             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
@@ -1967,6 +1974,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     if str(SaveGraph) == 'False' :
         print 'You can Save ' , GraphName, 'in ', pathGraphSave
     if str(SaveGraph) == 'True' :
+        # todo to understand
         # __PIPEIN_GRAPH.saveGraph(pathGraphSave)
         # print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
 
