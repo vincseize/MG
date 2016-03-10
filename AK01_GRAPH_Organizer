@@ -1,15 +1,16 @@
 def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraphM=None): 
     ''' 
     | /
-    | \ Tool - Last update 05-03-2016
+    | \ Tool - Last update 10-03-2016
       ----------------------------------------------------------------------
       - Organize Context Layout for layout, anim, previz, usecase 
       -> get streams      
       -> Add Nask/timing,casting,stereo | Stereo/stereo_session
 
       - todo
-              auto save usecase
+              switch to auto save usecase
               choice for real tool name
+
       ----------------------------------------------------------------------
 
       Select All .a7 or Layout.a7
@@ -85,9 +86,8 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
             assetList = ['Casting','Timing']
             path = 'USECASE/'+SEQUENCE+'/EDIT/NasK/USECASE_'+SEQUENCE+'_EDIT-NasK_'
 
-            # USECASE/PIGA/EDIT/NasK/USECASE_PIGA_EDIT-NasK_Casting.a7 
-
-        print path
+        # USECASE/PIGA/EDIT/NasK/USECASE_PIGA_EDIT-NasK_Casting.a7 
+        # print path
 
         #=========
         for Name in assetList:
@@ -179,10 +179,10 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         try:
 
             result = __PIPEIN_GRAPH.getGraph_infos(pa)
-            MASTER      = result[0]
-            SEQUENCE    = result[1]
-            SHOT        = result[2]
-            CATEGORY    = result[3]
+            MASTER       = result[0]
+            SEQUENCE     = result[1]
+            SHOT         = result[2]
+            CATEGORY     = result[3]
 
             #========= get a7 position
             # layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
@@ -242,7 +242,8 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
+                a_name           = A7_infos_us['a_name'] 
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+a_name+'_'+SHOT+'.inkGraph'
 
     #========= set position layout.a7 Upstreams
         moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
@@ -300,4 +301,3 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 'x_ecart'                   :  ( 'enum', '2',['-6','-3','-2', '-1', '1', '2', '3', '6', '9'] ) ,
 'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
 }
-
