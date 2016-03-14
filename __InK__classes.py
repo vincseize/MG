@@ -8,58 +8,11 @@
 # Date : 14-03-2016                                                                #
 # ##################################################################################
 
-# Required modules
-import graphs
-import nomen
-import ink.proto
-import ink.query
-import nask.sdk
-import nask.sdk.casting
-import nask.sdk.shots as shots
-import nask.sdk.hit 
-import proj.pipe.ink.graphs as prodgraphs
-from subprocess import Popen, PIPE
-
-# Optionals modules
-import re 
-import sys
-import os 
-import time
-import datetime
-
-# QT modules
-from PyQt4 import QtGui
-import shutil
-import string
-import os
-import subprocess
-import collections
-from collections import OrderedDict
-import sip
-from PyQt4 import QtGui,QtCore,QtOpenGL
-
-# qt module for InK
-try:
-  if 'sandboxQt' in sys.modules:
-    del(sys.modules["sandboxQt"])
-    import sandboxQt 
-  else:
-    import sandboxQt
-except:
-  pass
-
-
-CONNECT_USER_INFOS      = ink.io.ConnectUserInfo()
-CONNECT_USER0           = CONNECT_USER_INFOS[0]
-CONNECT_USER1           = CONNECT_USER_INFOS[1] # todo to ask why ?
-PROJECT                 = CONNECT_USER_INFOS[2].upper()
-projectLower            = PROJECT.lower()
-USER                    = CONNECT_USER_INFOS[1]
-MAIL_HOSTNAME           = 'HOSTNAME.illum-mg.fr'
-MAIL_USER               = USER+'@illum-mg.fr'
-LOCALPATH               = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'
-
-
+import sys, ink.proto
+path_modules = "/u/"+ink.io.ConnectUserInfo()[2]+"/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples"
+sys.path.append(path_modules)
+import __InK__connect
+from __InK__connect import *
 
 #=======================================================================================================================  CLASS __PIPEIN_GRAPH__
 
@@ -104,8 +57,8 @@ class __PIPEIN_GRAPH__():
             -> control if really graphPath isfile 
         '''
 
-        # protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
-        # protoGraphM.Write(str(protoGraphName), private=True)
+        # self.protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
+        # self.protoGraphM.Write(str(protoGraphName), private=True)
 
         self.protoGraph.GetSelection()
         self.protoGraph.Apply()
@@ -235,8 +188,8 @@ class __PIPEIN_GRAPH__():
 
     def getSelected(self):
         result            = []
-        protoGraph        = ink.proto.Graph( self.graphName )
-        assetList         = protoGraph.GetSelection( nomen.Filter().SetTypes(['.*']).SetStage('') ) # todo, to understand return Object list
+        self.protoGraph        = ink.proto.Graph( self.graphName )
+        assetList         = self.protoGraph.GetSelection( nomen.Filter().SetTypes(['.*']).SetStage('') ) # todo, to understand return Object list
         if not assetList:
             raise Exception('Class error : Please select at list one Asset !')  
         for asset in assetList: 
@@ -673,9 +626,9 @@ class __PIPEIN_GRAPH__():
                 if inc_n_column in tb_n_group:
                     inc_X = inc_X + params['ecart_a7_X'] + params['X_space_betweenGroup'] 
         #-------------------------------------- Apply ---------------------------------------------------------------#
-        protoGraph.Show()
-        protoGraph.Apply()
-        protoGraph.SelectAll()
+        self.protoGraph.Show()
+        self.protoGraph.Apply()
+        self.protoGraph.SelectAll()
 
 
     def get_autoEcart_X(self,StreamProtoList,params):
@@ -702,29 +655,6 @@ class __PIPEIN_GRAPH__():
 
 #======================================================================================================================= End class __PIPEIN_GRAPH__ 
 
-
-
-
-
-
-#===================================================================================================================== CLASS __CONNECT_USER_INFOS__
-
-# class __CONNECT_USER_INFOS__():
-
-#     def __init__(self):
-#         '''   '''
-#         self.CONNECT_USER_INFOS      = ink.io.ConnectUserInfo()
-#         self.CONNECT_USER0           = self.CONNECT_USER_INFOS[0]
-#         self.CONNECT_USER1           = self.CONNECT_USER_INFOS[1] # todo to ask why ?
-#         self.PROJECT                 = self.CONNECT_USER_INFOS[2]
-#         self.projectLower            = self.PROJECT.lower()
-#         self.USER                    = self.CONNECT_USER_INFOS[1]
-
-#         self.MAIL_HOSTNAME           = 'HOSTNAME.illum-mg.fr'
-#         self.MAIL_USER               = self.USER+'@illum-mg.fr'
-#         self.LOCALPATH               = '/u/'+self.projectLower+'/Users/'+self.USER+'/Presets/Graphs/'
-
-#================================================================================================================= end CLASS __CONNECT_USER_INFOS__
 
 
 
