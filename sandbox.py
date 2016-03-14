@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	   #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 2016                                                                      #
+# Date : 14-03-2016                                                                #
 # ##################################################################################
 
 import sys, ink.proto
@@ -14,7 +14,7 @@ sys.path.append(path_modules)
 import __InK__connect
 from __InK__connect import *
 
-#==============================================================================================================================Ink useful CLASSES
+#============================================================================================================================= Ink useful CLASSES
 import __InK__classes
 from __InK__classes import __PIPEIN_GRAPH__
 protoGraph              = ink.proto.Graph( graphs.DEFAULT )
@@ -99,7 +99,6 @@ def K03_UI_CONSTRUCT_QT(Action1='Var_Name'):
 
 
 #=========================== append path for tools qt
-
 try:
   if 'sandboxQt' in sys.modules:
     del(sys.modules["sandboxQt"])
@@ -552,7 +551,7 @@ def K11_SAVE_SELECTION_IN_NEW_GRAPH():
 
     protoGraph     = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
-    protoGraphName = 'mySample3_select'
+    protoGraphName = 'mySampleK11_select'
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(str(protoGraphName), private=True)
 
@@ -576,28 +575,50 @@ def K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH():
     ''' 
     - SAVE IN DIFERRENT PROTOGRAPH
 
-    You need to import and select all assets
+    You need to import and select all or some assets
 
     That will save an new graph for each asset
     mySample_several_1(2,3...).inkGraph into Private Graphs
 
     '''
 
-    protoGraph     = ink.proto.Graph( graphs.DEFAULT )
+    type_layout = None 
+    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
-    protoGraphName = 'mySample3_select'
-    protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
-    protoGraph.Write(str(protoGraphName), private=True)
 
+    selection   = protoGraph.GetSelection()
+    if not selection:
+        raise Exception('Please select All a7 !')
 
-    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
-    if os.path.isfile(graphPath):
-        print 'Private sample_select [OK]'
-        print graphPath , 'Have been saved !!!'
-        pass
-    else :
-        print graphPath + '\n\nSaving FAILED !!!'
+    assetList=[]
 
+    for pa in selection:  
+        assetList.append(pa)
+
+    protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
+
+    n = 0
+    for pa in assetList:
+        n += 1
+        protoGraphName = 'mySampleK12_several_'+str(n)
+        graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+
+        protoGraph.SetSelection([pa])
+        layout.SetPos(pa, (0,0) ) # optional
+        protoGraph.Show()
+        protoGraph.Apply()
+
+        protoGraphS  = ink.proto.Graph.FromQuery('foo', [pa]) 
+        l = protoGraphS.GetLayout()                           
+        l.LoadGraphPos([pa])                              
+        protoGraphS.Write(str(graphPath), private=True)
+
+        if os.path.isfile(graphPath):
+            print 'Private sample_select [OK]'
+            print graphPath , 'Have been saved !!!'
+            pass
+        else :
+            print graphPath + '\n\nSaving FAILED !!!'
 
 #=========================== UI
 K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH.__category__         = 'F - SAVE GRAPH'
