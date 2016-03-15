@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 2016                                                                      #
+# Last Update : 15-03-2016                                                         #
 # ##################################################################################
 
 import sys, ink.proto
@@ -483,7 +483,7 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
-    | \ Tool - Last update 01-03-2016
+    | \ Tool - Last update 15-03-2016
       ----------------------------------------------------------------------
       - Organize MODEL Context Layout 
       - autosave graphs in :
@@ -657,8 +657,14 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='T
     # myGraph = myGraphLocal
     if str(save_private) == 'True':
         myGraph = myGraphLocal        
-    if str(autosave) == 'True':
-        __PIPEIN_GRAPH.saveGraph(myGraph)
+    if str(autosave) == 'True' and str(save_private) == 'True':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(myG, private=True)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
+    if str(autosave) == 'True' and str(save_private) == 'False':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(str(myGraph), private=False)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
     if str(autosave) == 'False':
         print '[ OK ] You can save : ' + myG
 
@@ -680,7 +686,7 @@ AK02_LAYOUT_BuildCameraModel.__paramsType__         = {
 def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
-    | \ Tool - Last update 01-03-2016
+    | \ Tool - Last update 15-03-2016
       ----------------------------------------------------------------------
       - Organize FACIAL Context Layout 
       - autosave graphs in :
@@ -894,26 +900,21 @@ def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='Tr
         if str(nm_asset) != str(A7RefPath):
             result = showStream(protoGraph,pa,'GetUpstreams',catFamily,A7posRef)  # protoGraph,assetProto,typeStreams,catFamily,A7posRef=None
 
-    # to do better
-    # for pa in StreamProtoList:   
-    #     A7pos         = __PIPEIN_GRAPH.getPosition(pa,layout)         
-    #     X_pos         = A7pos[0]-2
-    #     Y_pos         = A7pos[1]                    
-    #     layout.SetPos(pa, (X_pos,Y_pos) )
-
-
     #========= apply and refresh graph
     protoGraph.Show()
     protoGraph.Apply()
-    #======================================================================
     #========= save Graph
-    #======================================================================
     # myGraph = myGraphLocal
     if str(save_private) == 'True':
-        myGraph = myGraphLocal  
-    if str(autosave) == 'True':
-        __PIPEIN_GRAPH.saveGraph(myGraph)
-        print myGraph + ' SAVED !!!'
+        myGraph = myGraphLocal        
+    if str(autosave) == 'True' and str(save_private) == 'True':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(myG, private=True)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
+    if str(autosave) == 'True' and str(save_private) == 'False':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(str(myGraph), private=False)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
     if str(autosave) == 'False':
         print '[ OK ] You can save : ' + myG
 
