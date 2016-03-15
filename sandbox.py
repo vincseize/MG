@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	   #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 14-03-2016                                                                #
+# Date : 15-03-2016                                                                #
 # ##################################################################################
 
 import sys, ink.proto
@@ -15,8 +15,13 @@ import __InK__connect
 from __InK__connect import *
 
 #============================================================================================================================= Ink useful CLASSES
-import __InK__classes
-from __InK__classes import __PIPEIN_GRAPH__
+# dev classes
+import __InK__classes_forDev
+from __InK__classes_forDev import __PIPEIN_GRAPH__
+
+# prod classes
+# import __InK__classes
+# from __InK__classes import __PIPEIN_GRAPH__
 protoGraph              = ink.proto.Graph( graphs.DEFAULT )
 __PIPEIN_GRAPH          = __PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
 #================================================================================================================================================
@@ -1662,110 +1667,6 @@ AK01_MULTI_GRAPH_OrganiZator.__paramsType__        = {
 
 
 
-# def AK01_MULTI_GRAPH_OrganiZator2(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraph=None):
-#     ''' 
-#     | /
-#     | \ Tool - Last update 01-03-2016
-#     ----------------------------------------------------------------------
-#       - Organize MULTI Context Layout 
-#       - todo :
-#             - tout
-#     ----------------------------------------------------------------------
-
-
-#     '''
-
-
-
-
-
-#     # MODIFIABLE #########################################################
-#     # Nask relative with Layout.a7
-#     X_move_nask         =  0
-#     Y_move_nask         = -1.5
-#     ecart_nask          =  3
-#     # for debug or tests
-#     pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
-
-#     # DONT TOUCH #########################################################
-#     MASTER              = None
-#     SEQUENCE            = None
-
-#     layA7Pos_X          = None
-#     layA7Pos_Y          = None
-#     ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-#     ecartClip_Y         =  1
-
-#     #####################################################################
-
-
-#     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
-#     layout      = protoGraph.GetLayout()
-#     selection   = protoGraph.GetSelection()
-#     type_layout = None 
-
-#     if not selection:
-#         raise Exception('Please select All a7 !')
-
-#     n = 0
-#     for pa in selection:  
-
-
-#         n += 1
-#         protoGraphName = 'GRAPHNAME_'+str(n)
-#         protoGraphM     = ink.proto.Graph(str(protoGraphName))
-#         # layout          = protoGraphM.GetLayout()
-#         print protoGraphName, protoGraphM
-
-#         # AK01_GRAPH_Organizer(show_neighbours,organize_Upstreams,organize_Downstreams,x_ecart,SaveGraph,protoGraphM)
-#         AK01_GRAPH_Organizer(show_neighbours,organize_Upstreams,organize_Downstreams,x_ecart,SaveGraph,protoGraph)
-
-
-
-
-
-
-
-
-
-
-
-
-# # #=========================== UI
-
-# AK01_MULTI_GRAPH_OrganiZator2.__category__          = 'A - PIPE-IN TOOLZ'
-# AK01_MULTI_GRAPH_OrganiZator2.__author__            = 'cpottier'
-# AK01_MULTI_GRAPH_OrganiZator2.__textColor__         = '#6699ff'
-# AK01_MULTI_GRAPH_OrganiZator2.__paramsType__        = {
-# 'show_neighbours'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
-# 'organize_Upstreams'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
-# 'organize_Downstreams'     :  ( 'bool', 'True' , ['True', 'False']  ) ,
-# 'x_ecart'                   :  ( 'enum', '2',['-6','-3','-2', '-1', '1', '2', '3', '6', '9'] ) ,
-# 'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
-# }
-
-
-
-
-
-
-
-
-# #===========================================================================================================================  Fin TEST
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1775,7 +1676,7 @@ AK01_MULTI_GRAPH_OrganiZator.__paramsType__        = {
 def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
-    | \ Tool - Last update 01-03-2016
+    | \ Tool - Last update 15-03-2016
       ----------------------------------------------------------------------
       - Organize MODEL Context Layout 
       - autosave graphs in :
@@ -1949,8 +1850,14 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='T
     # myGraph = myGraphLocal
     if str(save_private) == 'True':
         myGraph = myGraphLocal        
-    if str(autosave) == 'True':
-        __PIPEIN_GRAPH.saveGraph(myGraph)
+    if str(autosave) == 'True' and str(save_private) == 'True':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(myG, private=True)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
+    if str(autosave) == 'True' and str(save_private) == 'False':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(str(myGraph), private=False)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
     if str(autosave) == 'False':
         print '[ OK ] You can save : ' + myG
 
@@ -1972,7 +1879,7 @@ AK02_LAYOUT_BuildCameraModel.__paramsType__         = {
 def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
     ''' 
     | /
-    | \ Tool - Last update 01-03-2016
+    | \ Tool - Last update 15-03-2016
       ----------------------------------------------------------------------
       - Organize FACIAL Context Layout 
       - autosave graphs in :
@@ -2197,15 +2104,18 @@ def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='Tr
     #========= apply and refresh graph
     protoGraph.Show()
     protoGraph.Apply()
-    #======================================================================
     #========= save Graph
-    #======================================================================
     # myGraph = myGraphLocal
     if str(save_private) == 'True':
-        myGraph = myGraphLocal  
-    if str(autosave) == 'True':
-        __PIPEIN_GRAPH.saveGraph(myGraph)
-        print myGraph + ' SAVED !!!'
+        myGraph = myGraphLocal        
+    if str(autosave) == 'True' and str(save_private) == 'True':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(myG, private=True)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
+    if str(autosave) == 'True' and str(save_private) == 'False':
+        # __PIPEIN_GRAPH.saveGraph(myGraph) # to do , to debug
+        protoGraph.Write(str(myGraph), private=False)
+        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
     if str(autosave) == 'False':
         print '[ OK ] You can save : ' + myG
 
