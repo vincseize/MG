@@ -1518,7 +1518,6 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         #========= set position clip.a7 Downstreams
         moveClipA7s(protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y)
 
-
         #======================================================================
         #========= Retrieve Upstreams
         #======================================================================
@@ -1571,7 +1570,6 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
             if str(checkString) in str(pa):
                 assetList_toSelect.append(pa)
 
-
         #======================================================================
         #========= Apply 
         #======================================================================
@@ -1579,14 +1577,13 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         protoGraph.Apply()
         # protoGraph.SelectAll()
 
-
-
         #======================================================================
         # SAVE LAYOUT GRAPH
         #======================================================================
-
+        pathGraphSave = graphPathLocal
+        if str(SaveGraph) == 'False':
+            print pathGraphSave , 'ready to be saved ...'
         if str(SaveGraph) == 'True': 
-            pathGraphSave = graphPathLocal
             protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_toSelect) 
             l = protoGraphS.GetLayout()                           
             l.LoadGraphPos(assetList_toSelect)         
@@ -1594,10 +1591,10 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
             protoGraphS.Write(str(pathGraphSave), private=True)
 
             if os.path.isfile(pathGraphSave):
-                print graphPathLocal , 'Have been saved !!!'
+                print pathGraphSave , 'Have been saved !!!'
                 pass
             else :
-                print graphPathLocal + '\n\nSaving FAILED !!!'
+                print pathGraphSave + '\n\nSaving FAILED !!!'
 
 
 # #=========================== UI
