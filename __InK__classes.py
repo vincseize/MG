@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 14-03-2016                                                                #
+# Date : 16-03-2016                                                                #
 # ##################################################################################
 
 import sys, ink.proto
@@ -80,7 +80,7 @@ class __PIPEIN_GRAPH__():
             for GraphBuilder 
             todo : new class only for Builder toolz
         '''
-
+        print 'getGraph_infos',pa
         check = str(pa).split('_')[2] # todo better with filter
         MASTER      = check.split('-')[0]
         SEQUENCE    = str(pa).split('_')[1]
@@ -109,7 +109,7 @@ class __PIPEIN_GRAPH__():
     #------------------------- Layout
 
                           # pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,True
-    def gettTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,verbose=False):
+    def getTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,verbose=False):
         ''' 
             for GraphBuilder 
             todo : new class only for Builder toolz
@@ -204,7 +204,7 @@ class __PIPEIN_GRAPH__():
 
         todo            - find all available infos
         '''
-
+        print 'getA7_infos',pa
         nm_asset        = 'None' # 1
         nm_path         = 'None' # 2
         a_libname       = 'None' # 3
