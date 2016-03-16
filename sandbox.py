@@ -1333,60 +1333,49 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         protoGraph.SelectAll()
 
 
-    def LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,X,Y,X_move_nask,Y_move_nask,ecart,type_layout):
+    def LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,type_layout):
         ''' add Nask/timing,casting,stereo | Stereo/stereo_session '''
 
-        #======================================================================
-        #========= add, set position .a7 timing,casting,stereo, stereo_session
-        #======================================================================
         assetListNasK = []
         
-        # if str(type_layout) == 'Layout':
-        #     assetListNasK = ['Casting','Timing','Stereo']
-        #     path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
+        #========= add timing/casting/stereo
 
-        # if str(type_layout) == 'Anim':
-        #     assetListNasK = ['Casting','Timing']
-        #     path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
+        if str(type_layout) == 'Layout':
+            assetListNasK = ['Casting','Timing','Stereo']
+            path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
 
-        # if str(type_layout) == 'Previz':
-        #     assetListNasK = ['Casting','Timing','Stereo']
-        #     path = 'PREVIZ/'+SEQUENCE+'/EDIT/NasK/PREVIZ_'+SEQUENCE+'_EDIT-NasK_'
+        if str(type_layout) == 'Anim':
+            assetListNasK = ['Casting','Timing']
+            path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
 
+        if str(type_layout) == 'Previz':
+            assetListNasK = ['Casting','Timing','Stereo']
+            path = 'PREVIZ/'+SEQUENCE+'/EDIT/NasK/PREVIZ_'+SEQUENCE+'_EDIT-NasK_'
+
+        if str(type_layout) == 'Usecase':
+            assetListNasK = ['Casting','Timing']
+            path = 'USECASE/'+SEQUENCE+'/EDIT/NasK/USECASE_'+SEQUENCE+'_EDIT-NasK_'
+
+        #=========
+        for Name in assetListNasK:
+            A7path = path+Name+'.a7'
+            __PIPEIN_GRAPH.add_A7('dirPath',A7path,True) # _type, A7(str,list,dic), A7Select[optional], A7position[optional]
+
+        #========= add Stereo/stereo_session
+
+        if str(type_layout) == 'Layout':
+            A7path = PROJECT+'/'+SEQUENCE+'/EDIT/Stereo/'+PROJECT+'_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
+            __PIPEIN_GRAPH.add_A7('dirPath',A7path)
+        if str(type_layout) == 'Previz':
+            A7path = 'PREVIZ/'+SEQUENCE+'/EDIT/Stereo/PREVIZ_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
+            __PIPEIN_GRAPH.add_A7('dirPath',A7path)
         # if str(type_layout) == 'Usecase':
-        #     assetListNasK = ['Casting','Timing']
-        #     path = 'USECASE/'+SEQUENCE+'/EDIT/NasK/USECASE_'+SEQUENCE+'_EDIT-NasK_'
-
-        # #=========
-        # for Name in assetListNasK:
-        #     A7path = path+Name+'.a7'
-        #     __PIPEIN_GRAPH.add_A7('dirPath',A7path,True) # _type, A7(str,list,dic), A7Select[optional], A7position[optional]
-        #     selection = protoGraph.GetSelection()
-        #     for pa in selection:
-        #         assetList_toSelect.append(pa)
-        # #======================================================================
-        # #========= add Stereo/stereo_session
-        # #======================================================================
-        # if str(type_layout) == 'Layout':
-        #     A7path = PROJECT+'/'+SEQUENCE+'/EDIT/Stereo/'+PROJECT+'_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
+        #     A7path = 'USECASE/'+SEQUENCE+'/EDIT/Stereo/USECASE_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
         #     __PIPEIN_GRAPH.add_A7('dirPath',A7path)
-        #     selection = protoGraph.GetSelection()
-        #     for pa in selection:
-        #         assetList_toSelect.append(pa)
-        # if str(type_layout) == 'Previz':
-        #     A7path = 'PREVIZ/'+SEQUENCE+'/EDIT/Stereo/PREVIZ_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
-        #     __PIPEIN_GRAPH.add_A7('dirPath',A7path)
-        #     selection = protoGraph.GetSelection()
-        #     for pa in selection:
-        #         assetList_toSelect.append(pa)
-        # # if str(type_layout) == 'Usecase':
-        # #     A7path = 'USECASE/'+SEQUENCE+'/EDIT/Stereo/USECASE_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
-        # #     __PIPEIN_GRAPH.add_A7('dirPath',A7path)
 
-        # #========= Apply VERY IMPORTANT
-        # protoGraph.Show()
-        # protoGraph.Apply()
-        # protoGraph.SelectAll()
+        #========= Apply VERY IMPORTANT
+        protoGraph.Show()
+        protoGraph.Apply()
 
 
     #============================================================================================================== end functions
@@ -1487,56 +1476,8 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         #======================================================================
         #========= add, set position .a7 timing,casting,stereo, stereo_session
         #======================================================================
-        assetListNasK = []
-        
-        if str(type_layout) == 'Layout':
-            assetListNasK = ['Casting','Timing','Stereo']
-            path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
 
-        if str(type_layout) == 'Anim':
-            assetListNasK = ['Casting','Timing']
-            path = PROJECT+'/'+SEQUENCE+'/EDIT/NasK/'+PROJECT+'_'+SEQUENCE+'_EDIT-NasK_'
-
-        if str(type_layout) == 'Previz':
-            assetListNasK = ['Casting','Timing','Stereo']
-            path = 'PREVIZ/'+SEQUENCE+'/EDIT/NasK/PREVIZ_'+SEQUENCE+'_EDIT-NasK_'
-
-        if str(type_layout) == 'Usecase':
-            assetListNasK = ['Casting','Timing']
-            path = 'USECASE/'+SEQUENCE+'/EDIT/NasK/USECASE_'+SEQUENCE+'_EDIT-NasK_'
-
-        #=========
-        for Name in assetListNasK:
-            A7path = path+Name+'.a7'
-            __PIPEIN_GRAPH.add_A7('dirPath',A7path,True) # _type, A7(str,list,dic), A7Select[optional], A7position[optional]
-            # print A7path
-            # # selection = protoGraph.GetSelection()
-            # for pa in selection:
-            #     # protoGraph.SetSelection([pa] , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
-            #     assetList_toSelect.append(pa)
-            #     print '############'
-            #     print pa
-            #     print '############'
-            # protoGraph.Show()
-            # protoGraph.Apply()
-            #     # protoGraph.SelectAll()
-        #======================================================================
-        #========= add Stereo/stereo_session
-        #======================================================================
-        if str(type_layout) == 'Layout':
-            A7path = PROJECT+'/'+SEQUENCE+'/EDIT/Stereo/'+PROJECT+'_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
-            __PIPEIN_GRAPH.add_A7('dirPath',A7path)
-        if str(type_layout) == 'Previz':
-            A7path = 'PREVIZ/'+SEQUENCE+'/EDIT/Stereo/PREVIZ_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
-            __PIPEIN_GRAPH.add_A7('dirPath',A7path)
-        # if str(type_layout) == 'Usecase':
-        #     A7path = 'USECASE/'+SEQUENCE+'/EDIT/Stereo/USECASE_'+SEQUENCE+'_EDIT-Stereo_Session.a7'
-        #     __PIPEIN_GRAPH.add_A7('dirPath',A7path)
-
-        #========= Apply VERY IMPORTANT
-        protoGraph.Show()
-        protoGraph.Apply()
-        # protoGraph.SelectAll()
+        LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,type_layout)
 
 
 
@@ -1544,13 +1485,8 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         protoGraph.SelectAll()
         selection = protoGraph.GetSelection()
         for pa in selection:
-            if '_EDIT-' in str(pa):
+            if '_EDIT-' in str(pa): # plus nom de l asset de ref pour multi folder
                 assetList_toSelect.append(pa)
-        # print '++++++++++++++++++++++++++++++++++++++++++++++++++++'
-        # assetList_toSelect = list(set(assetList_toSelect))
-        # for pa in assetList_toSelect:
-        #     print pa
-        # print '++++++++++++++++++++++++++++++++++++++++++++++++++++'
 
 
         #======================================================================
