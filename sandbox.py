@@ -1277,18 +1277,18 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 
 
 
-def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
+def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ''' 
     | /
     | \ Tool - Last update 16-03-2016
     ----------------------------------------------------------------------
-      - Organize MULTI Context Layout 
-      - todo :
-            - debug get casting etc
-    ---------------------------------------------------------
-    -------------
+      - Organize and Save Graph(s) 
+      - Multi select and auto batch mode enable
+      
+      Select one or several anim, layout .a7
+      (previz, usecase enabled)
 
-
+    ----------------------------------------------------------------------
     '''
 
     # MODIFIABLE #########################################################
@@ -1441,7 +1441,7 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         n += 1
 
         #========= List of A7 that will be saved in new Graph
-        assetList_toSelect = []
+        assetList_forGraphtoSave = []
 
         protoGraphName = 'GRAPHNAME_'+str(n)
         graphPathLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
@@ -1453,7 +1453,7 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         #========= repositionning a7 ref
         layout.SetPos(pa, (0,0) )
 
-        assetList_toSelect.append(pa)
+        assetList_forGraphtoSave.append(pa)
        
         #========= Retrieve Type Graph
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
@@ -1477,14 +1477,14 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         #========= determine cases
         try:
 
-            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT)
-            type_layout      = result[0]
-            check_clips      = result[1]
-            pathGraphSave    = result[2]
-            SHOT             = result[3]
+          result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT)
+          type_layout      = result[0]
+          check_clips      = result[1]
+          pathGraphSave    = result[2]
+          SHOT             = result[3]
 
-            if SHOT == 'None':
-                print 'Shot == None !'
+          if SHOT == 'None':
+              print 'Shot == None !'
 
         except:
             pass
@@ -1504,7 +1504,7 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         if str(type_layout) == 'Previz' or str(type_layout) == 'Layout':
             FiltersDownstreams = {'family': ['.*'] , 'type': ['Layout','Clip']}  
         StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,pa,FiltersDownstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
-        assetList_toSelect = assetList_toSelect + StreamProtoList
+        assetList_forGraphtoSave = assetList_forGraphtoSave + StreamProtoList
         #========= select a7 Upstreams for positioning
         assetClips = []
         assetClipsByName = []
@@ -1524,17 +1524,17 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
 
         FiltersUpstreams = {'family': ['.*'] , 'type': ['.*']}             
         StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
-        assetList_toSelect = assetList_toSelect + StreamProtoList
+        assetList_forGraphtoSave = assetList_forGraphtoSave + StreamProtoList
         #========= select a7 Upstreams for positioning
         assetClips = []
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
         for us in UpStreamProtoList:
             assetClips.append(us)
-            if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
-                A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
-                a_catFamily      = A7_infos_us['a_catFamily']
-                a_name           = A7_infos_us['a_name'] 
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+a_name+'_'+SHOT+'.inkGraph'
+            # if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
+            #     A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
+            #     a_catFamily      = A7_infos_us['a_catFamily']
+            #     a_name           = A7_infos_us['a_name'] 
+            #     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+a_name+'_'+SHOT+'.inkGraph'
 
         #========= set position layout.a7 Upstreams
         moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
@@ -1542,8 +1542,8 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         #======================================================================
         ##========= retrieve information for path if USECASE
         #======================================================================
-        if str(type_layout) == 'Usecase' or str(type_layout) == 'Anim':
-            for a7 in assetList_toSelect:
+        if str(type_layout) == 'Usecase':
+            for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(SEQUENCE).upper() in str(a7).upper():
                     A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
                     a_catFamily      = A7_infos['a_catFamily']
@@ -1562,13 +1562,22 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
 
         assetListEditPos = moveEditA7s(protoGraph)
 
-        #========= add EDIT a7 in assetList_toSelect and clean List
+        #========= add EDIT a7 in assetList for Graph to Save
         protoGraph.SelectAll()
-        selection = protoGraph.GetSelection()     
-        for pa in selection:
-            checkString = str(a_name).upper() + '_EDIT-'
+        selection = protoGraph.GetSelection()   
+
+        if type_layout == 'Layout' or type_layout == 'Anim' or type_layout == 'Previz':
+            checkString = str(SEQUENCE) + '_EDIT-'
+        # if type_layout == 'Anim':
+        #     checkString = str(SEQUENCE) + '_EDIT-'
+        # if type_layout == 'Previz':
+        #     checkString = str(SEQUENCE) + '_EDIT-'
+        if type_layout == 'Usecase':
+            checkString = str(a_name).upper() + '_EDIT-'   
+
+        for pa in selection:             
             if str(checkString) in str(pa):
-                assetList_toSelect.append(pa)
+                assetList_forGraphtoSave.append(pa)
 
         #======================================================================
         #========= Apply 
@@ -1584,9 +1593,9 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
         if str(SaveGraph) == 'False':
             print pathGraphSave , 'ready to be saved ...'
         if str(SaveGraph) == 'True': 
-            protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_toSelect) 
+            protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_forGraphtoSave) 
             l = protoGraphS.GetLayout()                           
-            l.LoadGraphPos(assetList_toSelect)         
+            l.LoadGraphPos(assetList_forGraphtoSave)         
 
             protoGraphS.Write(str(pathGraphSave), private=True)
 
@@ -1597,13 +1606,13 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
                 print pathGraphSave + '\n\nSaving FAILED !!!'
 
 
-# #=========================== UI
+#=========================== UI
 
-AK01_MULTI_GRAPH_OrganiZator.__category__          = 'A - PIPE-IN TOOLZ'
-AK01_MULTI_GRAPH_OrganiZator.__author__            = 'cpottier'
-AK01_MULTI_GRAPH_OrganiZator.__textColor__         = '#6699ff'
-AK01_MULTI_GRAPH_OrganiZator.__paramsType__        = {
-'SaveGraph'                :  ( 'bool', 'True' , ['True', 'False']  )
+AK01_MULTIGRAPH_Organizer.__category__          = 'A - PIPE-IN TOOLZ'
+AK01_MULTIGRAPH_Organizer.__author__            = 'cpottier'
+AK01_MULTIGRAPH_Organizer.__textColor__         = '#6699ff'
+AK01_MULTIGRAPH_Organizer.__paramsType__        = {
+'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
 }
 
 
