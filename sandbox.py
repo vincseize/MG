@@ -1291,7 +1291,6 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
 
     '''
 
-
     # MODIFIABLE #########################################################
     # Nask relative with Layout.a7
     X_move_nask         =  0
@@ -1392,6 +1391,7 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
 
     for pa in selection:  
         assetList.append(pa)
+        layout.SetPos(pa, (0,0) )
 
     protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
 
@@ -1479,15 +1479,13 @@ def AK01_MULTI_GRAPH_OrganiZator(SaveGraph='True'):
 
         LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,type_layout)
 
-
-
         #========= add EDIT a7 in assetList_toSelect and clean List
         protoGraph.SelectAll()
         selection = protoGraph.GetSelection()
         for pa in selection:
-            if '_EDIT-' in str(pa): # plus nom de l asset de ref pour multi folder
+            checkString = str(a_name).upper() + '_EDIT-'
+            if str(checkString) in str(pa):
                 assetList_toSelect.append(pa)
-
 
         #======================================================================
         #========= move for friendly user layout
