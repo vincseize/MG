@@ -9,7 +9,7 @@
 # ##################################################################################
 
 import sys, ink.proto
-path_modules = "/u/"+ink.io.ConnectUserInfo()[2]+"/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples"
+path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 sys.path.append(path_modules)
 import __InK__connect
 from __InK__connect import *
@@ -105,13 +105,13 @@ def K03_UI_CONSTRUCT_QT(Action1='Var_Name'):
 
 #=========================== append path for tools qt
 try:
-  if 'sandboxQt' in sys.modules:
-    del(sys.modules["sandboxQt"])
-    import sandboxQt 
-  else:
-    import sandboxQt
+    if 'sandboxQt' in sys.modules:
+        del(sys.modules["sandboxQt"])
+        import sandboxQt 
+    else:
+        import sandboxQt
 except:
-      pass
+    pass
 #=========================== UI
 K03_UI_CONSTRUCT_QT.__category__         = 'C - UI'
 K03_UI_CONSTRUCT_QT.__author__           = 'cpottier'
@@ -508,11 +508,11 @@ def K10_SAVE_GRAPH():
 
     protoGraphName = 'mySample1'
     # will save 
-    # /u/gri/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
+    # /u/'+projectLower+'/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(str(protoGraphName), private=True)
 
-    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     if os.path.isfile(graphPath):
         print 'Private mySample1 [OK]'
         print graphPath , 'Have been saved !!!'
@@ -522,7 +522,7 @@ def K10_SAVE_GRAPH():
 
 
     protoGraphName = 'mySample2'
-    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     # will save 
     # /u/gri/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
@@ -560,7 +560,7 @@ def K11_SAVE_SELECTION_IN_NEW_GRAPH():
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(str(protoGraphName), private=True)
 
-    graphPath = '/u/gri/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     if os.path.isfile(graphPath):
         print 'Private sample_select [OK]'
         print graphPath , 'Have been saved !!!'
@@ -637,7 +637,7 @@ K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH.__author__           = 'cpottier'
 
 
 
-#===========================================================================================================================  CLASS CRUD
+#===================================================================================================================================== CLASS CRUD
 
 
 def K20_CLASS_CRUD(getAssetsInfos1='True',getAssetsInfos2='Wip',assetToAdd='LIB/MATERIALS/Paint/Maps/Paint-Maps.a7',addA7='True',findA7='True',XNAMEX='XNAMEX-Shading_Shots_Scout.a7', shotList='', castType='Actor', castStage='Ok', shotType='Anim', libName='LIB', familyList='CHARS,PROPS,SETS', update=True, select=True):
@@ -713,8 +713,9 @@ K20_CLASS_CRUD.__paramsType__        = {
 
 
 
-# #===========================================================================================================================  PART LAST , GOODIES
+#===========================================================================================================================  PART LAST , GOODIES
 
+#===================================================================================================================================  K80_GOODIES
 
 
 def K80_GOODIES(UserConnected0,UserConnected1,Projet,sendMail_wip='False'):
@@ -799,9 +800,100 @@ K80_GOODIES.__paramsType__        = {
     'sendMail_wip'       :  ( 'bool', 'False' , ['True', 'False']  )
 }
 
+#================================================================================================================================ END  K80_GOODIES
+
+#====================================================================================================================== K81_DATABASE_sqlLite
+
+def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
+    ''' 
+    SQL Create Read Insert :
+      - create a db file, if not exist
+      - create users table, and populate it, if not exist
+      - insert your task
+      - read datas
+    '''
+
+    import sqlite3, os, sys, stat
+
+    db = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples/sqlite.db'
+    tb = 'users'
+
+    if not os.path.isfile(db):
+        f = open(db, 'w')
+        f.close()
+        st = os.stat(db)
+        os.chmod(db, st.st_mode | stat.S_IEXEC)
+
+    conn = sqlite3.connect(db) # connecteur
+    cursor = conn.cursor()
+
+    # if not os.path.isfile(db):
+    with conn as c : # curseur
+        # création de la table
+        c.execute("""create table if not exists """ +tb+ """(login text, projet text, task text, status text)""")
+        # insertion d'une ligne de données
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'gri', '86451', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'lun', '86617', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('KARLOVA', 'gri', '86619', 'wip')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'lun', '86604', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'dm3', '86624', 'locked')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'dm18', '86600', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('KARLOVA', 'starwars', '86602', 'open')""")
 
 
-# ###################################################################################################### FIN GOODIES
+    data = {"login" : str(ink.io.ConnectUserInfo()[0]), "projet" : str(projects), "task" : str(task), "status" : str(status)}
+    cursor.execute("""
+    INSERT INTO """ +tb+ """(login, projet, task, status) VALUES(:login, :projet, :task, :status)""", data)
+
+
+    print '---- first entry ----'
+    cursor.execute('SELECT * FROM '+tb)
+    user1 = cursor.fetchone()
+    print user1
+    print '---- all entries ----'
+    users = cursor.fetchall()
+    for user in users:
+        print user
+
+    conn.close()
+
+
+#=========================== UI
+# K81_DATABASE_sqlLite.__position__         = 4
+K81_DATABASE_sqlLite.__category__         = 'Z - GOODIES'
+K81_DATABASE_sqlLite.__author__           = 'cpottier'
+K81_DATABASE_sqlLite.__paramsType__        = {  
+    'task'        :  ( 'str' , 'Give strawberries tagada for ever to Vador'), 
+    'projects'       :  ( 'enum', 'gri',['gri', 'dm3', 'lun'] ),
+    'status'       :  ( 'enum', 'open',['open', 'locked', 'wip'] )
+}
+
+#================================================================================================================ end  K81_DATABASE_sqlLite
+
+
+#===================================================================================================================== K82_DATABASE_sqlLite
+
+def K82_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
+    ''' 
+    SQL Create Read Insert :
+      - create a db file, if not exist
+      - create users table, and populate it, if not exist
+      - insert your task
+      - read datas
+    '''
+
+
+
+
+#=========================== UI
+# K82_DATABASE_sqlLite.__position__         = 4
+K82_DATABASE_sqlLite.__category__         = 'Z - GOODIES'
+K82_DATABASE_sqlLite.__author__           = 'cpottier'
+K82_DATABASE_sqlLite.__paramsType__        = {  
+    'task'        :  ( 'str' , 'Give strawberries tagada for ever to Vador')
+}
+
+#================================================================================================================ end  K82_DATABASE_sqlLite
 
 
 
@@ -811,7 +903,31 @@ K80_GOODIES.__paramsType__        = {
 
 
 
-#===============================================================================================  PIPE IN TOOLZ
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################################################################################### FIN GOODIES
+
+
+
+
+
+
+
+
+
+#=================================================================================================================================  PIPE IN TOOLZ
 
 def AK00_SETS_AddScout(save_after='True'): 
     ''' 
@@ -887,7 +1003,7 @@ def AK00_SETS_AddScout(save_after='True'):
     #========= get .ink path and create new protograph
     #======================================================================
 
-        pathGraphLocal = '/u/'+PROJECT+'/Users/'+CONNECT_USER1+'/Presets/Graphs/'+a_name+'.inkGraph'
+        pathGraphLocal = '/u/'+projectLower+'/Users/'+CONNECT_USER1+'/Presets/Graphs/'+a_name+'.inkGraph'
         pathGraph = '/u/'+PROJECT+'/Users/COM/Presets/Graphs/SHADING/'+a_typeFamily+'/'+a_catFamily+'/'+a_name+'.inkGraph'
         protoGraph = ink.proto.Graph( pathGraph, load=True, private=False )
         layout = protoGraph.GetLayout()
@@ -995,7 +1111,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     Y_move_nask         = -1.5
     ecart_nask          =  3
     # for debug or tests
-    pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
+    pathGraphLocal = '/u/'+projectLower+'/Users/cpottier/Presets/Graphs/toto.inkGraph'
 
     # DONT TOUCH #########################################################
     MASTER              = None
@@ -1275,6 +1391,7 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 }
 
 
+#=========================================================================================================================== AK01_MULTIGRAPH_Organizer
 
 
 def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
@@ -1443,8 +1560,9 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= List of A7 that will be saved in new Graph
         assetList_forGraphtoSave = []
 
+        #=========
         protoGraphName = 'GRAPHNAME_'+str(n)
-        graphPathLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+        graphPathLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph' # for debug
 
         protoGraph.SetSelection([pa])
         protoGraph.Show()
@@ -1452,7 +1570,11 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         #========= repositionning a7 ref
         layout.SetPos(pa, (0,0) )
+        layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+        layA7Pos_X  = layA7Pos[0]
+        layA7Pos_Y  = layA7Pos[1]
 
+        #========= populate List
         assetList_forGraphtoSave.append(pa)
        
         #========= Retrieve Type Graph
@@ -1489,12 +1611,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         except:
             pass
 
-        #========= Retrieve a7 Downstreams and Upstreams
-
-        layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
-        layA7Pos_X  = layA7Pos[0]
-        layA7Pos_Y  = layA7Pos[1]
-
         #======================================================================
         #========= Retrieve Downstreams
         #======================================================================
@@ -1530,11 +1646,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
         for us in UpStreamProtoList:
             assetClips.append(us)
-            # if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(SEQUENCE).upper() in str(us).upper():
-            #     A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
-            #     a_catFamily      = A7_infos_us['a_catFamily']
-            #     a_name           = A7_infos_us['a_name'] 
-            #     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+a_name+'_'+SHOT+'.inkGraph'
 
         #========= set position layout.a7 Upstreams
         moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
@@ -1568,10 +1679,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         if type_layout == 'Layout' or type_layout == 'Anim' or type_layout == 'Previz':
             checkString = str(SEQUENCE) + '_EDIT-'
-        # if type_layout == 'Anim':
-        #     checkString = str(SEQUENCE) + '_EDIT-'
-        # if type_layout == 'Previz':
-        #     checkString = str(SEQUENCE) + '_EDIT-'
+
         if type_layout == 'Usecase':
             checkString = str(a_name).upper() + '_EDIT-'   
 
@@ -1616,26 +1724,7 @@ AK01_MULTIGRAPH_Organizer.__paramsType__        = {
 }
 
 
-
-
-
-
-
-
-
-# #===========================================================================================================================  TEST
-
-
-
-
-
-
-
-
-
-
-
-
+#========================================================================================================================= AK02_LAYOUT_BuildCameraModel
 
 
 def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
@@ -1839,6 +1928,7 @@ AK02_LAYOUT_BuildCameraModel.__paramsType__         = {
 'cat'                     :  ( 'enum', 'MAIN',['MAIN', 'SECONDARY', 'TERTIARY'] )
 }
 
+#========================================================================================================================= AK03_LAYOUT_BuildHumanShape
 
 
 def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
