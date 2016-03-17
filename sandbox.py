@@ -813,8 +813,6 @@ def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
       - read datas
     '''
 
-    import sqlite3, os, sys, stat
-
     db = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples/sqlite.db'
     tb = 'users'
 
@@ -829,9 +827,9 @@ def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
 
     # if not os.path.isfile(db):
     with conn as c : # curseur
-        # création de la table
+        # creation de la table
         c.execute("""create table if not exists """ +tb+ """(login text, projet text, task text, status text)""")
-        # insertion d'une ligne de données
+        # insertion
         c.execute("""insert into """ +tb+ """ values ('GAMIN', 'gri', '86451', 'open')""")
         c.execute("""insert into """ +tb+ """ values ('GAMIN', 'lun', '86617', 'open')""")
         c.execute("""insert into """ +tb+ """ values ('KARLOVA', 'gri', '86619', 'wip')""")
@@ -840,7 +838,18 @@ def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
         c.execute("""insert into """ +tb+ """ values ('GAMIN', 'dm18', '86600', 'open')""")
         c.execute("""insert into """ +tb+ """ values ('KARLOVA', 'starwars', '86602', 'open')""")
 
+    # delete all entries > 7
+    cursor.execute("""SELECT * FROM """ +tb+""" """)
+    nRows = len(cursor.fetchall())
+    limit = nRows-7
+    # cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT """+str(nRows)+""")""")
+    # cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT """+str(limit)+""")""")
+    # cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT 9,100)""")
+    # cursor.execute("""SELECT * FROM """ +tb+""" """)
+    # nRows = str(len(cursor.fetchall()))
+    # print nRows
 
+    # insert
     data = {"login" : str(ink.io.ConnectUserInfo()[0]), "projet" : str(projects), "task" : str(task), "status" : str(status)}
     cursor.execute("""
     INSERT INTO """ +tb+ """(login, projet, task, status) VALUES(:login, :projet, :task, :status)""", data)
@@ -850,10 +859,17 @@ def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
     cursor.execute('SELECT * FROM '+tb)
     user1 = cursor.fetchone()
     print user1
-    print '---- all entries ----'
+    print '---- all entries ----', nRows
     users = cursor.fetchall()
     for user in users:
         print user
+
+
+    cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT  14)""")
+    cursor.execute("""SELECT * FROM """ +tb+""" """)
+
+    nRows = len(cursor.fetchall())     
+    print nRows
 
     conn.close()
 
@@ -875,14 +891,67 @@ K81_DATABASE_sqlLite.__paramsType__        = {
 
 def K82_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
     ''' 
-    SQL Create Read Insert :
-      - create a db file, if not exist
-      - create users table, and populate it, if not exist
-      - insert your task
+    SQL Delete random entry, Update Task entry :
       - read datas
     '''
 
+    db = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples/sqlite.db'
+    tb = 'users'
 
+    if not os.path.isfile(db):
+        f = open(db, 'w')
+        f.close()
+        st = os.stat(db)
+        os.chmod(db, st.st_mode | stat.S_IEXEC)
+
+    conn = sqlite3.connect(db) # connecteur
+    cursor = conn.cursor()
+
+    # if not os.path.isfile(db):
+    with conn as c : # curseur
+        # creation de la table
+        c.execute("""create table if not exists """ +tb+ """(login text, projet text, task text, status text)""")
+        # insertion
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'gri', '86451', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'lun', '86617', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('KARLOVA', 'gri', '86619', 'wip')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'lun', '86604', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'dm3', '86624', 'locked')""")
+        c.execute("""insert into """ +tb+ """ values ('GAMIN', 'dm18', '86600', 'open')""")
+        c.execute("""insert into """ +tb+ """ values ('KARLOVA', 'starwars', '86602', 'open')""")
+
+    # delete all entries > 7
+    cursor.execute("""SELECT * FROM """ +tb+""" """)
+    nRows = len(cursor.fetchall()) 
+    limit = nRows-7
+    # cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT """+str(nRows)+""")""")
+    # cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT """+str(limit)+""")""")
+
+    # cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT  9,100)""")
+
+
+    # cursor.execute("""SELECT * FROM """ +tb+""" """)
+    # nRows = str(len(cursor.fetchall()))
+    # print nRows
+
+    # update last entry
+    cursor.execute("""SELECT max(task) FROM """ +tb+""" """)
+    max_id = cursor.fetchone()[0]
+    cursor.execute("""UPDATE """+tb+""" SET task = ? WHERE task = """+max_id+""" """, (task,))
+
+    print '---- all entries ---- ', nRows
+    cursor.execute('SELECT * FROM '+tb)
+    users = cursor.fetchall()
+    for user in users:
+        print user
+
+
+    cursor.execute("""DELETE FROM """ +tb+""" WHERE users.task IN (SELECT task FROM users ORDER BY task LIMIT  14)""")
+    cursor.execute("""SELECT * FROM """ +tb+""" """)
+
+    nRows = len(cursor.fetchall())     
+    print nRows
+    conn.close()        
 
 
 #=========================== UI
@@ -890,7 +959,7 @@ def K82_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
 K82_DATABASE_sqlLite.__category__         = 'Z - GOODIES'
 K82_DATABASE_sqlLite.__author__           = 'cpottier'
 K82_DATABASE_sqlLite.__paramsType__        = {  
-    'task'        :  ( 'str' , 'Give strawberries tagada for ever to Vador')
+    'task'        :  ( 'str' , 'Taskarin de Taskaron')
 }
 
 #================================================================================================================ end  K82_DATABASE_sqlLite
