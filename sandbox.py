@@ -2,10 +2,10 @@
 '''     List of Samples Functions to learn  InK UI-API  - Verbose Documentation  '''
 
 # ##################################################################################
-# MG ILLUMINATION                                                           	   #
+# MG ILLUMINATION                                                           	     #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 16-03-2016                                                         #
+# Last Update : 17-03-2016                                                         #
 # ##################################################################################
 
 import sys, ink.proto
