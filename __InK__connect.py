@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	   #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 14-03-2016                                                                #
+# Date : 22-03-2016                                                                #
 # ##################################################################################
 
 # Required modules
