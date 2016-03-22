@@ -195,7 +195,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     Y_move_nask         = -1.5
     ecart_nask          =  3
     # for debug or tests
-    pathGraphLocal = '/u/gri/Users/cpottier/Presets/Graphs/toto.inkGraph'
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
 
     # DONT TOUCH #########################################################
     MASTER              = None
@@ -413,7 +413,8 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                 a_catFamily      = A7_infos_us['a_catFamily']
                 a_name           = A7_infos_us['a_name'] 
                 pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+SEQUENCE+'/'+a_name+'_'+SHOT+'.inkGraph'
-
+                                                # /u/dm3/Users/COM/Presets/Graphs/ANIM/USECASE/None/DRUTRIOB/DRUTRIOB_Test101.inkGraph
+                                                # /u/dm3/Users/COM/Presets/Graphs/ANIM/USECASE/SECONDARY/BARTENDER/BARTENDER_Test101.inkGraph 
     #========= set position layout.a7 Upstreams
         moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
     #========= select a7 Downstreams  for positioning
@@ -438,22 +439,24 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     #======================================================================
     # SAVE LAYOUT GRAPH
     #======================================================================
-    print '\nAK01_GRAPH_Organizer is Happy :)\n'
-    if str(SaveGraph) == 'False' :
+    signatureTRUE = '\nAK01_GRAPH_Organizer is Happy :)\n'
+    signatureFALSE = '\nAK01_GRAPH_Organizer is NOT HAPPY DU TOUT :)\n'
+    if str(SaveGraph) == 'False'  and 'None' not in str(pathGraphSave):
+        print signatureTRUE
         print 'You can Save ' , GraphName, 'in ', pathGraphSave
-    if str(SaveGraph) == 'True' :
+    if str(SaveGraph) == 'True' and 'None' not in str(pathGraphSave):
         # todo to understand
         # __PIPEIN_GRAPH.SaveGraph(pathGraphSave)
         # print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
-
-
-
         protoGraph.Write(pathGraphSave, comment='', private=False)
         if os.path.isfile(pathGraphSave):
+            print signatureTRUE
             print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
         else :
             print pathGraphSave , ' saving FAILED  !!!'
-
+    if 'None' in str(pathGraphSave):
+        print signatureFALSE
+        print 'WARNING\nbad path for' + pathGraphSave
 
 #=========================== UI
 
@@ -497,7 +500,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     Y_move_nask         = -1.5
     ecart_nask          =  3
     # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/cpottier/Presets/Graphs/toto.inkGraph'
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
 
     # DONT TOUCH #########################################################
     MASTER              = None
@@ -533,14 +536,18 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
 
 
-    def moveEditA7s(protoGraph):
+    def moveEditA7s(protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask):
         '''   '''
+
+        layout = protoGraph.GetLayout()
         protoGraph.SelectAll()
         selection = protoGraph.GetSelection()       
 
         for pa in selection:
+            # print pa
             try:
                 if str(assetListEdit[0]) in str(pa):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + Y_move_nask
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -548,6 +555,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[1]) in str(pa):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*2)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -555,6 +563,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' in str(a):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + ecart_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -562,11 +571,24 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' not in str(a):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X - ecart_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
+
+
+            if 'EDIT-Stereo_Session.a7' in str(pa):
+                X_move_naskRelToLayA7 = layA7Pos_X - (ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+
+            if 'EDIT-NasK_Stereo.a7' in str(pa):
+                X_move_naskRelToLayA7 = layA7Pos_X + (ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+
 
 
     def LAYOUT_addA7s(PROJECT,SEQUENCE,SHOT,CATEGORY,protoGraph,type_layout):
@@ -750,7 +772,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
 
-        assetListEditPos = moveEditA7s(protoGraph)
+        assetListEditPos = moveEditA7s(protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask)
+
 
         #========= add EDIT a7 in assetList for Graph to Save
         protoGraph.SelectAll()
@@ -775,9 +798,11 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         # SAVE LAYOUT GRAPH
         #======================================================================
         # pathGraphSave = graphPathLocal
-        if str(SaveGraph) == 'False':
+        signatureTRUE = '\nAK01_GRAPH_Organizer is Happy :)\n'
+        signatureFALSE = '\nAK01_GRAPH_Organizer is NOT HAPPY DU TOUT :)\n'        
+        if str(SaveGraph) == 'False' and 'None' not in str(pathGraphSave):
             print pathGraphSave , 'ready to be saved ...'
-        if str(SaveGraph) == 'True': 
+        if str(SaveGraph) == 'True' and 'None' not in str(pathGraphSave): 
             protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_forGraphtoSave) 
             l = protoGraphS.GetLayout()                           
             l.LoadGraphPos(assetList_forGraphtoSave)         
@@ -785,11 +810,15 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
             protoGraphS.Write(str(pathGraphSave), private=True)
 
             if os.path.isfile(pathGraphSave):
+                print signatureTRUE
                 print pathGraphSave , 'Have been saved !!!'
                 pass
             else :
                 print pathGraphSave + '\n\nSaving FAILED !!!'
 
+        if 'None' in str(pathGraphSave):
+            print signatureFALSE
+            print 'WARNING\nbad path for' + pathGraphSave            
 
 #=========================== UI
 
