@@ -5,12 +5,15 @@
 # MG ILLUMINATION                                                           	     #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 21-03-2016                                                         #
+# Last Update : 22-03-2016                                                         #
 # ##################################################################################
 
+#================================================================================================================================== PRIMARY CLASS
 import sys, ink.proto
 path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 sys.path.append(path_modules)
+# import __InK__connect
+# from __InK__connect import * 
 if '__InK__connect' in sys.modules:
     del(sys.modules["__InK__connect"])
     import __InK__connect
@@ -18,21 +21,8 @@ if '__InK__connect' in sys.modules:
 else:
     import __InK__connect
     from __InK__connect import *
-
-
-# import __InK__connect
-# from __InK__connect import *
-
 #============================================================================================================================= Ink useful CLASSES
-# dev classes
-import __InK__classes_forDev
-from __InK__classes_forDev import __PIPEIN_GRAPH__
-
-# prod classes
-# import __InK__classes
-# from __InK__classes import __PIPEIN_GRAPH__
-protoGraph              = ink.proto.Graph( graphs.DEFAULT )
-__PIPEIN_GRAPH          = __PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
+__PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
 #================================================================================================================================================
 
 
@@ -43,7 +33,7 @@ __PIPEIN_GRAPH          = __PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, v
   # BASICS
   # TOOLS NAME COME FROM FUNCTIONS NAME
   # IMPORTANT HACK
-  # DEFAULT CATEGORIES ORDER IS ALPHABETICAL FUNCTION NAME INSIDE (IF NO myCat, NAME.py IS THE NAME OF myCat)
+  # DEFAULT CATEGORIES ORDER IS ALPHABETICAL FUNCTION NAME INSIDE (IF NO Cat, 'NAME.py' IS THE NAME OF the cat)
 
 
 def K01_SAMPLE_1(): 
