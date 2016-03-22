@@ -109,7 +109,7 @@ class __PIPEIN_GRAPH__():
     #------------------------- Layout
 
                           # pa,a_types,nm_asset,projectLower,PROJECT,myShot,myCat,mySeq,SHOT,True
-    def getTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,myShot,myCat,mySeq,SHOT,verbose=False):
+    def getTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,myShot,myCat,mySeq,mySHOT,verbose=False):
         ''' 
             for GraphBuilder 
             todo : new class only for Builder toolz
@@ -131,7 +131,7 @@ class __PIPEIN_GRAPH__():
         if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' not in str(nm_asset):
             type_layout = 'Anim'
             check_clips = '-Anim_Clip'
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+PROJECT+'/'+mySeq+'/'+mySeq+'_'+SHOT+'.inkGraph'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+PROJECT+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
 
         # case Usecase
         if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' in str(nm_asset):
@@ -140,10 +140,10 @@ class __PIPEIN_GRAPH__():
             tmp = str(pa).split('USECASE_')[1] # todo better with filter
             mySeq = tmp.split('_')[0]
             tmp2 = tmp.split('_')[1]
-            SHOT = tmp2.split('-')[0]
+            mySHOT = tmp2.split('-')[0]
 
             # Prov, premiere pass to do better
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+myCat+'/'+mySeq+'/'+mySeq+'_'+SHOT+'.inkGraph' 
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+myCat+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph' 
 
             # Assets # sample 1
             # USECASE/MANI/Test101/Anim/USECASE_MANI_Test101-Anim.a7 
@@ -155,13 +155,17 @@ class __PIPEIN_GRAPH__():
             # Graphs # sample 2
             # /u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/LOOKDEV/BathroomOffset.inkGraph 
 
+            # /u/dm3/Users/COM/Presets/Graphs/ANIM/DM3/S1575/S1575_P0193.inkGraph
+            # Graphs 
+            # /u/dm3/Users/COM/Presets/Graphs/ANIM/DM3/S1575/S1575_P0193.inkGraph 
+
         if verbose==True:
             print 'type_layout : ' + type_layout
             print 'check_clips : ' + check_clips
             print 'pathGraphSave : ' + pathGraphSave
-            print 'SHOT : ' + SHOT
+            print 'mySHOT : ' + mySHOT
 
-        return type_layout, check_clips, pathGraphSave, SHOT
+        return type_layout, check_clips, pathGraphSave, mySHOT
 
 
 
