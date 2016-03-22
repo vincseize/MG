@@ -1668,7 +1668,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         #========= retrieve graphname
         try:
-            result = __PIPEIN_GRAPH.getGraph_infos(pa) # return  myNomen, myFilm, mySeq, myShot, myCat
+            result = __PIPEIN_GRAPH.getGraph_infos(pa,True) # return  myNomen, myFilm, mySeq, myShot, myCat
             myfilm    = result[1] # = PROJECT in fact
             mySeq     = result[2]
             myShot    = result[3]
@@ -1683,7 +1683,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= determine cases
         try:
 
-            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,myShot,myCat,mySeq,mySHOT)
+            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myfilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
@@ -1781,7 +1781,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #======================================================================
         # SAVE LAYOUT GRAPH
         #======================================================================
-        pathGraphSave = graphPathLocal
+
+        # pathGraphSave = graphPathLocal
         if str(SaveGraph) == 'False':
             print pathGraphSave , 'ready to be saved ...'
         if str(SaveGraph) == 'True': 
