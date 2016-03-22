@@ -1733,14 +1733,18 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
 
 
-    def moveEditA7s(protoGraph):
+    def moveEditA7s(protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask):
         '''   '''
+
+        layout = protoGraph.GetLayout()
         protoGraph.SelectAll()
         selection = protoGraph.GetSelection()       
 
         for pa in selection:
+            # print pa
             try:
                 if str(assetListEdit[0]) in str(pa):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + Y_move_nask
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -1748,6 +1752,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[1]) in str(pa):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*2)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -1755,6 +1760,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' in str(a):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + ecart_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -1762,11 +1768,23 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' not in str(a):
+                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X - ecart_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
+
+
+            if 'EDIT-Stereo_Session.a7' in str(pa):
+                X_move_naskRelToLayA7 = layA7Pos_X - (ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
+
+            if 'EDIT-NasK_Stereo.a7' in str(pa):
+                X_move_naskRelToLayA7 = layA7Pos_X + (ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
 
 
 
@@ -1954,7 +1972,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
 
-        assetListEditPos = moveEditA7s(protoGraph)
+        assetListEditPos = moveEditA7s(protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask)
 
         #========= add EDIT a7 in assetList for Graph to Save
         protoGraph.SelectAll()
