@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	     #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 17-03-2016                                                         #
+# Last Update : 21-03-2016                                                         #
 # ##################################################################################
 
 import sys, ink.proto
@@ -524,7 +524,7 @@ def K10_SAVE_GRAPH():
     protoGraphName = 'mySample2'
     graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     # will save 
-    # /u/gri/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
+    # /u/'+projectLower+'/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(graphPath, private=True)
 
@@ -802,9 +802,9 @@ K80_GOODIES.__paramsType__        = {
 
 #================================================================================================================================ END  K80_GOODIES
 
-#====================================================================================================================== K81_DATABASE_sqlLite
+#====================================================================================================================== K81_DATABASE_sqlLite_create
 
-def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
+def K81_DATABASE_sqlLite_create(task,projects='Var_Name',status='Var_Name'):
     ''' 
     SQL Create Read Insert :
       - create a db file, if not exist
@@ -875,21 +875,21 @@ def K81_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
 
 
 #=========================== UI
-# K81_DATABASE_sqlLite.__position__         = 4
-K81_DATABASE_sqlLite.__category__         = 'Z - GOODIES'
-K81_DATABASE_sqlLite.__author__           = 'cpottier'
-K81_DATABASE_sqlLite.__paramsType__        = {  
+# K81_DATABASE_sqlLite_create.__position__         = 4
+K81_DATABASE_sqlLite_create.__category__         = 'Z - GOODIES'
+K81_DATABASE_sqlLite_create.__author__           = 'cpottier'
+K81_DATABASE_sqlLite_create.__paramsType__        = {  
     'task'        :  ( 'str' , 'Give strawberries tagada for ever to Vador'), 
     'projects'       :  ( 'enum', 'gri',['gri', 'dm3', 'lun'] ),
     'status'       :  ( 'enum', 'open',['open', 'locked', 'wip'] )
 }
 
-#================================================================================================================ end  K81_DATABASE_sqlLite
+#================================================================================================================ end  K81_DATABASE_sqlLite_create
 
 
-#===================================================================================================================== K82_DATABASE_sqlLite
+#===================================================================================================================== K82_DATABASE_sqlLite_update
 
-def K82_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
+def K82_DATABASE_sqlLite_update(task,projects='Var_Name',status='Var_Name'):
     ''' 
     SQL Delete random entry, Update Task entry :
       - read datas
@@ -955,14 +955,14 @@ def K82_DATABASE_sqlLite(task,projects='Var_Name',status='Var_Name'):
 
 
 #=========================== UI
-# K82_DATABASE_sqlLite.__position__         = 4
-K82_DATABASE_sqlLite.__category__         = 'Z - GOODIES'
-K82_DATABASE_sqlLite.__author__           = 'cpottier'
-K82_DATABASE_sqlLite.__paramsType__        = {  
+# K82_DATABASE_sqlLite_update.__position__         = 4
+K82_DATABASE_sqlLite_update.__category__         = 'Z - GOODIES'
+K82_DATABASE_sqlLite_update.__author__           = 'cpottier'
+K82_DATABASE_sqlLite_update.__paramsType__        = {  
     'task'        :  ( 'str' , 'Taskarin de Taskaron')
 }
 
-#================================================================================================================ end  K82_DATABASE_sqlLite
+#================================================================================================================ end  K82_DATABASE_sqlLite_update
 
 
 
@@ -986,7 +986,221 @@ K82_DATABASE_sqlLite.__paramsType__        = {
 
 
 
-#################################################################################################################################### FIN GOODIES
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################################################################################### FIN GOODIE
+
+
+
+
+
+
+
+
+# def AK00_FOR_OCC_VON_KROUMCH(save_after='False'): 
+#     '''
+  
+#     Creer la branche de rendu Occ2 pour l oeil droit.
+  
+#     Selectionner l'a7 Occ_2_Render.
+
+#     '''
+    
+
+#     def save_graph(protoGraphResult):
+#         '''   '''
+
+#         assetList = []
+   
+#         protoGraphResult.SelectAll()
+#         selection = protoGraphResult.GetSelection()
+#         for pa in selection:
+#             a_name        = pa.GetNomen()
+#             tmp           = str(pa).split('_')[2] # todo better with filter
+#             SHOT      = tmp.split('-')[0]
+#             FILM          = str(pa).split('_')[1]
+#             if '-L-Occ_2_Render' not in str(a_name): # to do better with filter
+#                 assetList.append(pa)
+
+#         graphPath='/u/'+projectLower+'/Users/COM/Presets/Graphs/OCC/USECASE/'+FILM+'/'+FILM+'_'+SHOT+'.inkGraph'
+#         graphPathLocal='/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/occ_USECASE_'+SHOT+'.inkGraph' # debug
+
+#         grL = ink.proto.Graph( graphPath, load=True, private=False )
+#         grL.SelectAll()
+#         selection = grL.GetSelection()
+#         for pa in selection:
+#             assetList.append(pa)
+
+#         # graphPath = graphPathLocal  # debug
+#         protoGraphS  = ink.proto.Graph.FromQuery('foo', assetList) 
+#         l = protoGraphS.GetLayout()                           
+#         l.LoadGraphPos(assetList) 
+
+
+#     ##----------------------save graph 
+#         if save_after=='False' and 'None' not in str(graphPath):
+#             print graphPath , 'is ready to be saved !!!'
+
+#         if save_after=='True' and 'None' not in str(graphPath):                         
+#             protoGraphS.Write(str(graphPath), private=False)
+#             if os.path.isfile(graphPath):                
+#                 print graphPath , 'Have been saved !!!'
+#                 pass
+#             else :
+#                 print graphPath + '\n\nSaving FAILED !!!'
+
+#         if 'None' in str(graphPath): 
+#           print graphPath + '\n\nSaving FAILED !!!'
+#           print '\n\n BAD PATH !!!'
+
+
+
+#     ##---------------------------------------------------------------------------------------------------------------- end defs
+
+
+#     protoGraphToMaj     = ink.proto.Graph('protoGraphToMaj')
+#     protoGraphToConnect = ink.proto.Graph('Clean')                    
+#     selection           = protoGraphToMaj.GetSelection( nomen.Filter().SetTypes(['Occ', '2', 'Render']).SetEye('L'))
+#     layout              = protoGraphToMaj.GetLayout()
+
+
+
+#     if not selection:
+#         raise Exception("Please Selectionner l'a7 d'Export_Anim  !")
+
+#     for proto in selection:
+#         nmShot      = proto.GetNomen()
+#         myfilm      = nmShot.GetFilm()
+#         myseq       = nmShot.GetSeq()
+#         myshot      = nmShot.GetShot()
+
+#     ##----------------------get ref a7 position, and movie downstream position
+#         layout.LoadGraphPos([proto])
+#         selPos = layout.GetPoint([proto], direction='M')
+#         Xref = selPos[0]
+#         Yref = selPos[1]
+#         niFilters = nomen.Nomen.Empty().SetTypes(['Occ', 'Movie']).SetEye('L').SetVar('V2')
+#         StreamProtoList = protoGraphToConnect.GetDownstreams(proto, niFilter=niFilters)
+#         for ds in StreamProtoList:
+#             layout.LoadGraphPos([ds])
+#             selPos = layout.GetPoint([ds], direction='M')
+#             Xmovie = selPos[0]
+#             Ymovie = selPos[1]
+
+#     ##----------------------LIBREF/Seq/Shot/Occ/LIBREF_Seq_Shot-R-Occ_2_Render.a7----------------------
+#         Occ2Render       = nomen.Nomen.NewFilm( film='LIBREF', seq='Seq', shot='Shot', var='', types=['Occ','2', 'Render'], stage='',eye ='R' )
+#         Occ2RenderProto  = protoGraphToMaj.Add(Occ2Render)
+      
+      
+#     ##----------------------Occ2Movie----------------------
+#         Occ2RMovie       = nomen.Nomen.NewFilm( film='LIBREF', seq='Seq', shot='Shot', var='V2', types=['Occ','Movie'], stage='',eye ='R' )
+#         Occ2RMovieProto  = protoGraphToMaj.Add(Occ2RMovie)
+
+
+#         protoGraphResult = ink.proto.Graph('result')
+
+#         mycloneparam = nomen.Filter()
+#         mycloneparam.SetFilm(myfilm)
+#         mycloneparam.SetSeq(myseq)
+#         mycloneparam.SetShot(myshot)
+
+#         protoGraphResult.Clone(protoGraphToMaj, mycloneparam, substInFile=True, forceCopy=True, copyUBLinks=False)
+    
+#         result = protoGraphResult.Apply()
+
+#     #======================================================================
+#     #========= Branchements
+#     #======================================================================
+  
+#         OccRenderR       = nmShot.SetTypes(['Occ', '2', 'Render']).SetEye('R')
+#         OccRenderRProto  = protoGraphToConnect.Add(OccRenderR)
+    
+#         ExptLighting = nmShot.SetTypes(['Export', 'Lighting']).SetEye('')
+#         ExptLightingProto  = protoGraphToConnect.Add(ExptLighting)    
+        
+#         OccRender = nmShot.SetTypes(['Occ', 'Render']).SetEye('L')
+#         OccRenderProto  = protoGraphToConnect.Add(OccRender)      
+    
+#         OccRenderL       = nmShot.SetTypes(['Occ', 'Render']).SetEye('L')
+#         OccRenderLProto  = protoGraphToConnect.Add(OccRenderL)    
+    
+
+#         protoGraphToConnect.AddLink(ExptLightingProto, OccRenderRProto, ink.proto.LINK_REF)
+#         protoGraphToConnect.AddLink(OccRenderProto, OccRenderRProto, ink.proto.LINK_REF)  
+#         protoGraphToConnect.AddLink( OccRenderLProto, OccRenderRProto, ink.proto.LINK_DEP, )    
+
+#         addLinks = protoGraphToConnect.Apply()
+
+#     #======================================================================
+#     #========= positionnement
+#     #======================================================================
+#         offset_Y = 1.5
+#         layout = protoGraphToConnect.GetLayout()
+#         layout.SetPos(OccRenderRProto, (Xref, Yref-offset_Y) ) # XXX-R-Occ_2_Render.a7
+#         niFilters = nomen.Nomen.Empty().SetTypes(['Occ', 'Movie']).SetEye('R').SetVar('V2')
+#         StreamProtoList = protoGraphToConnect.GetDownstreams( OccRenderRProto, niFilter=niFilters)
+#         for ds in StreamProtoList:
+#             layout.SetPos(ds, (Xmovie, Ymovie-offset_Y) ) # XXX-V2-R-Occ_Movie.a7
+#         protoGraphToConnect.Show()
+
+#     #======================================================================
+#     #========= save graph
+#     #======================================================================  
+#         save_graph(protoGraphResult)
+
+
+# #=========================== UI
+
+# AK00_FOR_OCC_VON_KROUMCH.__category__          = 'A - PIPE-IN TOOLZ'
+# AK00_FOR_OCC_VON_KROUMCH.__author__            = 'cpottier'
+# AK00_FOR_OCC_VON_KROUMCH.__textColor__         = '#6699ff'
+# AK00_FOR_OCC_VON_KROUMCH.__paramsType__        = {
+# 'save_after'            :  ( 'bool', 'False' , ['True', 'False']  )    
+
+# }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1180,7 +1394,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     Y_move_nask         = -1.5
     ecart_nask          =  3
     # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/cpottier/Presets/Graphs/toto.inkGraph'
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
 
     # DONT TOUCH #########################################################
     MASTER              = None
@@ -1483,7 +1697,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     Y_move_nask         = -1.5
     ecart_nask          =  3
     # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/cpottier/Presets/Graphs/toto.inkGraph'
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
 
     # DONT TOUCH #########################################################
     MASTER              = None
