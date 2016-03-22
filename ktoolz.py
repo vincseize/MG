@@ -5,23 +5,21 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 16-03-2016                                                         #
+# Last Update : 22-03-2016                                                         #
 # ##################################################################################
 
+#================================================================================================================================== PRIMARY CLASS
 import sys, ink.proto
 path_modules = "/u/"+ink.io.ConnectUserInfo()[2]+"/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples"
 sys.path.append(path_modules)
 import __InK__connect
-from __InK__connect import *
-
-#==============================================================================================================================Ink useful CLASSES
-import __InK__classes
+from __InK__connect import * 
+#============================================================================================================================= Ink useful CLASSES
 from __InK__classes import __PIPEIN_GRAPH__
-protoGraph              = ink.proto.Graph( graphs.DEFAULT )
 __PIPEIN_GRAPH          = __PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
 #================================================================================================================================================
 
-# ===========================================================================================================================  AK00_SETS_AddScout
+# ============================================================================================================================ AK00_SETS_AddScout
 
 
 def AK00_SETS_AddScout(save_after='True'): 
@@ -258,9 +256,6 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
             assetList = ['Casting','Timing']
             path = 'USECASE/'+SEQUENCE+'/EDIT/NasK/USECASE_'+SEQUENCE+'_EDIT-NasK_'
 
-        # USECASE/PIGA/EDIT/NasK/USECASE_PIGA_EDIT-NasK_Casting.a7 
-        # print path
-
         #=========
         for Name in assetList:
             A7path = path+Name+'.a7'
@@ -377,7 +372,6 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                 print 'Shot == None !'
                 
         except:
-            # result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,True)
             pass
 
     #========= Retrieve a7 Downstreams and Upstreams
@@ -544,10 +538,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         selection = protoGraph.GetSelection()       
 
         for pa in selection:
-            # print pa
             try:
                 if str(assetListEdit[0]) in str(pa):
-                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + Y_move_nask
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -555,7 +547,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[1]) in str(pa):
-                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*2)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -563,7 +554,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' in str(a):
-                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X + ecart_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
@@ -571,7 +561,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' not in str(a):
-                    print pa
                     X_move_naskRelToLayA7 = layA7Pos_X - ecart_nask
                     Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
