@@ -19,11 +19,11 @@ if '__InK__connect' in sys.modules:
 else:
     import __InK__connect
     from __InK__connect import *
-#============================================================================================================================= Ink useful CLASSES
+#==================================================================================================================== Ink external useful CLASSES
 __PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
 #================================================================================================================================================
 
-#============================================================================================================================ CLASSES for Sansbox 
+#================================================================================================================================== local CLASSES
 
 class __ORGANIZER__():
     
@@ -36,12 +36,18 @@ class __ORGANIZER__():
 
     def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y):
         '''   '''
+
         layout    = protoGraph.GetLayout()
         inc_Y     = 0
         # infos nomenclature clip_p0340sub etc -> varNomenClips = ['sub', 'trailer', 'tr', 'vi']
         for pa in assetClips:
+            # clipA7Pos_X = 0
             clipA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
-            clipA7Pos_X           = clipA7Pos[0]
+            # clipA7Pos_X           = clipA7Pos[0]
+
+            clipA7Pos_X = 0
+
+
             clipA7Pos_Y           = layA7Pos_Y + inc_Y
             X_move_naskRelToLayA7 = clipA7Pos_X + ( ecart*2 )
             if str(stream) == 'Upstreams':
@@ -55,7 +61,7 @@ class __ORGANIZER__():
         protoGraph.SelectAll()
 
 
-    def moveEditA7s(self,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask):
+    def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask):
         '''   '''
 
         layout = protoGraph.GetLayout()
@@ -1339,24 +1345,20 @@ AK00_SETS_AddScout.__paramsType__        = {
 }
 
 
+#================================================================================================================================ AK01_GRAPH_Organizer
+
 
 def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraphM=None): 
     ''' 
     | /
-    | \ Tool - Last update 10-03-2016
+    | \ Tool - Last update 23-03-2016
       ----------------------------------------------------------------------
       - Organize Context Layout for layout, anim, previz, usecase 
       -> get streams      
       -> Add Nask/timing,casting,stereo | Stereo/stereo_session
-
-      - todo
-              switch to auto save usecase
-              choice for real tool name
-
       ----------------------------------------------------------------------
 
-      Select All .a7 or Layout.a7
-
+      Select Anim/Layout.a7
     '''
 
     # MODIFIABLE #########################################################
@@ -1467,7 +1469,6 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
     #========= set position layout.a7 Upstreams
-        # moveClipA7s(protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y)
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
     #========= select a7 Downstreams  for positioning
     if organize_Downstreams == 'True':
@@ -1481,13 +1482,11 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
     #========= set position clip.a7 Downstreams
-        # moveClipA7s(protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y)
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
 
     #======================================================================
     #========= add, set position .a7 timing,casting,stereo, stereo_session
     #======================================================================
-    # LAYOUT_addA7s(myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart,type_layout)
     __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask,type_layout)
 
 
@@ -1528,20 +1527,25 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 }
 
 
+#============================================================================================================================ end AK01_GRAPH_Organizer
+
+
 #=========================================================================================================================== AK01_MULTIGRAPH_Organizer
 
 
 def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ''' 
     | /
-    | \ Tool - Last update 16-03-2016
+    | \ Tool - Last update 23-03-2016
     ----------------------------------------------------------------------
       - Organize and Save Graph(s) 
-      - Multi select and auto batch mode enable
       
       Select one or several anim, layout .a7
-      (previz, usecase enabled)
+      (previz, usecase enable, slun enable)
 
+      todo:
+            -> test mlun
+            -> real pathSave when Multi
     ----------------------------------------------------------------------
     '''
 
@@ -1756,6 +1760,10 @@ AK01_MULTIGRAPH_Organizer.__textColor__         = '#6699ff'
 AK01_MULTIGRAPH_Organizer.__paramsType__        = {
 'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
 }
+
+
+# ====================================================================================================================== end  AK01_MULTIGRAPH_Organizer
+
 
 
 #========================================================================================================================= AK02_LAYOUT_BuildCameraModel
