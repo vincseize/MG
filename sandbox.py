@@ -35,16 +35,13 @@ class __ORGANIZER__():
         self.ecart          = ecart
         self.ecartClip_Y    = ecartClip_Y
 
-    # def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y):
     def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_Y):
         '''   '''
         layout    = protoGraph.GetLayout()
         inc_Y     = 0
         # infos nomenclature clip_p0340sub etc -> varNomenClips = ['sub', 'trailer', 'tr', 'vi']
         for pa in assetClips:
-            # clipA7Pos_X = 0
             clipA7Pos       = __PIPEIN_GRAPH.getPosition(pa,layout)
-            # clipA7Pos_X           = clipA7Pos[0]
             clipA7Pos_X     = 0
             clipA7Pos_Y     = layA7Pos_Y + inc_Y
 
@@ -109,7 +106,6 @@ class __ORGANIZER__():
                 Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                 layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
 
-    # def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,X,Y,X_move_nask,Y_move_nask,X_ecart_nask,type_layout):
     def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout):
         ''' add Nask/timing,casting,stereo | Stereo/stereo_session '''
 
@@ -1350,30 +1346,21 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
       Select Anim/Layout.a7
     '''
 
-    # # MODIFIABLE #########################################################
-    # # Nask relative with Layout.a7
-    # X_move_nask         =  0
-    # Y_move_nask         = -1.5
-    # X_ecart_nask          =  3
-    # # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph'
-
-    # # DONT TOUCH #########################################################
-    # myShot              = None
-    # mySeq               = None
-
-    # layA7Pos_X          = None
-    # layA7Pos_Y          = None
-    # # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-    # ecart               =  2
-    # ecartClip_Y         =  1
-
+    #========= MODIFIABLES
+    # X_move_nask     = 0
+    # Y_move_nask     = -1.5
+    # X_ecart_nask    = 3
+    # ecart           = 2
+    # ecartClip_Y     = 1
+    #========= MODIFIABLE , optional
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph' # for debug/tests
 
     #==============================================================================================================
-    __ORGANIZER = __ORGANIZER__() # local class for oranize .a7
+    __ORGANIZER = __ORGANIZER__() # local class for organize .a7
+    # __ORGANIZER = __ORGANIZER__(X_move_nask,Y_move_nask,X_ecart_nask,ecart,ecartClip_Y) # to mof defaults choices
     #==============================================================================================================
 
-
+    #=========  
     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
     selection   = protoGraph.GetSelection()
@@ -1397,14 +1384,11 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         mySeq     = result[2]
         myShot    = result[3]
         mySHOT    = result[4]
-
         myCat     = 'None'
 
         #========= determine cases
         try:
-          
             result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
-
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
@@ -1412,12 +1396,10 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
 
             if mySHOT == 'None':
                 print 'mySHOT == None !'
-                
         except:
             pass
 
     #========= Retrieve a7 Downstreams and Upstreams
-
         if str(show_neighbours)=='True':
 
             layout.SetPos(pa, (0,0) )
@@ -1450,7 +1432,6 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                 a_name           = A7_infos_us['a_name'] 
                 pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
 
-
             if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
                 if type_layout == 'Layout':
                     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
@@ -1458,7 +1439,6 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
     #========= set position layout.a7 Upstreams
-        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
     #========= select a7 Downstreams  for positioning
@@ -1473,13 +1453,11 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
     #========= set position clip.a7 Downstreams
-        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
 
     #======================================================================
     #========= add, set position .a7 timing,casting,stereo, stereo_session
     #======================================================================
-    # __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask,type_layout)
     __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
 
     #======================================================================
@@ -1508,9 +1486,6 @@ AK01_GRAPH_Organizer.__category__         = 'A - PIPE-IN TOOLZ'
 AK01_GRAPH_Organizer.__author__           = 'cpottier'
 AK01_GRAPH_Organizer.__textColor__        = '#6699ff'
 AK01_GRAPH_Organizer.__paramsType__       = {
-# 'sep'                       :  ('') ,
-# 'myShot_layout'             :  ( 'bool', 'True' , ['True', 'False']  ) ,  # todo switch layout/anim
-# 'myShot_anim'               :  ( 'bool', 'False' , ['True', 'False']  ) , # todo switch layout/anim
 'show_neighbours'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
 'organize_Upstreams'        :  ( 'bool', 'True' , ['True', 'False']  ) ,
 'organize_Downstreams'     :  ( 'bool', 'True' , ['True', 'False']  ) ,
@@ -1541,28 +1516,21 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ----------------------------------------------------------------------
     '''
 
-    # MODIFIABLE #########################################################
-    # Nask relative with Layout.a7
-    # X_move_nask         =  0
-    # Y_move_nask         = -1.5
-    # X_ecart_nask          =  3
-    # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph'
-
-    # DONT TOUCH #########################################################
-    myShot           = None
-    mySeq            = None
-
-    # layA7Pos_X          = None
-    # layA7Pos_Y          = None
-    # # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-    # ecart               = 2
-    # ecartClip_Y         = 1
+    #========= MODIFIABLES
+    # X_move_nask     = 0
+    # Y_move_nask     = -1.5
+    # X_ecart_nask    = 3
+    # ecart           = 2
+    # ecartClip_Y     = 1
+    #========= MODIFIABLE , optional
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph' # for debug/tests
 
     #==============================================================================================================
-    __ORGANIZER = __ORGANIZER__() # local class for oranize .a7
+    __ORGANIZER = __ORGANIZER__() # local class for organize .a7
+    # __ORGANIZER = __ORGANIZER__(X_move_nask,Y_move_nask,X_ecart_nask,ecart,ecartClip_Y) # to mof defaults choices
     #==============================================================================================================
 
+    #=========
     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
     selection   = protoGraph.GetSelection()
@@ -1581,9 +1549,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
     n = 0
     for pa in assetList:
-
         n += 1
-
         #========= List of A7 that will be saved in new Graph
         assetList_forGraphtoSave = []
 
@@ -1618,7 +1584,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
             myShot    = result[3]
             mySHOT    = result[4]
             myCat     = 'None'
-
         except:
             __PIPEIN_GRAPH.getA7_infos(pa,True)
             __PIPEIN_GRAPH.getGraph_infos(pa,True)
@@ -1626,23 +1591,19 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         #========= determine cases
         try:
-
             result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
             mySHOT           = result[3]
-
             if mySHOT == 'None':
                 print 'myShot == None !'
-
         except:
             pass
 
         #======================================================================
         #========= Retrieve Downstreams
         #======================================================================
-
         if str(type_layout) == 'Usecase' or str(type_layout) == 'Anim':
             FiltersDownstreams = {'family': ['.*'] , 'type': ['Anim','Clip']} 
         if str(type_layout) == 'Previz' or str(type_layout) == 'Layout':
@@ -1675,7 +1636,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         for us in UpStreamProtoList:
             assetClips.append(us)
         #========= set position layout.a7 Upstreams
-        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
@@ -1698,13 +1658,11 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #======================================================================
         #========= add EDIT a7s 
         #======================================================================
-        # assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask,type_layout)
-        assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,X,Y,type_layout)
+        assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
 
         #======================================================================
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
-        # assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask)
         assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y)
 
         #========= add EDIT a7 in assetList for Graph to Save
