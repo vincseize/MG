@@ -262,29 +262,35 @@ K02_UI_CONSTRUCT.__paramsType__       = {
    
 }
 
+#=========================================================================================================================== Require FOR QT SAMPLE
 
-def K03_UI_CONSTRUCT_QT(Action1='Var_Name'):
+import sys, ink.proto
+path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+sys.path.append(path_modules)
+if 'sandboxqt' in sys.modules:
+    del(sys.modules["sandboxqt"])
+    import sandboxqt
+else:
+    import sandboxqt
+
+#===========================================================================================================================  QT UI external
+
+def K03_UI_CONSTRUCT_QT():
     ''' 
     UI QT CONSTRUCTION SAMPLE 
 
-    qt scripts are in sandboxQt.py
+    qt UI/script are in sandboxqt.py
+    IMPORTANT : pas de majuscule dans le nom !!!!
     '''
 
+    return None
 
-#=========================== append path for tools qt
-try:
-    if 'sandboxQt' in sys.modules:
-        del(sys.modules["sandboxQt"])
-        import sandboxQt 
-    else:
-        import sandboxQt
-except:
-    pass
 #=========================== UI
 K03_UI_CONSTRUCT_QT.__category__         = 'C - UI'
 K03_UI_CONSTRUCT_QT.__author__           = 'cpottier'
 K03_UI_CONSTRUCT_QT.__textColor__        = '#7cfcaa'
-K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxQt'
+K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxqt'
+
 
 
 #===========================================================================================================================  PART 3 , ASSETS INFOS
@@ -1336,7 +1342,7 @@ AK00_SETS_AddScout.__paramsType__        = {
 def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',SaveGraph='False',protoGraphM=None): 
     ''' 
     | /
-    | \ Tool - Last update 23-03-2016
+    | \ Tool - Last update 24-03-2016
       ----------------------------------------------------------------------
       - Organize Context Layout for layout, anim, previz, usecase 
       -> get streams      
@@ -1503,7 +1509,7 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ''' 
     | /
-    | \ Tool - Last update 23-03-2016
+    | \ Tool - Last update 24-03-2016
     ----------------------------------------------------------------------
       - Organize and Save Graph(s) 
       
