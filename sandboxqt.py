@@ -2,44 +2,19 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 14-03-2016                                                                #
+# Date : 24-03-2016                                                                #
 # ##################################################################################
 
-import sys, ink.proto
-path_modules = "/u/"+ink.io.ConnectUserInfo()[2]+"/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples"
-sys.path.append(path_modules)
-import __InK__connect
-from __InK__connect import *
 
 #=======================================================================================================================  CLASS __QT_GUI_SAMPLE__
 
-# # Required modules
-# import graphs
-# import nomen
-# import ink.proto
-# import ink.query
-# import nask.sdk
-# import nask.sdk.casting
-# import nask.sdk.shots as shots
-# import nask.sdk.hit	
-# import proj.pipe.ink.graphs as prodgraphs
-# from subprocess import Popen, PIPE
-
-
-# import os
-# import sys
-# import random
-# from PyQt4 import QtGui, QtCore, Qt
-# import ink
-# import ink.io
- 
-
-# CONNECT_USER_INFOS = ink.io.ConnectUserInfo()
-# CONNECT_USER0 = CONNECT_USER_INFOS[0]
-# CONNECT_USER1 = CONNECT_USER_INFOS[1] # todo to ask why ?
-# PROJECT = CONNECT_USER_INFOS[2]
-# MAIL_HOSTNAME = 'HOSTNAME.illum-mg.fr'
-# MAIL_USER = CONNECT_USER1+'@illum-mg.fr'
+import os
+import sys
+import random
+import glob
+from PyQt4 import QtGui, QtCore, Qt
+import ink
+import ink.io
 
 
 class __QT_GUI_SAMPLE__(QtGui.QDialog):
@@ -47,6 +22,9 @@ class __QT_GUI_SAMPLE__(QtGui.QDialog):
 	def __init__(self, parent = None): #
 		super(__QT_GUI_SAMPLE__, self).__init__(parent) 
 
+
+		self.CONNECT_USER_INFOS = ink.io.ConnectUserInfo()
+		self.CONNECT_USER1 = self.CONNECT_USER_INFOS[1]
 
 		self.setWindowTitle('Title Sample QT UI')
 
@@ -103,7 +81,7 @@ class __QT_GUI_SAMPLE__(QtGui.QDialog):
 
 
 
-		self.editSeqOut.setText('First Release From ' + CONNECT_USER1)
+		self.editSeqOut.setText('First Release From ' + self.CONNECT_USER1)
 
 
 		self.editIn.setReadOnly(1)
@@ -139,4 +117,3 @@ def start(parent, data):
 	main.activateWindow()
 	main.raise_()
 	main.show()
-
