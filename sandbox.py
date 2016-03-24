@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	     #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 23-03-2016                                                         #
+# Last Update : 24-03-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -25,43 +25,43 @@ __PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) 
 
 #================================================================================================================================== local CLASSES
 
-class __ORGANIZER__():
+class __ORGANIZER__():   
     
-
-    # def __init__(self,graphName,verbose=None):
-    #     self.verbose    = verbose
-    #     self.graphName    = graphName
-    #     self.protoGraph   = ink.proto.Graph( self.graphName )
-    
-
-    def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y):
+    def __init__(self,X_move_nask=0,Y_move_nask=-1.5,X_ecart_nask=3,ecart=2,ecartClip_Y=1):
         '''   '''
+        self.X_move_nask    = X_move_nask
+        self.Y_move_nask    = Y_move_nask
+        self.X_ecart_nask   = X_ecart_nask
+        self.ecart          = ecart
+        self.ecartClip_Y    = ecartClip_Y
 
+    # def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y):
+    def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_Y):
+        '''   '''
         layout    = protoGraph.GetLayout()
         inc_Y     = 0
         # infos nomenclature clip_p0340sub etc -> varNomenClips = ['sub', 'trailer', 'tr', 'vi']
         for pa in assetClips:
             # clipA7Pos_X = 0
-            clipA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+            clipA7Pos       = __PIPEIN_GRAPH.getPosition(pa,layout)
             # clipA7Pos_X           = clipA7Pos[0]
+            clipA7Pos_X     = 0
+            clipA7Pos_Y     = layA7Pos_Y + inc_Y
 
-            clipA7Pos_X = 0
-
-
-            clipA7Pos_Y           = layA7Pos_Y + inc_Y
-            X_move_naskRelToLayA7 = clipA7Pos_X + ( ecart*2 )
+            X_move_naskRelToLayA7 = clipA7Pos_X + ( self.ecart*2 )
             if str(stream) == 'Upstreams':
-                X_move_naskRelToLayA7 = clipA7Pos_X - ( ecart*2 )
+                X_move_naskRelToLayA7 = clipA7Pos_X - ( self.ecart*2 )
             Y_move_naskRelToLayA7     = clipA7Pos_Y
             layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
-            inc_Y = inc_Y + ecartClip_Y
+            inc_Y = inc_Y + self.ecartClip_Y
         #========= Apply 
         protoGraph.Show()
         protoGraph.Apply()
         protoGraph.SelectAll()
 
 
-    def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask):
+    # def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask):
+    def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y):
         '''   '''
 
         layout = protoGraph.GetLayout()
@@ -71,46 +71,46 @@ class __ORGANIZER__():
         for pa in selection:
             try:
                 if str(assetListEdit[0]) in str(pa):
-                    X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + Y_move_nask
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + self.Y_move_nask
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetListEdit[1]) in str(pa):
-                    X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*2)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*2)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' in str(a):
-                    X_move_naskRelToLayA7 = layA7Pos_X + ecart_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' not in str(a):
-                    X_move_naskRelToLayA7 = layA7Pos_X - ecart_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X - self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
 
 
             if 'EDIT-Stereo_Session.a7' in str(pa):
-                X_move_naskRelToLayA7 = layA7Pos_X - (ecart_nask)
-                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                X_move_naskRelToLayA7 = layA7Pos_X - (self.X_ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                 layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
 
             if 'EDIT-NasK_Stereo.a7' in str(pa):
-                X_move_naskRelToLayA7 = layA7Pos_X + (ecart_nask)
-                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                X_move_naskRelToLayA7 = layA7Pos_X + (self.X_ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                 layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
 
-
-    def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,X,Y,X_move_nask,Y_move_nask,ecart_nask,type_layout):
+    # def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,X,Y,X_move_nask,Y_move_nask,X_ecart_nask,type_layout):
+    def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout):
         ''' add Nask/timing,casting,stereo | Stereo/stereo_session '''
 
         layout = protoGraph.GetLayout()
@@ -166,29 +166,29 @@ class __ORGANIZER__():
         for a in A7add:
             try:
                 if str(assetList[0]) in str(a):
-                    X_move_naskRelToLayA7 = X + X_move_nask
-                    Y_move_naskRelToLayA7 = Y + Y_move_nask
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + self.Y_move_nask
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetList[1]) in str(a):
-                    X_move_naskRelToLayA7 = X + X_move_nask
-                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*2)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*2)
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetList[2]) in str(a) and 'NasK' in str(a):
-                    X_move_naskRelToLayA7 = X + ecart_nask
-                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetList[2]) in str(a) and 'NasK' not in str(a):
-                    X_move_naskRelToLayA7 = X - ecart_nask
-                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X - self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
@@ -1200,17 +1200,6 @@ def AK00_SETS_AddScout(save_after='True'):
       - please GRAB Shading.a7
     '''
 
-    # Classe de connection
-    # __CONNECT_USER_INFOS    = __CONNECT_USER_INFOS__()
-
-    # CONNECT_USER_INFOS = ink.io.ConnectUserInfo()
-    # CONNECT_USER0 = CONNECT_USER_INFOS[0]
-    # CONNECT_USER1 = CONNECT_USER_INFOS[1] # todo to ask why ?
-    # PROJECT = CONNECT_USER_INFOS[2]
-    # MAIL_HOSTNAME = 'HOSTNAME.illum-mg.fr'
-    # MAIL_USER = CONNECT_USER1+'@illum-mg.fr'
-
-
     # absolute
     X_move_naskAbs = -21 
     Y_move_naskAbs = -7
@@ -1361,23 +1350,23 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
       Select Anim/Layout.a7
     '''
 
-    # MODIFIABLE #########################################################
-    # Nask relative with Layout.a7
-    X_move_nask         =  0
-    Y_move_nask         = -1.5
-    ecart_nask          =  3
-    # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
+    # # MODIFIABLE #########################################################
+    # # Nask relative with Layout.a7
+    # X_move_nask         =  0
+    # Y_move_nask         = -1.5
+    # X_ecart_nask          =  3
+    # # for debug or tests
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph'
 
-    # DONT TOUCH #########################################################
-    myShot              = None
-    mySeq               = None
+    # # DONT TOUCH #########################################################
+    # myShot              = None
+    # mySeq               = None
 
-    layA7Pos_X          = None
-    layA7Pos_Y          = None
-    # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-    ecart               =  2
-    ecartClip_Y         =  1
+    # layA7Pos_X          = None
+    # layA7Pos_Y          = None
+    # # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
+    # ecart               =  2
+    # ecartClip_Y         =  1
 
 
     #==============================================================================================================
@@ -1469,7 +1458,9 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
     #========= set position layout.a7 Upstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
+
     #========= select a7 Downstreams  for positioning
     if organize_Downstreams == 'True':
         assetClips = []
@@ -1482,13 +1473,14 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
     #========= set position clip.a7 Downstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
 
     #======================================================================
     #========= add, set position .a7 timing,casting,stereo, stereo_session
     #======================================================================
-    __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask,type_layout)
-
+    # __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask,type_layout)
+    __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
 
     #======================================================================
     # SAVE LAYOUT GRAPH
@@ -1551,21 +1543,21 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
     # MODIFIABLE #########################################################
     # Nask relative with Layout.a7
-    X_move_nask         =  0
-    Y_move_nask         = -1.5
-    ecart_nask          =  3
+    # X_move_nask         =  0
+    # Y_move_nask         = -1.5
+    # X_ecart_nask          =  3
     # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
+    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph'
 
     # DONT TOUCH #########################################################
-    myShot              = None
+    myShot           = None
     mySeq            = None
 
-    layA7Pos_X          = None
-    layA7Pos_Y          = None
-    # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-    ecart               = 2
-    ecartClip_Y         = 1
+    # layA7Pos_X          = None
+    # layA7Pos_Y          = None
+    # # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
+    # ecart               = 2
+    # ecartClip_Y         = 1
 
     #==============================================================================================================
     __ORGANIZER = __ORGANIZER__() # local class for oranize .a7
@@ -1668,7 +1660,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
         #========= set position clip.a7 Downstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
         #========= Retrieve Upstreams
@@ -1682,7 +1675,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         for us in UpStreamProtoList:
             assetClips.append(us)
         #========= set position layout.a7 Upstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        # __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
         ##========= retrieve information for path if USECASE
@@ -1704,12 +1698,14 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #======================================================================
         #========= add EDIT a7s 
         #======================================================================
-        assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask,type_layout)
+        # assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask,type_layout)
+        assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,X,Y,type_layout)
 
         #======================================================================
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
-        assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask)
+        # assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask)
+        assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y)
 
         #========= add EDIT a7 in assetList for Graph to Save
         protoGraph.SelectAll()
