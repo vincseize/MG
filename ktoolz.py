@@ -25,40 +25,40 @@ __PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) 
 
 #================================================================================================================================== local CLASSES  
 
-class __ORGANIZER__():
+class __ORGANIZER__():   
     
+    def __init__(self,X_move_nask=0,Y_move_nask=-1.5,X_ecart_nask=3,ecart=2,ecartClip_Y=1):
+        '''   '''
+        self.X_move_nask    = X_move_nask
+        self.Y_move_nask    = Y_move_nask
+        self.X_ecart_nask   = X_ecart_nask
+        self.ecart          = ecart
+        self.ecartClip_Y    = ecartClip_Y
 
-    # def __init__(self,graphName,verbose=None):
-    #     self.verbose    = verbose
-    #     self.graphName    = graphName
-    #     self.protoGraph   = ink.proto.Graph( self.graphName )
-    
-
-    def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y):
+    def moveClipA7s(self,__PIPEIN_GRAPH,protoGraph,stream,assetClips,layout,layA7Pos_Y):
         '''   '''
         layout    = protoGraph.GetLayout()
         inc_Y     = 0
         # infos nomenclature clip_p0340sub etc -> varNomenClips = ['sub', 'trailer', 'tr', 'vi']
         for pa in assetClips:
-            clipA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
-            # clipA7Pos_X           = clipA7Pos[0]
+            clipA7Pos       = __PIPEIN_GRAPH.getPosition(pa,layout)
+            clipA7Pos_X     = 0
+            clipA7Pos_Y     = layA7Pos_Y + inc_Y
 
-            clipA7Pos_X = 0
-            
-            clipA7Pos_Y           = layA7Pos_Y + inc_Y
-            X_move_naskRelToLayA7 = clipA7Pos_X + ( ecart*2 )
+            X_move_naskRelToLayA7 = clipA7Pos_X + ( self.ecart*2 )
             if str(stream) == 'Upstreams':
-                X_move_naskRelToLayA7 = clipA7Pos_X - ( ecart*2 )
+                X_move_naskRelToLayA7 = clipA7Pos_X - ( self.ecart*2 )
             Y_move_naskRelToLayA7     = clipA7Pos_Y
             layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
-            inc_Y = inc_Y + ecartClip_Y
+            inc_Y = inc_Y + self.ecartClip_Y
         #========= Apply 
         protoGraph.Show()
         protoGraph.Apply()
         protoGraph.SelectAll()
 
 
-    def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask):
+    # def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask):
+    def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y):
         '''   '''
 
         layout = protoGraph.GetLayout()
@@ -68,46 +68,45 @@ class __ORGANIZER__():
         for pa in selection:
             try:
                 if str(assetListEdit[0]) in str(pa):
-                    X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + Y_move_nask
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + self.Y_move_nask
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetListEdit[1]) in str(pa):
-                    X_move_naskRelToLayA7 = layA7Pos_X + X_move_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*2)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*2)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' in str(a):
-                    X_move_naskRelToLayA7 = layA7Pos_X + ecart_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetListEdit[2]) in str(pa) and 'NasK' not in str(a):
-                    X_move_naskRelToLayA7 = layA7Pos_X - ecart_nask
-                    Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X - self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
 
 
             if 'EDIT-Stereo_Session.a7' in str(pa):
-                X_move_naskRelToLayA7 = layA7Pos_X - (ecart_nask)
-                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                X_move_naskRelToLayA7 = layA7Pos_X - (self.X_ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                 layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
 
             if 'EDIT-NasK_Stereo.a7' in str(pa):
-                X_move_naskRelToLayA7 = layA7Pos_X + (ecart_nask)
-                Y_move_naskRelToLayA7 = layA7Pos_Y + (Y_move_nask*3)
+                X_move_naskRelToLayA7 = layA7Pos_X + (self.X_ecart_nask)
+                Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                 layout.SetPos(pa, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
 
-
-    def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,X,Y,X_move_nask,Y_move_nask,ecart_nask,type_layout):
+    def LAYOUT_addA7s(self,__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout):
         ''' add Nask/timing,casting,stereo | Stereo/stereo_session '''
 
         layout = protoGraph.GetLayout()
@@ -163,29 +162,29 @@ class __ORGANIZER__():
         for a in A7add:
             try:
                 if str(assetList[0]) in str(a):
-                    X_move_naskRelToLayA7 = X + X_move_nask
-                    Y_move_naskRelToLayA7 = Y + Y_move_nask
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + self.Y_move_nask
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetList[1]) in str(a):
-                    X_move_naskRelToLayA7 = X + X_move_nask
-                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*2)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_move_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*2)
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetList[2]) in str(a) and 'NasK' in str(a):
-                    X_move_naskRelToLayA7 = X + ecart_nask
-                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X + self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
             try:
                 if str(assetList[2]) in str(a) and 'NasK' not in str(a):
-                    X_move_naskRelToLayA7 = X - ecart_nask
-                    Y_move_naskRelToLayA7 = Y + (Y_move_nask*3)
+                    X_move_naskRelToLayA7 = layA7Pos_X - self.X_ecart_nask
+                    Y_move_naskRelToLayA7 = layA7Pos_Y + (self.Y_move_nask*3)
                     layout.SetPos(a, (X_move_naskRelToLayA7, Y_move_naskRelToLayA7) )
             except:
                 pass
@@ -199,161 +198,13 @@ class __ORGANIZER__():
 
 
 
-# ============================================================================================================================ AK00_SETS_AddScout
-
-
-def AK00_SETS_AddScout(save_after='True'): 
-    ''' 
-    | /
-    | \ Tool - Last update 05-02-2016
-      ----------------------------------------------------------------------
-      AJOUTE 'Scout.a7' AU DECOR
-      ----------------------------------------------------------------------
-
-      - please GRAB Shading.a7
-    '''
-
-    # absolute
-    X_move_naskAbs = -21 
-    Y_move_naskAbs = -7
-
-    # relative with Paint-map
-    X_move_nask = 0
-    Y_move_nask = -3
-
-    error0 = 'GRABBER OU LOCKER L\'A7  and run again !!!'
-
-    paintMaps = 'LIB/MATERIALS/Paint/Maps/Paint-Maps.a7'
-
-    #======================================================================
-    #========= Add XNAMEX-Shading.a7 -> XXX-Shading_Shots_Scout.a7
-    #======================================================================
-
-    graph = ink.proto.Graph( graphs.DEFAULT )
-    layout = graph.GetLayout()
-    selection     = graph.GetSelection( nomen.Filter().SetTypes(['Shading']).SetStage('') )
-    if not selection:
-        raise Exception('Please select at least XNAMEX-Shading.a7 asset !')
-
-    for pa in selection: # pa is the original selected asset Shading
-        # Get info Optional
-        nm_path       = pa.GetPath()
-        nm_asset      = pa.GetNomen()     
-        a_libname     = nm_asset.GetLib()
-        a_name        = nm_asset.GetName()      
-        a_family      = nm_asset.GetFamilies()
-        a_typeFamily  = nm_asset.GetFamilies()[0] # cf SET
-        a_catFamily   = nm_asset.GetFamilies()[1] # 
-        a_var         = nm_asset.GetVar() # PROJECT cf GRINCH
-        a_types       = nm_asset.GetTypes()
-        a_lod         = nm_asset.GetLod()
-        a_version     = nm_asset.GetVersion() 
-        # print '----- a7 in first selection'
-        # print pa
-        # print nm_path,nm_asset
-        # print a_libname,a_name,a_family,a_typeFamily,a_catFamily,a_var,a_types,a_lod,a_version
-
-    #======================================================================
-    #========= get shading pos for Offset between or grap and loaded graph # a test
-    #======================================================================
-
-        # layout.LoadGraphPos([pa])
-        # shadingOrPos = layout.GetPoint([pa], direction='M') # todo, to understand M, B, T options
-        # print shadingOrPos
-  
-    #======================================================================
-    #========= get .ink path and create new protograph
-    #======================================================================
-
-        pathGraphLocal = '/u/'+PROJECT+'/Users/'+CONNECT_USER1+'/Presets/Graphs/'+a_name+'.inkGraph'
-        pathGraph = '/u/'+PROJECT+'/Users/COM/Presets/Graphs/SHADING/'+a_typeFamily+'/'+a_catFamily+'/'+a_name+'.inkGraph'
-        protoGraph = ink.proto.Graph( pathGraph, load=True, private=False )
-        layout = protoGraph.GetLayout()
-
-    #======================================================================
-    #========= check if selection locked
-    #======================================================================
-
-        A7IsLock = ink.query.Asset(nm_asset).GetLockInfos()[0]
-        if A7IsLock is False :
-            print '############################################################################'
-            print error0
-            print '############################################################################'
-            raise Exception( error0 )
-
-    #======================================================================
-    #========= a_name-Shading.a7-> a_name-Shading_Shots_Scout.a7
-    #======================================================================
-      
-        Scout = nomen.Nomen.NewLib( lib='LIB', name=a_name, family=a_family, types=['Shading','Shots','Scout'], stage='' )
-        ScoutProto = protoGraph.Add(Scout, execAction='', editAction='View/ViewShotsOfAsset')
-        ScoutProto.AddFile('csv') # un fichier msg minimal est a associer obligatoirement
-        ScoutProto.AddFile('rv')
-
-        protoGraph.Apply()
-        protoGraph.Show()
-
-        gg = protoGraph.List()
-        XNAMEX_shading = None
-        check = 'LIB/SETS/'+a_catFamily+'/'+a_name+'/Shading/'+a_name+'-Shading.a7';
-
-        for g in gg:
-            ref = g
-            if str(g) == check:
-                XNAMEX_shading = g
-    #======================================================================
-    #========= add link and set Include attribute to NO
-    #======================================================================
-                protoGraph.AddLink( ScoutProto, XNAMEX_shading, ink.proto.LINK_DEP , ctxParams={ 'Include':'No' })
-    #======================================================================
-    #========= get Paint-Maps a7 position
-    #======================================================================
-            if str(g) == paintMaps:
-                ref = g
-                layout.LoadGraphPos([g])
-                paintMapsPos = layout.GetPoint([g], direction='M') # todo, to understand M, B, T options
-                paintMaps_X = paintMapsPos[0]
-                paintMaps_Y = paintMapsPos[1]
-                # print 'Paint-Maps.a7 position :' , paintMapsPos
-    #======================================================================
-    #========= move for friendly user layout
-    #======================================================================
-    # layout.SetPos(ScoutProto, (X_move_naskAbs, Y_move_naskAbs) )
-    layout.SetPos(ScoutProto, (paintMaps_X+X_move_nask, paintMaps_Y+Y_move_nask) )
-    #======================================================================
-    #========= Apply Clean and save Graph
-    #======================================================================
-
-    protoGraph.Show()
-    protoGraph.Apply()
-    protoGraph.SelectAll()
-
-    print 'SCOUT ADDED'
-    if save_after == 'True':
-        # protoGraph.Write(pathGraphLocal, comment='', private=False)
-        print 'GRAPH SAVED !'
-    else :
-        print 'YOU CAN SAVE THIS GRAPH NOW !!!'     
-
-
-#=========================== UI
-
-AK00_SETS_AddScout.__category__          = 'A - PIPE-IN TOOLZ'
-AK00_SETS_AddScout.__author__            = 'cpottier'
-AK00_SETS_AddScout.__textColor__         = '#6699ff'
-AK00_SETS_AddScout.__paramsType__        = {
-'save_after'            :  ( 'bool', 'True' , ['True', 'False']  )    
-
-}
-
-
 #================================================================================================================================ AK01_GRAPH_Organizer
 
 
 def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',protoGraphM=None): 
     ''' 
     | /
-    | \ Tool - Last update 23-03-2016
+    | \ Tool - Last update 24-03-2016
       ----------------------------------------------------------------------
       - Organize Context Layout for layout, anim, previz, usecase 
       -> get streams      
@@ -363,30 +214,11 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
       Select Anim/Layout.a7
     '''
 
-    # MODIFIABLE #########################################################
-    # Nask relative with Layout.a7
-    X_move_nask         =  0
-    Y_move_nask         = -1.5
-    ecart_nask          =  3
-    # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
-
-    # DONT TOUCH #########################################################
-    myShot              = None
-    mySeq               = None
-
-    layA7Pos_X          = None
-    layA7Pos_Y          = None
-    # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-    ecart               =  2
-    ecartClip_Y         =  1
-
-
     #==============================================================================================================
-    __ORGANIZER = __ORGANIZER__() # local class for oranize .a7
+    __ORGANIZER = __ORGANIZER__() # local class for organize .a7
     #==============================================================================================================
 
-
+    #=========  
     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
     selection   = protoGraph.GetSelection()
@@ -410,27 +242,22 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
         mySeq     = result[2]
         myShot    = result[3]
         mySHOT    = result[4]
-
         myCat     = 'None'
 
         #========= determine cases
         try:
-          
             result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
-
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
             mySHOT           = result[3]
 
-            if mySHOT == 'None':
-                print 'mySHOT == None !'
-                
+            # if mySHOT == 'None':
+            #     print 'mySHOT == None !'
         except:
             pass
 
     #========= Retrieve a7 Downstreams and Upstreams
-
         if str(show_neighbours)=='True':
 
             layout.SetPos(pa, (0,0) )
@@ -463,7 +290,6 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
                 a_name           = A7_infos_us['a_name'] 
                 pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
 
-
             if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
                 if type_layout == 'Layout':
                     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
@@ -471,7 +297,8 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
                     pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
     #========= set position layout.a7 Upstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
+
     #========= select a7 Downstreams  for positioning
     if organize_Downstreams == 'True':
         assetClips = []
@@ -484,13 +311,12 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
     #========= set position clip.a7 Downstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
 
     #======================================================================
     #========= add, set position .a7 timing,casting,stereo, stereo_session
     #======================================================================
-    __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask,type_layout)
-
+    __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
 
     #======================================================================
     # SAVE LAYOUT GRAPH
@@ -499,12 +325,6 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
     if str(SaveGraph) == 'False' :
         print 'You can Save ' , GraphName, 'in ', pathGraphSave
     if str(SaveGraph) == 'True' :
-        # todo to understand
-        # __PIPEIN_GRAPH.SaveGraph(pathGraphSave)
-        # print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
-
-
-
         protoGraph.Write(pathGraphSave, comment='', private=False)
         if os.path.isfile(pathGraphSave):
             print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
@@ -530,7 +350,7 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ''' 
     | /
-    | \ Tool - Last update 23-03-2016
+    | \ Tool - Last update 24-03-2016
     ----------------------------------------------------------------------
       - Organize and Save Graph(s) 
       
@@ -543,28 +363,11 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ----------------------------------------------------------------------
     '''
 
-    # MODIFIABLE #########################################################
-    # Nask relative with Layout.a7
-    X_move_nask         =  0
-    Y_move_nask         = -1.5
-    ecart_nask          =  3
-    # for debug or tests
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/toto.inkGraph'
-
-    # DONT TOUCH #########################################################
-    myShot              = None
-    mySeq            = None
-
-    layA7Pos_X          = None
-    layA7Pos_Y          = None
-    # ecart               = int(graphs.__GetArgStr(int(x_ecart)))
-    ecart               = 2
-    ecartClip_Y         = 1
-
     #==============================================================================================================
-    __ORGANIZER = __ORGANIZER__() # local class for oranize .a7
+    __ORGANIZER = __ORGANIZER__() # local class for organize .a7
     #==============================================================================================================
 
+    #=========
     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
     layout      = protoGraph.GetLayout()
     selection   = protoGraph.GetSelection()
@@ -583,15 +386,12 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
     n = 0
     for pa in assetList:
-
         n += 1
-
         #========= List of A7 that will be saved in new Graph
         assetList_forGraphtoSave = []
 
         #=========
         protoGraphName = 'GRAPHNAME_'+str(n)
-        graphPathLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph' # for debug
 
         protoGraph.SetSelection([pa])
         protoGraph.Show()
@@ -620,7 +420,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
             myShot    = result[3]
             mySHOT    = result[4]
             myCat     = 'None'
-
         except:
             __PIPEIN_GRAPH.getA7_infos(pa,True)
             __PIPEIN_GRAPH.getGraph_infos(pa,True)
@@ -628,23 +427,19 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         #========= determine cases
         try:
-
             result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
             mySHOT           = result[3]
-
             if mySHOT == 'None':
                 print 'myShot == None !'
-
         except:
             pass
 
         #======================================================================
         #========= Retrieve Downstreams
         #======================================================================
-
         if str(type_layout) == 'Usecase' or str(type_layout) == 'Anim':
             FiltersDownstreams = {'family': ['.*'] , 'type': ['Anim','Clip']} 
         if str(type_layout) == 'Previz' or str(type_layout) == 'Layout':
@@ -662,7 +457,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         # re order list , by path Name and not InK object logical
         assetClips = sorted(assetClipsByName, reverse=True)
         #========= set position clip.a7 Downstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
         #========= Retrieve Upstreams
@@ -676,7 +471,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         for us in UpStreamProtoList:
             assetClips.append(us)
         #========= set position layout.a7 Upstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_X,layA7Pos_Y,ecart,ecartClip_Y)
+        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
         ##========= retrieve information for path if USECASE
@@ -698,12 +493,12 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #======================================================================
         #========= add EDIT a7s 
         #======================================================================
-        assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask,type_layout)
+        assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
 
         #======================================================================
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
-        assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,ecart_nask)
+        assetListEditPos = __ORGANIZER.moveEditA7s(__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y)
 
         #========= add EDIT a7 in assetList for Graph to Save
         protoGraph.SelectAll()
@@ -728,8 +523,6 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #======================================================================
         # SAVE LAYOUT GRAPH
         #======================================================================
-
-        # pathGraphSave = graphPathLocal
         if str(SaveGraph) == 'False':
             print pathGraphSave , 'ready to be saved ...'
         if str(SaveGraph) == 'True': 
