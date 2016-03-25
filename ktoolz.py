@@ -557,7 +557,7 @@ AK01_MULTIGRAPH_Organizer.__paramsType__        = {
 
 
 
-def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
+def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='False',cat='MAIN',_cat=None):
     ''' 
     | /
     | \ Tool - Last update 15-03-2016
@@ -673,6 +673,14 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='T
     
     # End Functions ################################################################################################  
 
+
+    #======================================================================
+    #========= Declare protograph
+    #======================================================================
+    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
+
+
     #======================================================================
     #========= Add Get Ref A7
     #======================================================================
@@ -754,13 +762,13 @@ AK02_LAYOUT_BuildCameraModel.__textColor__          = '#6699ff'
 AK02_LAYOUT_BuildCameraModel.__paramsType__         = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
-'save_private'            :  ( 'bool', 'True' , ['True', 'False']  ),
+'save_private'            :  ( 'bool', 'False' , ['True', 'False']  ),
 'cat'                     :  ( 'enum', 'MAIN',['MAIN', 'SECONDARY', 'TERTIARY'] )
 }
 
 
 
-def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='True',cat='MAIN',_cat=None):
+def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='False',cat='MAIN',_cat=None):
     ''' 
     | /
     | \ Tool - Last update 15-03-2016
@@ -895,8 +903,14 @@ def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='Tr
 
         return StreamProtoList
 
-    #============================================================================================================== end functions
+    # End Functions ################################################################################################  
 
+
+    #======================================================================
+    #========= Declare protograph
+    #======================================================================
+    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
 
     #======================================================================
     #========= Add Get Ref A7
@@ -1004,7 +1018,7 @@ AK03_LAYOUT_BuildHumanShape.__textColor__         = '#6699ff'
 AK03_LAYOUT_BuildHumanShape.__paramsType__        = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
-'save_private'            :  ( 'bool', 'True' , ['True', 'False']  ),
+'save_private'            :  ( 'bool', 'False' , ['True', 'False']  ),
 'cat'                     :  ( 'enum', 'MAIN',['MAIN', 'SECONDARY', 'TERTIARY'] )
 }
 
