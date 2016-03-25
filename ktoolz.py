@@ -280,11 +280,16 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
 
     #========= select a7 Upstreams for positioning
+        check_actor_ok = str(mySeq)+'-Actor-Ok'
         assetClips = []
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
         for us in UpStreamProtoList:
             assetClips.append(us)
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(mySeq).upper() in str(us).upper():
+                A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
+                a_catFamily      = A7_infos_us['a_catFamily']
+                a_name           = A7_infos_us['a_name']                
+            if type_layout == 'Usecase' and check_actor_ok.upper() in str(us).upper():                  
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
                 a_name           = A7_infos_us['a_name'] 
@@ -474,11 +479,16 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
-        ##========= retrieve information for path if USECASE
+        #========= retrieve information for path if USECASE
         #======================================================================
+        check_actor_ok = str(mySeq)+'-Actor-Ok'
         if str(type_layout) == 'Usecase':
             for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(mySeq).upper() in str(a7).upper():
+                    A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
+                    a_catFamily      = A7_infos['a_catFamily']
+                    a_name           = A7_infos['a_name']                
+                if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():                  
                     A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
                     a_catFamily      = A7_infos['a_catFamily']
                     a_name           = A7_infos['a_name'] 
