@@ -262,7 +262,11 @@ K02_UI_CONSTRUCT.__paramsType__       = {
    
 }
 
-#=========================================================================================================================== Require FOR QT SAMPLE
+
+
+#===========================================================================================================================  QT UI external
+
+#=========== Require FOR QT SAMPLE
 
 import sys, ink.proto
 path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
@@ -273,7 +277,7 @@ if 'sandboxqt' in sys.modules:
 else:
     import sandboxqt
 
-#===========================================================================================================================  QT UI external
+#=========== 
 
 def K03_UI_CONSTRUCT_QT():
     ''' 
@@ -290,6 +294,39 @@ K03_UI_CONSTRUCT_QT.__category__         = 'C - UI'
 K03_UI_CONSTRUCT_QT.__author__           = 'cpottier'
 K03_UI_CONSTRUCT_QT.__textColor__        = '#7cfcaa'
 K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxqt'
+
+
+
+
+#=========================================================================================================================== Require FOR MYTOOLz
+
+import sys, ink.proto
+path_modules = '/u/cpottier/Public/Sandbox/MYTOOLz'
+sys.path.append(path_modules)
+if 'karlovaboardzator' in sys.modules:
+    del(sys.modules["karlovaboardzator"])
+    import karlovaboardzator
+else:
+    import karlovaboardzator
+
+
+def AA00_MYTOOLZ():
+    ''' 
+    TOOLz 4 Von KARLOVA
+    '''
+
+    return None
+
+#=========================== UI
+AA00_MYTOOLZ.__category__         = 'A - A'
+AA00_MYTOOLZ.__author__           = 'cpottier'
+AA00_MYTOOLZ.__textColor__        = '#7cfcaa'
+AA00_MYTOOLZ.__customTool__       = 'karlovaboardzator'
+
+
+
+
+
 
 
 
@@ -1428,11 +1465,16 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
 
     #========= select a7 Upstreams for positioning
+        check_actor_ok = str(mySeq)+'-Actor-Ok'
         assetClips = []
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
         for us in UpStreamProtoList:
             assetClips.append(us)
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(mySeq).upper() in str(us).upper():
+                A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
+                a_catFamily      = A7_infos_us['a_catFamily']
+                a_name           = A7_infos_us['a_name']                
+            if type_layout == 'Usecase' and check_actor_ok.upper() in str(us).upper():                  
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
                 a_name           = A7_infos_us['a_name'] 
@@ -1645,11 +1687,16 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #======================================================================
-        ##========= retrieve information for path if USECASE
+        #========= retrieve information for path if USECASE
         #======================================================================
+        check_actor_ok = str(mySeq)+'-Actor-Ok'
         if str(type_layout) == 'Usecase':
             for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(mySeq).upper() in str(a7).upper():
+                    A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
+                    a_catFamily      = A7_infos['a_catFamily']
+                    a_name           = A7_infos['a_name']                
+                if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():                  
                     A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
                     a_catFamily      = A7_infos['a_catFamily']
                     a_name           = A7_infos['a_name'] 
