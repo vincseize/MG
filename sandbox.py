@@ -197,6 +197,32 @@ class __ORGANIZER__():
         protoGraph.SelectAll()
 
 
+
+    def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower):
+        ''' retrieve information for path if USECASE or specials cases '''
+           
+        if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():                  
+            A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
+            a_catFamily      = A7_infos['a_catFamily']
+            a_name           = A7_infos['a_name'] 
+            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
+            print pathGraphSave
+
+        if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
+            if type_layout == 'Layout':
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
+            if type_layout == 'Anim':
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+        try:
+            return pathGraphSave
+        except:
+            pass
+
+
+#===========================================================================================================================  end Classes
+
+
+
 #===========================================================================================================================  PART 1 , UI LOGICAL
 
   # BASICS
@@ -1173,204 +1199,16 @@ K82_DATABASE_sqlLite_update.__paramsType__        = {
     'task'        :  ( 'str' , 'Taskarin de Taskaron')
 }
 
-#================================================================================================================ end  K82_DATABASE_sqlLite_update
+#==================================================================================================================== end  K82_DATABASE_sqlLite_update
 
 
 
 
 
 
+#========================================================================================================================================  FIN GOODIES
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#=================================================================================================================================  FIN GOODIES
-
-
-
-
-
-
-
-
-#=================================================================================================================================  PIPE IN TOOLZ
-
-def AK00_SETS_AddScout(save_after='True'): 
-    ''' 
-    | /
-    | \ Tool - Last update 05-02-2016
-      ----------------------------------------------------------------------
-      AJOUTE 'Scout.a7' AU DECOR
-      ----------------------------------------------------------------------
-
-      - please GRAB Shading.a7
-    '''
-
-    # absolute
-    X_move_naskAbs = -21 
-    Y_move_naskAbs = -7
-
-    # relative with Paint-map
-    X_move_nask = 0
-    Y_move_nask = -3
-
-    error0 = 'GRABBER OU LOCKER L\'A7  and run again !!!'
-
-    paintMaps = 'LIB/MATERIALS/Paint/Maps/Paint-Maps.a7'
-
-    #======================================================================
-    #========= Add XNAMEX-Shading.a7 -> XXX-Shading_Shots_Scout.a7
-    #======================================================================
-
-    graph = ink.proto.Graph( graphs.DEFAULT )
-    layout = graph.GetLayout()
-    selection     = graph.GetSelection( nomen.Filter().SetTypes(['Shading']).SetStage('') )
-    if not selection:
-        raise Exception('Please select at least XNAMEX-Shading.a7 asset !')
-
-    for pa in selection: # pa is the original selected asset Shading
-        # Get info Optional
-        nm_path       = pa.GetPath()
-        nm_asset      = pa.GetNomen()     
-        a_libname     = nm_asset.GetLib()
-        a_name        = nm_asset.GetName()      
-        a_family      = nm_asset.GetFamilies()
-        a_typeFamily  = nm_asset.GetFamilies()[0] # cf SET
-        a_catFamily   = nm_asset.GetFamilies()[1] # 
-        a_var         = nm_asset.GetVar() # PROJECT cf GRINCH
-        a_types       = nm_asset.GetTypes()
-        a_lod         = nm_asset.GetLod()
-        a_version     = nm_asset.GetVersion() 
-        # print '----- a7 in first selection'
-        # print pa
-        # print nm_path,nm_asset
-        # print a_libname,a_name,a_family,a_typeFamily,a_catFamily,a_var,a_types,a_lod,a_version
-
-    #======================================================================
-    #========= get shading pos for Offset between or grap and loaded graph # a test
-    #======================================================================
-
-        # layout.LoadGraphPos([pa])
-        # shadingOrPos = layout.GetPoint([pa], direction='M') # todo, to understand M, B, T options
-        # print shadingOrPos
-  
-    #======================================================================
-    #========= get .ink path and create new protograph
-    #======================================================================
-
-        pathGraphLocal = '/u/'+projectLower+'/Users/'+CONNECT_USER1+'/Presets/Graphs/'+a_name+'.inkGraph'
-        pathGraph = '/u/'+PROJECT+'/Users/COM/Presets/Graphs/SHADING/'+a_typeFamily+'/'+a_catFamily+'/'+a_name+'.inkGraph'
-        protoGraph = ink.proto.Graph( pathGraph, load=True, private=False )
-        layout = protoGraph.GetLayout()
-
-    #======================================================================
-    #========= check if selection locked
-    #======================================================================
-
-        A7IsLock = ink.query.Asset(nm_asset).GetLockInfos()[0]
-        if A7IsLock is False :
-            print '############################################################################'
-            print error0
-            print '############################################################################'
-            raise Exception( error0 )
-
-    #======================================================================
-    #========= a_name-Shading.a7-> a_name-Shading_Shots_Scout.a7
-    #======================================================================
-      
-        Scout = nomen.Nomen.NewLib( lib='LIB', name=a_name, family=a_family, types=['Shading','Shots','Scout'], stage='' )
-        ScoutProto = protoGraph.Add(Scout, execAction='', editAction='View/ViewShotsOfAsset')
-        ScoutProto.AddFile('csv') # un fichier msg minimal est a associer obligatoirement
-        ScoutProto.AddFile('rv')
-
-        protoGraph.Apply()
-        protoGraph.Show()
-
-        gg = protoGraph.List()
-        XNAMEX_shading = None
-        check = 'LIB/SETS/'+a_catFamily+'/'+a_name+'/Shading/'+a_name+'-Shading.a7';
-
-        for g in gg:
-            ref = g
-            if str(g) == check:
-                XNAMEX_shading = g
-    #======================================================================
-    #========= add link and set Include attribute to NO
-    #======================================================================
-                protoGraph.AddLink( ScoutProto, XNAMEX_shading, ink.proto.LINK_DEP , ctxParams={ 'Include':'No' })
-    #======================================================================
-    #========= get Paint-Maps a7 position
-    #======================================================================
-            if str(g) == paintMaps:
-                ref = g
-                layout.LoadGraphPos([g])
-                paintMapsPos = layout.GetPoint([g], direction='M') # todo, to understand M, B, T options
-                paintMaps_X = paintMapsPos[0]
-                paintMaps_Y = paintMapsPos[1]
-                # print 'Paint-Maps.a7 position :' , paintMapsPos
-    #======================================================================
-    #========= move for friendly user layout
-    #======================================================================
-    # layout.SetPos(ScoutProto, (X_move_naskAbs, Y_move_naskAbs) )
-    layout.SetPos(ScoutProto, (paintMaps_X+X_move_nask, paintMaps_Y+Y_move_nask) )
-    #======================================================================
-    #========= Apply Clean and save Graph
-    #======================================================================
-
-    protoGraph.Show()
-    protoGraph.Apply()
-    protoGraph.SelectAll()
-
-    print 'SCOUT ADDED'
-    if save_after == 'True':
-        # protoGraph.Write(pathGraphLocal, comment='', private=False)
-        print 'GRAPH SAVED !'
-    else :
-        print 'YOU CAN SAVE THIS GRAPH NOW !!!'     
-
-
-#=========================== UI
-
-AK00_SETS_AddScout.__category__          = 'A - PIPE-IN TOOLZ'
-AK00_SETS_AddScout.__author__            = 'cpottier'
-AK00_SETS_AddScout.__textColor__         = '#6699ff'
-AK00_SETS_AddScout.__paramsType__        = {
-'save_after'            :  ( 'bool', 'True' , ['True', 'False']  )    
-
-}
 
 
 #================================================================================================================================ AK01_GRAPH_Organizer
@@ -1427,7 +1265,9 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         mySeq     = result[2]
         myShot    = result[3]
         mySHOT    = result[4]
+
         myCat     = 'None'
+        check_actor_ok = str(mySeq)+'-Actor-Ok'
 
         #========= determine cases
         try:
@@ -1465,26 +1305,21 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
 
     #========= select a7 Upstreams for positioning
-        check_actor_ok = str(mySeq)+'-Actor-Ok'
         assetClips = []
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
+
+
+
         for us in UpStreamProtoList:
             assetClips.append(us)
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(mySeq).upper() in str(us).upper():
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
-                a_name           = A7_infos_us['a_name']                
-            if type_layout == 'Usecase' and check_actor_ok.upper() in str(us).upper():                  
-                A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
-                a_catFamily      = A7_infos_us['a_catFamily']
-                a_name           = A7_infos_us['a_name'] 
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
-
-            if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
-                if type_layout == 'Layout':
-                    pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
-                if type_layout == 'Anim':
-                    pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+                a_name           = A7_infos_us['a_name']   
+        #========= retrieve information for path if USECASE or specials cases 
+            result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
+            if result != None:
+                pathGraphSave = result                   
 
     #========= set position layout.a7 Upstreams
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
@@ -1631,7 +1466,10 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
             mySeq     = result[2]
             myShot    = result[3]
             mySHOT    = result[4]
+
             myCat     = 'None'
+            check_actor_ok = str(mySeq)+'-Actor-Ok'
+
         except:
             __PIPEIN_GRAPH.getA7_infos(pa,True)
             __PIPEIN_GRAPH.getGraph_infos(pa,True)
@@ -1686,29 +1524,19 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= set position layout.a7 Upstreams
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
-        #======================================================================
-        #========= retrieve information for path if USECASE
-        #======================================================================
-        check_actor_ok = str(mySeq)+'-Actor-Ok'
+       
         if str(type_layout) == 'Usecase':
             for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(mySeq).upper() in str(a7).upper():
                     A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
                     a_catFamily      = A7_infos['a_catFamily']
-                    a_name           = A7_infos['a_name']                
-                if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():                  
-                    A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
-                    a_catFamily      = A7_infos['a_catFamily']
-                    a_name           = A7_infos['a_name'] 
-                    pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
- 
-        if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
-            if type_layout == 'Layout':
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
-            if type_layout == 'Anim':
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+                    a_name           = A7_infos['a_name']   
+        #========= retrieve information for path if USECASE or specials cases 
+                result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
+                if result != None:
+                    pathGraphSave = result   
 
-        #======================================================================
+        # #======================================================================
         #========= add EDIT a7s 
         #======================================================================
         assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
