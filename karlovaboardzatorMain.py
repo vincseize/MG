@@ -23,32 +23,14 @@ class __QT_KBZ__(QtGui.QDialog):
 	def __init__(self, parent = None): #
 		super(__QT_KBZ__, self).__init__(parent) 
 
-		#######################################
-		# Globals
-		#######################################
-		CURENT_USER 			= os.getenv('USER')
-		CURENT_PROJECT_lower 	= ink.io.ConnectUserInfo()[2]		
-		CURENT_PROJECT 			= CURENT_PROJECT_lower.upper()
-		# print >> sys.__stderr__, CURENT_USER
-		# print >> sys.__stderr__, CURENT_PROJECT
-
-
-
-		# #######################################
-		# # Tabs Widget as Menu
-		# #######################################
-		# self.tabArea = QtGui.QtabWidget()
-		# self.tabArea.setTabPosition(QtGui.QtabWidget.North)
-		# # self.tabArea.setTabPosition(QtGui.QtabWidget.West)
-		# # self.setWidget(self.tabArea)
-		# self.layout.addWidget(self.tabArea)
-
-		# #######################################
-		# # Tabs
-		# #######################################
-
-
-
+	#======================================================================
+	#========= Globals
+	#======================================================================
+		self.CURENT_USER 				= os.getenv('USER')
+		self.CURENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
+		self.CURENT_PROJECT 			= self.CURENT_PROJECT_lower.upper()
+		# self.printSTD(self.CURENT_USER)
+		# self.printSTD(self.CURENT_PROJECT)
 
 	#======================================================================
 	#========= main vlayout
@@ -61,13 +43,13 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContent = QtGui.QHBoxLayout()
 
 		#========= Top Bandeau content button
-		txtBt1 = 'SYNC MY SCRIPTS FROM ' + CURENT_PROJECT
+		txtBt1 = 'SYNC MY SCRIPTS FROM ' + self.CURENT_PROJECT
 		self.BT_MAIN_1 = QtGui.QPushButton(txtBt1)
 		self.BT_MAIN_1.clicked.connect(self.on_BT_MAIN_clicked)		
-		txtBt2 = 'BT2 ' + CURENT_PROJECT
+		txtBt2 = 'BT2 ' + self.CURENT_PROJECT
 		self.BT_MAIN_2 = QtGui.QPushButton(txtBt2)
 		self.BT_MAIN_2.clicked.connect(self.on_BT_MAIN_clicked)
-		txtBt3 = 'BT3 '
+		txtBt3 = 'BT3 ' + self.CURENT_PROJECT
 		self.BT_MAIN_3 = QtGui.QPushButton(txtBt3)
 		self.BT_MAIN_3.clicked.connect(self.on_BT_MAIN_clicked)
 
@@ -163,13 +145,15 @@ class __QT_KBZ__(QtGui.QDialog):
 	def closeWindows(self):
 		self.close()
 
+	def printSTD(self,msg):
+		print >> sys.__stderr__, msg
 
 
 
 def start(parent, data):
 	print >> sys.__stderr__, "__QT_KBZ__"
 	main = __QT_KBZ__(parent)
-	main.setWindowTitle('KARLOVA TOOLZ')
+	main.setWindowTitle('KARLOVA DASHBOARDZATOR | Welcome Dear ' + os.getenv('USER'))
 	main.showMaximized()
 	# sG = QtGui.QApplication.desktop().screenGeometry()
 	# w = sG.width
