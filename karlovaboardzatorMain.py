@@ -24,13 +24,25 @@ class __QT_KBZ__(QtGui.QDialog):
 		super(__QT_KBZ__, self).__init__(parent) 
 
 	#======================================================================
-	#========= Globals
+	#========= Globals Varaiables
 	#======================================================================
 		self.CURENT_USER 				= os.getenv('USER')
 		self.CURENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURENT_PROJECT 			= self.CURENT_PROJECT_lower.upper()
 		# self.printSTD(self.CURENT_USER)
 		# self.printSTD(self.CURENT_PROJECT)
+
+	#======================================================================
+	#========= Globals Colors
+	#======================================================================
+
+		# green_palette.setColor(QtGui.QPalette.WindowText,QtGui.QColor.fromHsv(120, 255, 255))
+
+		self.palette_grey = QtGui.QPalette()
+		self.palette_grey.setColor(QtGui.QPalette.Background,QtCore.Qt.gray)
+
+		self.palette_darkGrey = QtGui.QPalette()
+		self.palette_darkGrey.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(66, 66, 66))
 
 	#======================================================================
 	#========= main vlayout
@@ -123,6 +135,7 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 		self.centralWidget = QtGui.QWidget()
 		self.setLayout(self.mainLayout)
+		self.setPalette(self.palette_darkGrey)
 
 
 
