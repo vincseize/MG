@@ -12,6 +12,7 @@
 import sys, ink.proto
 path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 sys.path.append(path_modules)
+
 if '__InK__connect' in sys.modules:
     del(sys.modules["__InK__connect"])
     import __InK__connect
@@ -57,7 +58,6 @@ class __ORGANIZER__():
         protoGraph.SelectAll()
 
 
-    # def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y,X_move_nask,Y_move_nask,X_ecart_nask):
     def moveEditA7s(self,__PIPEIN_GRAPH,protoGraph,assetListEdit,layA7Pos_X,layA7Pos_Y):
         '''   '''
 
@@ -206,7 +206,6 @@ class __ORGANIZER__():
             a_catFamily      = A7_infos['a_catFamily']
             a_name           = A7_infos['a_name'] 
             pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
-            print pathGraphSave
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
@@ -220,6 +219,11 @@ class __ORGANIZER__():
 
 
 #===========================================================================================================================  end Classes
+
+
+
+
+
 
 
 
@@ -324,30 +328,37 @@ K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxqt'
 
 
 
-#=========================================================================================================================== Require FOR MYTOOLz
 
-import sys, ink.proto
-path_modules = '/u/cpottier/Public/Sandbox/MYTOOLz'
-sys.path.append(path_modules)
-if 'karlovaboardzator' in sys.modules:
-    del(sys.modules["karlovaboardzator"])
-    import karlovaboardzator
+
+# if 'karlovaboardzator' in sys.modules:
+#     del(sys.modules["karlovaboardzator"])
+#     import karlovaboardzator
+# else:
+#     import karlovaboardzator
+
+
+if 'karlovaboardzatorMain' in sys.modules:
+    del(sys.modules["karlovaboardzatorMain"])
+    import karlovaboardzatorMain
 else:
-    import karlovaboardzator
+    import karlovaboardzatorMain
+
 
 
 def AA00_MYTOOLZ():
-    ''' 
-    TOOLz 4 Von KARLOVA
-    '''
+    ''' TOOLz 4 Von KARLOVA '''
 
     return None
 
 #=========================== UI
+
 AA00_MYTOOLZ.__category__         = 'A - A'
 AA00_MYTOOLZ.__author__           = 'cpottier'
 AA00_MYTOOLZ.__textColor__        = '#7cfcaa'
-AA00_MYTOOLZ.__customTool__       = 'karlovaboardzator'
+# AA00_MYTOOLZ.__customTool__       = 'karlovaboardzator'
+AA00_MYTOOLZ.__customTool__       = 'karlovaboardzatorMain'
+
+
 
 
 
@@ -1308,15 +1319,15 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
         assetClips = []
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
 
-
-
+    #========= get infos
         for us in UpStreamProtoList:
             assetClips.append(us)
             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(mySeq).upper() in str(us).upper():
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
                 a_name           = A7_infos_us['a_name']   
-        #========= retrieve information for path if USECASE or specials cases 
+
+    #========= retrieve information for path if USECASE or specials cases 
             result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
             if result != None:
                 pathGraphSave = result                   
@@ -1461,7 +1472,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         #========= retrieve graphname
         try:
-            result = __PIPEIN_GRAPH.getGraph_infos(pa,True) # return  myNomen, myFilm, mySeq, myShot, myCat
+            result = __PIPEIN_GRAPH.getGraph_infos(pa,False) # return  myNomen, myFilm, mySeq, myShot, myCat
             myFilm    = result[1] # = PROJECT in fact
             mySeq     = result[2]
             myShot    = result[3]
@@ -1524,7 +1535,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= set position layout.a7 Upstreams
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
-       
+        #========= get infos
         if str(type_layout) == 'Usecase':
             for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(mySeq).upper() in str(a7).upper():
