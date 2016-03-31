@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 28-03-2016                                                                #
+# Date : 31-03-2016                                                                #
 # ##################################################################################
 
 
@@ -98,10 +98,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_1'))		
 		txtBt = 'BT2 ' + self.CURENT_PROJECT
 		self.BT_MAIN_2 = QtGui.QPushButton(txtBt)
-		self.BT_MAIN_2.clicked.connect(self.on_BT_MAIN_clicked)
+		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_2'))
 		txtBt = 'BT3 ' + self.CURENT_PROJECT
 		self.BT_MAIN_3 = QtGui.QPushButton(txtBt)
-		self.BT_MAIN_3.clicked.connect(self.on_BT_MAIN_clicked)
+		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_3'))
 
 		#================================================== add button to Top Area content
 		self.TopAreaContent.addWidget(self.BT_MAIN_1)
@@ -152,20 +152,43 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def construct_BottomAreaContent(self):
 		'''   '''
-		#========= Top Area content
+		#========= Bottom Area content
 		self.BottomAreaContent = QtGui.QHBoxLayout()
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
-		#========= Top Area content button
+		#========= Bottom Area content Date
 		now = time.strftime("%Y/%d/%m %H:%M:%S")
 		txtLbl = now
 		self.labelBottom = QtGui.QLabel()
 		self.labelBottom.setText(txtLbl)
 
-		#================================================== add button to Top Area content
+		#================================================== add Date to Bottom Area content
 		self.BottomAreaContent.addWidget(self.labelBottom)
 
-		#========= add Area content to Top Area container
+		#========= add Area content to Bottom Area container
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
+
+
+	def construct_ScriptsListArea(self):
+		'''   '''
+		#========= List Area content
+		ScriptsAreaContainer = QtGui.QStandardItemModel()
+		self.BottomAreaContent.setObjectName("BottomAreaContent")
+		#========= List Area content ckecked		
+		for n in range(10):                   
+			item = QtGui.QStandardItem('Item toto')
+			# check = Qt.Checked if randint(0, 1) == 1 else Qt.Unchecked
+			# item.setCheckState(check)
+			# item.setCheckable(True)
+			#================================================== add ckecked to List Area content
+			ScriptsAreaContainer.appendRow(item)
+
+		#========= add Area content to Scripts content
+		self.ScriptsAreaContainer.setModel(ScriptsAreaContainer)
+
+		#========= add Area content to Scripts Area container
+		# self.ScriptsAreaContainer.setLayout(self.ScriptsAreaContainer)
+		# self.ScriptsAreaContainer.addWidget(self.ScriptsAreaContainer)
+
 
 
 
@@ -189,17 +212,14 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def on_BT_MAIN_clicked(self,BT):
 		if BT == "BT_MAIN_1":
-			self.clear_LayoutOrWidget(self.MiddleAreaContainer)
-			self.clear_LayoutOrWidget(self.BottomAreaContainer)
-		else:
-			self.MiddleAreaContainer = QtGui.QWidget()
-			self.MiddleAreaContainer.setObjectName("MiddleAreaContainer")
-			self.construct_MiddleTabsArea()
-			self.BottomAreaContainer = QtGui.QWidget()
-			self.BottomAreaContainer.setObjectName("BottomAreaContainer")
-			self.construct_BottomAreaContent()
-			self.mainLayout.addWidget(self.MiddleAreaContainer)
-			self.mainLayout.addWidget(self.BottomAreaContainer)
+			self.delete_TopAndMiddle()
+			self.Construct_MiddleScript()
+		if BT == "BT_MAIN_2":
+			self.delete_TopAndMiddle()
+			self.Construct_TopAndMiddle()
+		if BT == "BT_MAIN_3":
+			self.delete_TopAndMiddle()
+			self.Construct_TopAndMiddle()
 
 	def on_Tab1_clicked(self):
 		self.printSTD("on_Tab1_clicked")
@@ -220,6 +240,47 @@ class __QT_KBZ__(QtGui.QDialog):
 		except:
 			pass
 
+	def delete_TopAndMiddle(self):
+		try:
+			self.clear_LayoutOrWidget(self.MiddleAreaContainer)
+		except:
+			pass
+		try:
+			self.clear_LayoutOrWidget(self.BottomAreaContainer)
+		except:
+			pass
+		try:
+			self.clear_LayoutOrWidget(self.ScriptsAreaContainer)
+		except:
+			pass
+
+
+	def Construct_TopAndMiddle(self):
+		self.MiddleAreaContainer = QtGui.QWidget()
+		self.MiddleAreaContainer.setObjectName("MiddleAreaContainer")
+		self.construct_MiddleTabsArea()
+		self.BottomAreaContainer = QtGui.QWidget()
+		self.BottomAreaContainer.setObjectName("BottomAreaContainer")
+		self.construct_BottomAreaContent()
+		self.mainLayout.addWidget(self.MiddleAreaContainer)
+		self.mainLayout.addWidget(self.BottomAreaContainer)
+
+	def Construct_MiddleScript(self):
+		#========= Scripts Area container
+		self.ScriptsAreaContainer = QtGui.QListView()
+		self.ScriptsAreaContainer.setObjectName("ScriptsAreaContainer")
+
+		# self.ScriptsAreaContainer = QtGui.QVBoxLayout()
+		# self.ScriptsAreaContainer.setObjectName("ScripAreaContainer")
+		# # self.ScriptsAreaContainer.setContentsMargins(0, 0, 0, 0)
+
+		self.construct_ScriptsListArea()
+		self.BottomAreaContainer = QtGui.QWidget()
+		self.BottomAreaContainer.setObjectName("BottomAreaContainer")
+		self.construct_BottomAreaContent()
+		# self.mainLayout.addWidget(self.ScriptsAreaContainer)
+		self.mainLayout.addWidget(self.ScriptsAreaContainer)
+		self.mainLayout.addWidget(self.BottomAreaContainer)
 
 	#===================================================================================================================================
 	#========= StyleSheets
