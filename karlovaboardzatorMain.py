@@ -83,7 +83,7 @@ class __QT_KBZ__(QtGui.QDialog):
 	#===================================================================================================================================
 
 	#======================================================================
-	#========= Areas Constructions Functions
+	#========= UI Areas Constructions Functions
 	#======================================================================
 
 	def construct_TopAreaContent(self):
@@ -127,7 +127,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.Tab1 = QtGui.QTreeWidget()
 		self.MiddleTabsArea.addTab(self.Tab1, "Arbo")
 		# self.connect(self.Tab1, QtCore.SIGNAL("itemDoubleClicked (QTreeWidgetItem *,int)"), self.on_Tab1_double_clicked)
-		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_Tab1_clicked)
+		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
 
 		self.Tab1.setAnimated(True)
 		self.Tab1.setRootIsDecorated(True)
@@ -174,21 +174,16 @@ class __QT_KBZ__(QtGui.QDialog):
 		ScriptsAreaContainer = QtGui.QStandardItemModel()
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
 		#========= List Area content ckecked		
-		for n in range(10):                   
-			item = QtGui.QStandardItem('Item toto')
-			# check = Qt.Checked if randint(0, 1) == 1 else Qt.Unchecked
-			# item.setCheckState(check)
-			# item.setCheckable(True)
+		dirs = self.list_Scripts()
+		for script in dirs:                 
+			item = QtGui.QStandardItem(script)
+			item.setCheckable(True)
+			status_checked = QtCore.Qt.Unchecked
+			item.setCheckState(status_checked)
 			#================================================== add ckecked to List Area content
 			ScriptsAreaContainer.appendRow(item)
-
 		#========= add Area content to Scripts content
 		self.ScriptsAreaContainer.setModel(ScriptsAreaContainer)
-
-		#========= add Area content to Scripts Area container
-		# self.ScriptsAreaContainer.setLayout(self.ScriptsAreaContainer)
-		# self.ScriptsAreaContainer.addWidget(self.ScriptsAreaContainer)
-
 
 
 
@@ -207,7 +202,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 	#======================================================================
-	#========= Buttons Functions
+	#========= UI Buttons Functions
 	#======================================================================
 
 	def on_BT_MAIN_clicked(self,BT):
@@ -221,14 +216,11 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.delete_TopAndMiddle()
 			self.Construct_TopAndMiddle()
 
-	def on_Tab1_clicked(self):
-		self.printSTD("on_Tab1_clicked")
+	def on_TAB_clicked(self):
+		self.printSTD("on_TAB_clicked")
 
 	def closeWindows(self):
 		self.close()
-
-	def printSTD(self,msg):
-		print >> sys.__stderr__, msg
 
 	def clear_LayoutOrWidget(self, LW):
 		try:
@@ -281,6 +273,20 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.mainLayout.addWidget(self.ScriptsAreaContainer)
 		self.mainLayout.addWidget(self.ScriptsAreaContainer)
 		self.mainLayout.addWidget(self.BottomAreaContainer)
+
+
+
+	#======================================================================
+	#========= Others Functions
+	#======================================================================
+
+	def list_Scripts(self):
+		path = '/u/'+self.CURENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+		dirs = os.listdir(path)
+		return dirs
+
+	def printSTD(self,msg):
+		print >> sys.__stderr__, msg
 
 	#===================================================================================================================================
 	#========= StyleSheets
