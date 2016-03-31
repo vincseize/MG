@@ -17,6 +17,7 @@ from PyQt4 import QtGui, QtCore, Qt
 import ink
 import ink.io
 import time
+import json
 
 
 class __QT_KBZ__(QtGui.QDialog):
@@ -27,9 +28,14 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 	#========= Globals Varaiables
 	#======================================================================
-		self.CURENT_USER 				= os.getenv('USER')
-		self.CURENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
-		self.CURENT_PROJECT 			= self.CURENT_PROJECT_lower.upper()
+		self.CURRENT_USER 				= os.getenv('USER')
+		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
+		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
+		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
+		# check if exist and not vide to do
+		self.MYPREFSJSON				= {}
+		self.MYPREFSJSON["scripts"]		= []
 
 	#======================================================================
 	#========= main vlayout
@@ -93,13 +99,13 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContent.setObjectName("TopAreaContent")
 
 		#========= Top Area content button
-		txtBt = 'SYNC MY SCRIPTS FROM ' + self.CURENT_PROJECT
+		txtBt = 'SYNC MY SCRIPTS FROM ' + self.CURRENT_PROJECT
 		self.BT_MAIN_1 = QtGui.QPushButton(txtBt)
 		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_1'))		
-		txtBt = 'BT2 ' + self.CURENT_PROJECT
+		txtBt = 'BT2 ' + self.CURRENT_PROJECT
 		self.BT_MAIN_2 = QtGui.QPushButton(txtBt)
 		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_2'))
-		txtBt = 'BT3 ' + self.CURENT_PROJECT
+		txtBt = 'BT3 ' + self.CURRENT_PROJECT
 		self.BT_MAIN_3 = QtGui.QPushButton(txtBt)
 		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_3'))
 
@@ -171,35 +177,33 @@ class __QT_KBZ__(QtGui.QDialog):
 	def construct_ScriptsListArea(self):
 		'''   '''
 		#========= List Area content
-		ScriptsAreaContainer = QtGui.QStandardItemModel()
-		self.BottomAreaContent.setObjectName("BottomAreaContent")
+		self.ScriptsAreaContent = QtGui.QStandardItemModel()
+		self.BottomAreaContent.setObjectName("ScriptsAreaContent")
 		#========= List Area content ckecked		
 		dirs = self.list_Scripts()
-		for script in dirs:                 
-			item = QtGui.QStandardItem(script)
-			item.setCheckable(True)
-			status_checked = QtCore.Qt.Unchecked
-			item.setCheckState(status_checked)
-			#================================================== add ckecked to List Area content
-			ScriptsAreaContainer.appendRow(item)
+		for script in dirs:
+			if '.pyc' not in str(script) and '.py~' not in str(script) and '__init__.py' not in str(script) and '_kbz.json' not in str(script):
+				
+				# myPrefs["scripts"].append(script)
+
+				item = QtGui.QStandardItem(script)
+				item.setCheckable(True)
+				status_checked = QtCore.Qt.Unchecked
+				item.setCheckState(status_checked)
+
+
+				# # item.emit(QtCore.SIGNAL("self.populate_prefs('scripts')"))
+				# item.itemChanged.connect(self.populate_prefs)
+
+
+				#================================================== add ckecked to List Area content
+				self.ScriptsAreaContent.appendRow(item)
 		#========= add Area content to Scripts content
-		self.ScriptsAreaContainer.setModel(ScriptsAreaContainer)
+		self.ScriptsAreaContainer.setModel(self.ScriptsAreaContent)
 
-
-
-	# def construct_scrollLayout(self):
-	# 	#========= scroll area widget contents - layout
-	# 	self.scrollLayout = QtGui.QFormLayout()
-
-	# 	#========= scroll area widget contents
-	# 	self.scrollWidget = QtGui.QWidget()
-	# 	self.scrollWidget.setLayout(self.scrollLayout)
-
-	# 	#========= scroll area
-	# 	self.scrollArea = QtGui.QScrollArea()
-	# 	self.scrollArea.setWidgetResizable(True)
-	# 	self.scrollArea.setWidget(self.scrollWidget)
-
+		#========= item connect fct
+		# self.connect(self.ScriptsAreaContent, QtCore.SIGNAL("itemClicked (QStandardItem *,int)"), self.populate_prefs)
+		self.ScriptsAreaContent.itemChanged.connect(self.populate_prefs_scripts)
 
 	#======================================================================
 	#========= UI Buttons Functions
@@ -274,16 +278,24 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.mainLayout.addWidget(self.ScriptsAreaContainer)
 		self.mainLayout.addWidget(self.BottomAreaContainer)
 
-
-
 	#======================================================================
 	#========= Others Functions
 	#======================================================================
 
 	def list_Scripts(self):
-		path = '/u/'+self.CURENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
-		dirs = os.listdir(path)
+		dirs = os.listdir(self.CURRENT_SCRIPTS_PATH)
 		return dirs
+
+	def populate_prefs_scripts(self,item):
+		# self.printSTD(item.index())
+
+		# check if checked
+		self.MYPREFSJSON["scripts"].append(item.text())
+		self.write_Prefs(self.MYPREFSJSON)
+
+	def write_Prefs(self,myPrefs):
+		with open(self.MYPREFSFILE, 'w') as outfile:
+			json.dump(myPrefs, outfile)
 
 	def printSTD(self,msg):
 		print >> sys.__stderr__, msg
@@ -298,7 +310,6 @@ class __QT_KBZ__(QtGui.QDialog):
 			# r = array_rgb[1], g=array_rgb[2], b=array_rgb[3]
 			hexColor = '#%02x%02x%02x' % (r, g, b)
 			return hexColor
-
 
 	#======================================================= Globals Colors
 
