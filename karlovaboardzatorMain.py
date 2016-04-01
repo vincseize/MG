@@ -268,7 +268,7 @@ class __QT_KBZ__(QtGui.QDialog):
 					self.printSTD(path_distant)		
 					try:
 						if os.path.isfile(path_local):
-							# copyfile(path_local, path_distant)
+							copyfile(path_local, path_distant)
 							self.printSTD('[ SYNC OK ]')
 					except:
 						self.printSTD('[ SYNC ERROR ]')
