@@ -29,9 +29,12 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= Globals Varaiables
 	#======================================================================
 		self.CURRENT_USER 				= os.getenv('USER')
+		self.ALL_PROJECTS	 			= ['gri','lun','dm3']
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
-		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+		# self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
 		self.MYPREFSJSON				= {}
 		self.MYPREFSJSON["scripts"]		= []
@@ -99,7 +102,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContent.setObjectName("TopAreaContent")
 
 		#========= Top Area content button
-		txtBt = 'SYNC MY SCRIPTS FROM ' + self.CURRENT_PROJECT
+		txtBt = 'SCRIPTS ' + self.CURRENT_PROJECT
 		self.BT_MAIN_1 = QtGui.QPushButton(txtBt)
 		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_1'))		
 		txtBt = 'BT2 ' + self.CURRENT_PROJECT
@@ -180,6 +183,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.ScriptsAreaContent = QtGui.QStandardItemModel()
 		self.BottomAreaContent.setObjectName("ScriptsAreaContent")
 		# self.ScriptsAreaContent.setAlternatingRowColors(True)
+
 		#========= List Area content ckecked
 		myChecked = []
 		myPrefs = json.load(open(self.MYPREFSFILE))
@@ -205,7 +209,6 @@ class __QT_KBZ__(QtGui.QDialog):
 				# item.setColor(allBlueAndShiny color)
 				# item.setForeground(QtGui.QColor('red')) # text color
 
-
 				#========= item Signal
 				# # item.emit(QtCore.SIGNAL("self.populate_prefs('scripts')"))
 				# item.itemChanged.connect(self.populate_prefs)
@@ -215,9 +218,15 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= add Area content to Scripts content
 		self.ScriptsAreaContainer.setModel(self.ScriptsAreaContent)
 
-		#========= items connect fct
+		#=========  bt sync
+		txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to Others Projects'
+		self.BT_SYNC_SCRIPTS = QtGui.QPushButton(txtBt)
+
+		#=========  connect fct
 		# self.connect(self.ScriptsAreaContent, QtCore.SIGNAL("itemClicked (QStandardItem *,int)"), self.populate_prefs)
 		self.ScriptsAreaContent.itemChanged.connect(self.populate_prefs_scripts)
+		self.BT_SYNC_SCRIPTS.clicked.connect(lambda : self.on_BT_SYNC_SCRIPTS_clicked(myChecked))
+
 
 	#======================================================================
 	#========= UI Buttons Functions
@@ -233,6 +242,30 @@ class __QT_KBZ__(QtGui.QDialog):
 		if BT == "BT_MAIN_3":
 			self.delete_TopAndMiddle()
 			self.Construct_TopAndMiddle()
+
+	def on_BT_SYNC_SCRIPTS_clicked(self,array_scriptToSync):
+		for ap in self.ALL_PROJECTS:
+			ap = str(ap).lower()			
+			if str(self.CURRENT_PROJECT_lower) != str(ap):
+				for s in array_scriptToSync:
+					path_local = '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
+					self.printSTD(path_local)					
+
+					self.printSTD('->')
+
+
+					path_distant = '/u/'+ap+self.PATH_EXEMPLES+'/'+s
+					self.printSTD(path_distant)		
+					self.printSTD('---')
+
+					self.printSTD('[ SYNC OK ]')
+
+
+	#======================================================================
+	#========= UI Construct Functions
+	#======================================================================
+
+
 
 	def on_TAB_clicked(self):
 		self.printSTD("on_TAB_clicked")
@@ -285,12 +318,22 @@ class __QT_KBZ__(QtGui.QDialog):
 		# # self.ScriptsAreaContainer.setContentsMargins(0, 0, 0, 0)
 
 		self.construct_ScriptsListArea()
-		self.BottomAreaContainer = QtGui.QWidget()
-		self.BottomAreaContainer.setObjectName("BottomAreaContainer")
-		self.construct_BottomAreaContent()
-		# self.mainLayout.addWidget(self.ScriptsAreaContainer)
+		# self.BottomAreaContainer = QtGui.QWidget()
+		# self.BottomAreaContainer.setObjectName("BottomAreaContainer")
+		# # self.construct_BottomAreaContent()
+		# # self.mainLayout.addWidget(self.ScriptsAreaContainer)
+
+		# self.BottomScriptAreaContainer = QtGui.QWidget()
+		# self.BottomScriptAreaContainer.setObjectName("BottomScriptAreaContainer")
+
+		# txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to Others Projects'
+		# self.BT_SYNC_SCRIPTS = QtGui.QPushButton(txtBt)
+		# self.BT_SYNC_SCRIPTS.clicked.connect(lambda : self.on_BT_SYNC_SCRIPTSclicked('array'))
+		# # self.BottomScriptAreaContainer.addWidget(self.BT_SYNC_SCRIPTS)
+
 		self.mainLayout.addWidget(self.ScriptsAreaContainer)
-		self.mainLayout.addWidget(self.BottomAreaContainer)
+		self.mainLayout.addWidget(self.BT_SYNC_SCRIPTS)
+
 
 	#======================================================================
 	#========= Others Functions
