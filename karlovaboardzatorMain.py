@@ -321,17 +321,20 @@ class __QT_KBZ__(QtGui.QDialog):
 		if checkIfExist == False:
 			self.MYPREFSJSON = myPrefs
 			self.MYPREFSJSON["scripts"].append(item.text())
-			self.write_Prefs(self.MYPREFSJSON,False)
+			# self.write_Prefs(self.MYPREFSJSON,False)
 		if checkIfExist == True:
+			self.printSTD(checkIfExist)
 			new_values = [] 
-			for v in self.MYPREFSJSON["scripts"]:
+			for v in myPrefs["scripts"]:
 				if str(v) != str(item.text()):
 					new_values.append(v)
 			self.MYPREFSJSON.pop('scripts', 0) # to do better
 			self.MYPREFSJSON["scripts"]		= []
 			for v in new_values:
-				self.MYPREFSJSON["scripts"].append(v)				
-			self.write_Prefs(self.MYPREFSJSON,False)
+				self.MYPREFSJSON["scripts"].append(v)	
+
+		# self.printSTD(self.MYPREFSJSON["scripts"])
+		self.write_Prefs(self.MYPREFSJSON,False)
 
 	def write_Prefs(self,myPrefs,isIndent=False):
 		if isIndent == False:
@@ -360,58 +363,70 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================= Globals Colors
 
 	#========= general Colors	
-
+		rvb_White = [255, 255, 255]
 		self.palette_White = QtGui.QPalette()
 		self.palette_White.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 255, 255))
 
+		rvb_Black = [0, 0, 0]
 		self.palette_Black = QtGui.QPalette()
 		self.palette_Black.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0))
 
-		self.palette_grey = QtGui.QPalette()
-		self.palette_grey.setColor(QtGui.QPalette.Background,QtCore.Qt.gray)
+		rvb_Grey = [128, 128, 128]
+		self.palette_Grey = QtGui.QPalette()
+		self.palette_Grey.setColor(QtGui.QPalette.Background,QtCore.Qt.gray)
 
-		self.palette_mediumGrey = QtGui.QPalette()
-		self.palette_mediumGrey.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(128, 128, 128))
+		rvb_hellGrey = [230, 230, 230]
+		self.palette_hellGrey = QtGui.QPalette()
+		self.palette_hellGrey.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(128, 128, 128))
 
+		rvb_darkGrey = [255, 255, 255]
 		self.palette_darkGrey = QtGui.QPalette()
 		self.palette_darkGrey.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(66, 66, 66))
 
 	#============================================ Complementary blues Colors # http://paletton.com	
 
 	#========= blues Colors
-
+		rvb_Blue1 = [97, 114, 141]
 		self.palette_Blue1 = QtGui.QPalette()
 		self.palette_Blue1.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(97, 114, 141))
 
+		rvb_Blue2 = [64, 84, 115]
 		self.palette_Blue2 = QtGui.QPalette()
 		self.palette_Blue2.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(64, 84, 115))
 
+		rvb_Blue3 = [43, 61, 91]
 		self.palette_Blue3 = QtGui.QPalette()
 		self.palette_Blue3.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(43, 61, 91))
 
+		rvb_Blue4 = [25, 44, 75]
 		self.palette_Blue4 = QtGui.QPalette()
 		self.palette_Blue4.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(25, 44, 75))
 
+		rvb_Blue5 = [10, 25, 50]
 		self.palette_Blue5 = QtGui.QPalette()
 		self.palette_Blue5.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(10, 25, 50))
 
 
 	#========= blues Colors
+		rvb_Orange1 = [255, 196, 77]
+		self.palette_Orange1 = QtGui.QPalette()
+		self.palette_Orange1.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 196, 77))
 
-		self.palette_orange1 = QtGui.QPalette()
-		self.palette_orange1.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 196, 77))
+		rvb_Orange1 = [255, 179, 27]
+		self.palette_Orange2 = QtGui.QPalette()
+		self.palette_Orange2.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 179, 27))
 
-		self.palette_orange2 = QtGui.QPalette()
-		self.palette_orange2.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 179, 27))
+		rvb_Orange1 = [255, 170, 0]
+		self.palette_Orange3 = QtGui.QPalette()
+		self.palette_Orange3.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 170, 0))
 
-		self.palette_orange3 = QtGui.QPalette()
-		self.palette_orange3.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 170, 0))
+		rvb_Orange1 = [206, 137, 0]
+		self.palette_Orange4 = QtGui.QPalette()
+		self.palette_Orange4.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(206, 137, 0))
 
-		self.palette_orange4 = QtGui.QPalette()
-		self.palette_orange4.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(206, 137, 0))
-
-		self.palette_orange5 = QtGui.QPalette()
-		self.palette_orange5.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(160, 107, 0))
+		rvb_Orange1 = [160, 107, 0]
+		self.palette_Orange5 = QtGui.QPalette()
+		self.palette_Orange5.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(160, 107, 0))
 
 		# other samples
 		# pal.setColor(QtGui.QPalette.ColorRole(9),QtGui.QColor("#4B4B4B"))
