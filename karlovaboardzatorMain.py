@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 31-03-2016                                                                #
+# Date : 01-04-2016                                                                #
 # ##################################################################################
 
 
@@ -33,10 +33,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
-		# check if exist and not vide to do
 		self.MYPREFSJSON				= {}
 		self.MYPREFSJSON["scripts"]		= []
-
+		if os.path.isfile(self.MYPREFSFILE) == False :
+			self.write_Prefs(self.MYPREFSJSON,False)
 	#======================================================================
 	#========= main vlayout
 	#======================================================================
@@ -287,15 +287,47 @@ class __QT_KBZ__(QtGui.QDialog):
 		return dirs
 
 	def populate_prefs_scripts(self,item):
-		# self.printSTD(item.index())
+		checkIfExist = False
+		#========= check if checked or already exist in list
 
-		# check if checked
-		self.MYPREFSJSON["scripts"].append(item.text())
-		self.write_Prefs(self.MYPREFSJSON)
+		#========= get json method 1
+		# with open(self.MYPREFSFILE) as json_file:
+		# 	myPrefs = json.load(json_file)
 
-	def write_Prefs(self,myPrefs):
-		with open(self.MYPREFSFILE, 'w') as outfile:
-			json.dump(myPrefs, outfile)
+		#========= get json method 2
+		# s = open(self.MYPREFSFILE, 'r').read()
+		# myPrefs = eval(s)
+
+		#========= get json method 3
+		myPrefs = json.load(open(self.MYPREFSFILE))
+		for key, value in myPrefs.items():
+			if str(key) == "scripts" and str(item.text()) in str(value) : # value is a list
+				checkIfExist = True
+
+		if checkIfExist == False:
+			self.MYPREFSJSON = myPrefs
+			self.MYPREFSJSON["scripts"].append(item.text())
+			self.write_Prefs(self.MYPREFSJSON,False)
+		if checkIfExist == True:
+			new_values = [] 
+			for v in self.MYPREFSJSON["scripts"]:
+				if str(v) != str(item.text()):
+					new_values.append(v)
+			self.MYPREFSJSON.pop('scripts', 0) # to do better
+			self.MYPREFSJSON["scripts"]		= []
+			for v in new_values:
+				self.MYPREFSJSON["scripts"].append(v)				
+			self.write_Prefs(self.MYPREFSJSON,False)
+
+	def write_Prefs(self,myPrefs,isIndent=False):
+		if isIndent == False:
+			# with open(self.MYPREFSFILE, 'w') as outfile:
+			# 	json.dump(myPrefs, outfile)
+			json.dump(myPrefs, open(self.MYPREFSFILE,'w'))
+		if isIndent == True:
+			# with open(self.MYPREFSFILE, 'w') as outfile:
+			# 	json.dump(myPrefs, outfile, indent=4)
+			file.write(dumps(self.MYPREFSFILE, file, indent=4))
 
 	def printSTD(self,msg):
 		print >> sys.__stderr__, msg
