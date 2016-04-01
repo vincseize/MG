@@ -179,7 +179,11 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= List Area content
 		self.ScriptsAreaContent = QtGui.QStandardItemModel()
 		self.BottomAreaContent.setObjectName("ScriptsAreaContent")
-		#========= List Area content ckecked		
+		#========= List Area content ckecked
+		myChecked = []
+		myPrefs = json.load(open(self.MYPREFSFILE))
+		for v in myPrefs["scripts"]:
+			myChecked.append(v)
 		dirs = self.list_Scripts()
 		for script in dirs:
 			if '.pyc' not in str(script) and '.py~' not in str(script) and '__init__.py' not in str(script) and '_kbz.json' not in str(script):
@@ -189,6 +193,8 @@ class __QT_KBZ__(QtGui.QDialog):
 				item = QtGui.QStandardItem(script)
 				item.setCheckable(True)
 				status_checked = QtCore.Qt.Unchecked
+				if str(script) in myChecked:
+					status_checked = QtCore.Qt.Checked
 				item.setCheckState(status_checked)
 
 
