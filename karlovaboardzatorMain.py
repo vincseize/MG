@@ -19,6 +19,7 @@ import ink.io
 import time
 import json
 from shutil import copyfile
+import datetime
 
 
 class __QT_KBZ__(QtGui.QDialog):
@@ -36,6 +37,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		# self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
+		self.DIR_BACKUP	 				= '_backup'		
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
 		self.MYPREFSJSON				= {}
 		self.MYPREFSJSON["scripts"]		= []
@@ -245,40 +247,54 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.Construct_TopAndMiddle()
 
 	def on_BT_SYNC_SCRIPTS_clicked(self):
+
+		now = datetime.datetime.now()
+		date = now.strftime("%Y%m%d-%H-%M-%S")
+
 		array_scriptToSync = []
 		myPrefs = json.load(open(self.MYPREFSFILE))
+
 		for v in myPrefs["scripts"]:
 			array_scriptToSync.append(v)
 
 		for ap in self.ALL_PROJECTS:
+			dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
+			if not os.path.exists(dir_distant_backup):
+				os.makedirs(dir_distant_backup)
 			APU = str(ap).upper()
-			ap = str(ap).lower()		
+			ap 	= str(ap).lower()		
 
 			if str(self.CURRENT_PROJECT_lower) != str(ap):
 				msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
 				self.printSTD(' ')
 				self.printSTD('-----------------------------------------------------------------------')
 				self.printSTD(str(msg))
-				self.printSTD(('-----------------------------------------------------------------------'))
+				self.printSTD('-----------------------------------------------------------------------')
 				for s in array_scriptToSync:
-					path_local = '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
-					path_distant = '/u/'+ap+self.PATH_EXEMPLES+'/'+s
+					filename = s.split('.')[0]
+					ext 	 = s.split('.')[1]
+					sbackup = filename+'_'+date+'.'+ext
+					path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
+					path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
+					path_distant_backup = dir_distant_backup+'/'+sbackup
 					self.printSTD(path_local)					
 					self.printSTD('->')
-					self.printSTD(path_distant)		
+					self.printSTD(path_distant)	
 					try:
 						if os.path.isfile(path_local):
+		#========= backup distant file before copy
+							if os.path.isfile(path_distant):
+								copyfile(path_distant, path_distant_backup)
+		#========= copy sync
 							copyfile(path_local, path_distant)
 							self.printSTD('[ SYNC OK ]')
 					except:
 						self.printSTD('[ SYNC ERROR ]')
 
-					# self.printSTD('--------------------------------------')
+
 	#======================================================================
 	#========= UI Construct Functions
 	#======================================================================
-
-
 
 	def on_TAB_clicked(self):
 		self.printSTD("on_TAB_clicked")
@@ -325,25 +341,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= Scripts Area container
 		self.ScriptsAreaContainer = QtGui.QListView()
 		self.ScriptsAreaContainer.setObjectName("ScriptsAreaContainer")
-
-		# self.ScriptsAreaContainer = QtGui.QVBoxLayout()
-		# self.ScriptsAreaContainer.setObjectName("ScripAreaContainer")
-		# # self.ScriptsAreaContainer.setContentsMargins(0, 0, 0, 0)
-
 		self.construct_ScriptsListArea()
-		# self.BottomAreaContainer = QtGui.QWidget()
-		# self.BottomAreaContainer.setObjectName("BottomAreaContainer")
-		# # self.construct_BottomAreaContent()
-		# # self.mainLayout.addWidget(self.ScriptsAreaContainer)
-
-		# self.BottomScriptAreaContainer = QtGui.QWidget()
-		# self.BottomScriptAreaContainer.setObjectName("BottomScriptAreaContainer")
-
-		# txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to Others Projects'
-		# self.BT_SYNC_SCRIPTS = QtGui.QPushButton(txtBt)
-		# self.BT_SYNC_SCRIPTS.clicked.connect(lambda : self.on_BT_SYNC_SCRIPTSclicked('array'))
-		# # self.BottomScriptAreaContainer.addWidget(self.BT_SYNC_SCRIPTS)
-
 		self.mainLayout.addWidget(self.ScriptsAreaContainer)
 		self.mainLayout.addWidget(self.BT_SYNC_SCRIPTS)
 
