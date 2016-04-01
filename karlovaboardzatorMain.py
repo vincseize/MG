@@ -18,6 +18,7 @@ import ink
 import ink.io
 import time
 import json
+from shutil import copyfile
 
 
 class __QT_KBZ__(QtGui.QDialog):
@@ -225,7 +226,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		#=========  connect fct
 		# self.connect(self.ScriptsAreaContent, QtCore.SIGNAL("itemClicked (QStandardItem *,int)"), self.populate_prefs)
 		self.ScriptsAreaContent.itemChanged.connect(self.populate_prefs_scripts)
-		self.BT_SYNC_SCRIPTS.clicked.connect(lambda : self.on_BT_SYNC_SCRIPTS_clicked(myChecked))
+		self.BT_SYNC_SCRIPTS.clicked.connect(self.on_BT_SYNC_SCRIPTS_clicked)
 
 
 	#======================================================================
@@ -243,24 +244,36 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.delete_TopAndMiddle()
 			self.Construct_TopAndMiddle()
 
-	def on_BT_SYNC_SCRIPTS_clicked(self,array_scriptToSync):
+	def on_BT_SYNC_SCRIPTS_clicked(self):
+		array_scriptToSync = []
+		myPrefs = json.load(open(self.MYPREFSFILE))
+		for v in myPrefs["scripts"]:
+			array_scriptToSync.append(v)
+
 		for ap in self.ALL_PROJECTS:
-			ap = str(ap).lower()			
+			APU = str(ap).upper()
+			ap = str(ap).lower()		
+
 			if str(self.CURRENT_PROJECT_lower) != str(ap):
+				msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
+				self.printSTD(' ')
+				self.printSTD('-----------------------------------------------------------------------')
+				self.printSTD(str(msg))
+				self.printSTD(('-----------------------------------------------------------------------'))
 				for s in array_scriptToSync:
 					path_local = '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
-					self.printSTD(path_local)					
-
-					self.printSTD('->')
-
-
 					path_distant = '/u/'+ap+self.PATH_EXEMPLES+'/'+s
+					self.printSTD(path_local)					
+					self.printSTD('->')
 					self.printSTD(path_distant)		
-					self.printSTD('---')
+					try:
+						if os.path.isfile(path_local):
+							# copyfile(path_local, path_distant)
+							self.printSTD('[ SYNC OK ]')
+					except:
+						self.printSTD('[ SYNC ERROR ]')
 
-					self.printSTD('[ SYNC OK ]')
-
-
+					# self.printSTD('--------------------------------------')
 	#======================================================================
 	#========= UI Construct Functions
 	#======================================================================
@@ -366,7 +379,6 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.MYPREFSJSON["scripts"].append(item.text())
 			# self.write_Prefs(self.MYPREFSJSON,False)
 		if checkIfExist == True:
-			self.printSTD(checkIfExist)
 			new_values = [] 
 			for v in myPrefs["scripts"]:
 				if str(v) != str(item.text()):
