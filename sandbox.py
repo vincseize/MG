@@ -1357,21 +1357,22 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     #======================================================================
     # SAVE LAYOUT GRAPH
     #======================================================================
-    print '\nAK01_GRAPH_Organizer is Happy :)\n'
     if str(SaveGraph) == 'False' :
-        print 'You can Save ' , GraphName, 'in ', pathGraphSave
+        if 'NONE' in str(pathGraphSave).upper():
+            print '\n\nERROR, bad path : ' + pathGraphSave
+        else:
+            print '\nAK01_GRAPH_Organizer is Happy :)\n'
+            print 'You can Save ' , GraphName, 'in ', pathGraphSave
     if str(SaveGraph) == 'True' :
-        # todo to understand
-        # __PIPEIN_GRAPH.SaveGraph(pathGraphSave)
-        # print GraphName , 'Have been saved ', 'in ', pathGraphSave, ' !!!'
-
-
-
-        protoGraph.Write(pathGraphSave, comment='', private=False)
-        if os.path.isfile(pathGraphSave):
-            print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
-        else :
-            print pathGraphSave , ' saving FAILED  !!!'
+        if 'NONE' in str(pathGraphSave).upper():
+            print '\n\nERROR, bad path : ' + pathGraphSave
+        else:
+            protoGraph.Write(pathGraphSave, comment='', private=False)
+            if os.path.isfile(pathGraphSave):
+                print '\nAK01_GRAPH_Organizer is Happy :)\n'
+                print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
+            else :
+                print pathGraphSave , ' saving FAILED  !!!'
 
 
 #=========================== UI
@@ -1580,22 +1581,30 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #======================================================================
         # SAVE LAYOUT GRAPH
         #======================================================================
-
         # pathGraphSave = graphPathLocal
         if str(SaveGraph) == 'False':
-            print pathGraphSave , 'ready to be saved ...'
+            if 'NONE' in str(pathGraphSave).upper():
+                print '\n\nERROR, bad path : ' + pathGraphSave
+            else:
+                print '\nAK01_MULTIGRAPH_Organizer is Happy :)\n'
+                print pathGraphSave , 'ready to be saved ...'
         if str(SaveGraph) == 'True': 
-            protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_forGraphtoSave) 
-            l = protoGraphS.GetLayout()                           
-            l.LoadGraphPos(assetList_forGraphtoSave)         
 
-            protoGraphS.Write(str(pathGraphSave), private=True)
+            if 'NONE' in str(pathGraphSave).upper():
+                print '\n\nERROR, bad path : ' + pathGraphSave
+            else:            
+                protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_forGraphtoSave) 
+                l = protoGraphS.GetLayout()                           
+                l.LoadGraphPos(assetList_forGraphtoSave)         
 
-            if os.path.isfile(pathGraphSave):
-                print pathGraphSave , 'Have been saved !!!'
-                pass
-            else :
-                print pathGraphSave + '\n\nSaving FAILED !!!'
+                protoGraphS.Write(str(pathGraphSave), private=True)
+
+                if os.path.isfile(pathGraphSave):
+                    print '\nAK01_MULTIGRAPH_Organizer is Happy :)\n'
+                    print pathGraphSave , 'Have been saved !!!'
+                    pass
+                else :
+                    print pathGraphSave + '\n\nSaving FAILED !!!'
 
 
 #=========================== UI
