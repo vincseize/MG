@@ -577,15 +577,17 @@ class __QT_KBZ__(QtGui.QDialog):
 							)
 
 		# #========= Back to Home  Button
-		# if self.CURRENT_PROJECT 	== 'GRI':
-		# 	self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_GRI
-		# if self.CURRENT_PROJECT 	== 'LUN':
-		# 	self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_LUN
-		# if self.CURRENT_PROJECT 	== 'DM3':
-		# 	self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_DM3
+		if self.CURRENT_PROJECT 	== 'GRI':
+			self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_GRI
+		if self.CURRENT_PROJECT 	== 'LUN':
+			self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_LUN
+		if self.CURRENT_PROJECT 	== 'DM3':
+			self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_DM3
 
-		# r = self.BT_BACK_HOME_COLOR[0], g = self.BT_BACK_HOME_COLOR[1], b = self.BT_BACK_HOME_COLOR[2]
-		# hexColor = rvbToHex(r, g, b)
+		r = self.BT_BACK_HOME_COLOR[0]
+		g = self.BT_BACK_HOME_COLOR[1]
+		b = self.BT_BACK_HOME_COLOR[2]
+		hexColor = rvbToHex(r, g, b)
 		
 		self.BT_BACK_HOME.setStyleSheet(
 								"color: white;"
