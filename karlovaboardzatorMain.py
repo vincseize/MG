@@ -14,7 +14,6 @@ import sys
 import random
 import glob
 from PyQt4 import QtGui, QtCore, Qt
-from PyQt4.QtGui import *
 import ink
 import ink.io
 import time
@@ -120,104 +119,34 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_BACK_HOME.setVisible(False)
 
 		txtBt = 'SCRIPTS ' + self.CURRENT_PROJECT
-		self.BT_MAIN_1 = QtGui.QPushButton(txtBt)
-		name = 'BT_MAIN_1'
-		self.BT_MAIN_1.setObjectName(name)
-		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked(name))
-		self.BT_MAIN_1.installEventFilter(self)
+		self.BT_HOME_SCRIPTS = QtGui.QPushButton(txtBt)
+		name1 = 'BT_HOME_SCRIPTS'
+		self.BT_HOME_SCRIPTS.setObjectName(name1)
+		# self.BT_HOME_SCRIPTS.clicked.connect(lambda : self.on_BT_MAIN_clicked(name1))
+		self.BT_HOME_SCRIPTS.installEventFilter(self)
 
 		txtBt = 'BT2 ' + self.CURRENT_PROJECT
 		self.BT_MAIN_2 = QtGui.QPushButton(txtBt)
-		name = 'BT_MAIN_2'
-		self.BT_MAIN_1.setObjectName(name)
-		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked(name))
-
+		name2 = 'BT_MAIN_2'
+		self.BT_MAIN_2.setObjectName(name2)
+		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked(name2))
+		self.BT_MAIN_2.installEventFilter(self)
 
 		txtBt = 'BT3 ' + self.CURRENT_PROJECT
 		self.BT_MAIN_3 = QtGui.QPushButton(txtBt)
-		name = 'BT_MAIN_3'
-		self.BT_MAIN_1.setObjectName(name)
-		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked(name))
-
-
+		name3 = 'BT_MAIN_3'
+		self.BT_MAIN_3.setObjectName(name3)
+		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked(name3))
+		self.BT_MAIN_3.installEventFilter(self)
 
 		#================================================== add button to Top Area content
 		self.TopAreaContent.addWidget(self.BT_BACK_HOME)
-		self.TopAreaContent.addWidget(self.BT_MAIN_1)
+		self.TopAreaContent.addWidget(self.BT_HOME_SCRIPTS)
 		self.TopAreaContent.addWidget(self.BT_MAIN_2)
 		self.TopAreaContent.addWidget(self.BT_MAIN_3)
 
 		#========= add Area content to Top Area container
 		self.TopAreaContainer.setLayout(self.TopAreaContent)
-
-
-
-	def eventFilter(self, object, event):
-		# print >> sys.__stderr__, object
-
-
-
-		if event.type() == QtCore.QEvent.MouseButtonPress:
-			# msg = "You pressed the button"
-			# print >> sys.__stderr__, msg
-			msg = object.objectName()
-			print >> sys.__stderr__, msg
-			return True
-
-		# if event.type() == QtCore.QEvent.MouseMove:
-		# 	msg = "mon! CLick-meeee!!!"
-		# 	print >> sys.__stderr__, msg
-		# 	return True
-
-		if event.type() == QtCore.QEvent.HoverEnter:
-
-			r = self.HOME_COLOR[0]
-			g = self.HOME_COLOR[1]
-			b = self.HOME_COLOR[2]
-			hexColor = self.rvbToHex(r, g, b)
-			object.setStyleSheet(
-								"color: white;"
-								"background-color: "+hexColor+";"
-								"selection-color: yellow;"
-								"selection-background-color: blue;"
-								"font: bold 14px;"
-								"border-style: outset;"
-								"height: 40px;"
-								)
-
-			return True
-
-
-
-
-
-
-		if event.type() == QtCore.QEvent.HoverLeave:
-			hexColor = self.rvbToHex(25, 44, 50)
-			object.setStyleSheet(
-								"color: white;"
-								"background-color: "+hexColor+";"
-								"selection-color: yellow;"
-								"selection-background-color: blue;"
-								"font: bold 14px;"
-								"border-style: outset;"
-								"height: 40px;"
-								)
-			return True
-
-
-
-
-		return False
-
-
-
-
-
-
-
-
-
 
 
 	def construct_MiddleTabsArea(self):
@@ -352,7 +281,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def show_BT_HOME(self):
 		self.BT_BACK_HOME.setVisible(False)
-		self.BT_MAIN_1.setVisible(True)
+		self.BT_HOME_SCRIPTS.setVisible(True)
 		self.BT_MAIN_2.setVisible(True)
 		self.BT_MAIN_3.setVisible(True)
 		self.BT_SYNC_SCRIPTS.setVisible(False)
@@ -360,7 +289,7 @@ class __QT_KBZ__(QtGui.QDialog):
 	def hide_BT_HOME(self):
 		self.BT_BACK_HOME.setVisible(True)
 		self.BT_BACK_HOME.clicked.connect(self.on_BT_BACK_HOME_clicked)
-		self.BT_MAIN_1.setVisible(False)
+		self.BT_HOME_SCRIPTS.setVisible(False)
 		self.BT_MAIN_2.setVisible(False)
 		self.BT_MAIN_3.setVisible(False)
 		# self.BT_SYNC_SCRIPTS.setVisible(False)
@@ -369,16 +298,17 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.back_to_HOME()
 
 	def on_BT_MAIN_clicked(self,BT):
-		self.hide_BT_HOME()
-		if BT == "BT_MAIN_1":
+		# self.hide_BT_HOME()
+		if BT == "BT_HOME_SCRIPTS":
+			self.hide_BT_HOME()
 			self.delete_TopAndMiddle()
 			self.Construct_MiddleScript()
-		if BT == "BT_MAIN_2":
-			self.delete_TopAndMiddle()
-			self.Construct_TopAndMiddle()
-		if BT == "BT_MAIN_3":
-			self.delete_TopAndMiddle()
-			self.Construct_TopAndMiddle()
+		# if BT == "BT_MAIN_2":
+		# 	self.delete_TopAndMiddle()
+		# 	self.Construct_TopAndMiddle()
+		# if BT == "BT_MAIN_3":
+		# 	self.delete_TopAndMiddle()
+		# 	self.Construct_TopAndMiddle()
 
 	def on_BT_SYNC_SCRIPTS_clicked(self):
 
@@ -444,6 +374,73 @@ class __QT_KBZ__(QtGui.QDialog):
 
 					msg = '\nEND ' + msg
 					self.printSTD(str(msg))
+
+
+
+	def eventFilter(self, object, event):
+		name = object.objectName()
+		
+		#========= Mouse Click
+
+		if event.type() == QtCore.QEvent.MouseButtonPress:
+			if str(name)=='BT_HOME_SCRIPTS':
+				self.on_BT_MAIN_clicked(name)
+			return True
+
+		#========= Mouse Over
+
+		if event.type() == QtCore.QEvent.HoverEnter:
+
+			r = self.HOME_COLOR[0]
+			g = self.HOME_COLOR[1]
+			b = self.HOME_COLOR[2]
+			hexColor = self.rvbToHex(r, g, b)
+			object.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"height: 40px;"
+								)
+
+			return True
+
+		#========= Mouse Out
+
+		if event.type() == QtCore.QEvent.HoverLeave:
+			hexColor = self.rvbToHex(25, 44, 50)
+			object.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"height: 40px;"
+								)
+			return True
+
+		#========= Mouse ClicK
+
+		# if event.type() == QtCore.QEvent.HoverLeave:
+		# 	hexColor = self.rvbToHex(25, 44, 50)
+		# 	object.setStyleSheet(
+		# 						"color: white;"
+		# 						"background-color: "+hexColor+";"
+		# 						"selection-color: yellow;"
+		# 						"selection-background-color: blue;"
+		# 						"font: bold 14px;"
+		# 						"border-style: outset;"
+		# 						"height: 40px;"
+		# 						)
+		# 	return True
+
+		#========= 
+
+		return False
+
 
 	#======================================================================
 	#========= UI Construct Functions
@@ -644,8 +641,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= Main Home  Buttons
 		hexColor = self.rvbToHex(25, 44, 50)
 		
-		# self.BT_MAIN_1.setStyleSheet('QPushButton {background-color: '+hexColor+'; color: white; height: 40px;}')
-		self.BT_MAIN_1.setStyleSheet(
+		# self.BT_HOME_SCRIPTS.setStyleSheet('QPushButton {background-color: '+hexColor+'; color: white; height: 40px;}')
+		self.BT_HOME_SCRIPTS.setStyleSheet(
 								"color: white;"
 								"background-color: "+hexColor+";"
 								"selection-color: yellow;"
@@ -692,9 +689,9 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#========= others samples
 
-		# self.BT_MAIN_1.setFlat(True)
+		# self.BT_HOME_SCRIPTS.setFlat(True)
 
-		# QPushButton#self.BT_MAIN_1 {
+		# QPushButton#self.BT_HOME_SCRIPTS {
 		# 	background-color: red;
 		# 	border-style: outset;
 		# 	border-width: 2px;
@@ -704,6 +701,13 @@ class __QT_KBZ__(QtGui.QDialog):
 		# 	min-width: 10em;
 		# 	padding: 6px;
 		# }
+
+
+
+
+
+
+
 
 
 
@@ -721,10 +725,12 @@ def start(parent, data):
 	welcome = random.choice(array_welcome)
 	main.setWindowTitle( ink.io.ConnectUserInfo()[2].upper() + ' | KARLOVA DASHBOARDZATOR | '+ welcome +' ' + os.getenv('USER') )
 	main.showMaximized()
+
 	# sG = QtGui.QApplication.desktop().screenGeometry()
 	# w = sG.width
 	# h = sG.height
-	# main.resize(250, 150)
+	# main.resize(550, 750)
+
 	# main.move(300, 300)
 	# main.setGeometry(300, 300, 150, 200)
 
@@ -732,5 +738,3 @@ def start(parent, data):
 	main.activateWindow()
 	main.raise_()
 	main.show()
-
-
