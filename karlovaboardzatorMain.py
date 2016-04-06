@@ -46,6 +46,12 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.COLOR_PROJECT_GRI			= [71, 209, 71]
 		self.COLOR_PROJECT_LUN			= [0, 153, 255]
 		self.COLOR_PROJECT_DM3			= [204, 51, 255]
+		if self.CURRENT_PROJECT 	== 'GRI':
+			self.HOME_COLOR = self.COLOR_PROJECT_GRI
+		if self.CURRENT_PROJECT 	== 'LUN':
+			self.HOME_COLOR = self.COLOR_PROJECT_LUN
+		if self.CURRENT_PROJECT 	== 'DM3':
+			self.HOME_COLOR = self.COLOR_PROJECT_DM3
 	#======================================================================
 	#========= main vlayout
 	#======================================================================
@@ -181,7 +187,14 @@ class __QT_KBZ__(QtGui.QDialog):
 		txtLbl = now
 		self.labelBottom = QtGui.QLabel()
 		self.labelBottom.setText(txtLbl)
-
+		r = self.HOME_COLOR[0]
+		g = self.HOME_COLOR[1]
+		b = self.HOME_COLOR[2]
+		hexColor = self.rvbToHex(r, g, b)
+		self.labelBottom.setStyleSheet(
+								"color: "+hexColor+";"
+								"font: italic;"
+							)
 		#================================================== add Date to Bottom Area content
 		self.BottomAreaContent.addWidget(self.labelBottom)
 
@@ -252,6 +265,8 @@ class __QT_KBZ__(QtGui.QDialog):
 	def back_to_HOME(self):
 		self.show_BT_HOME()
 		# cunstruct to do
+		self.delete_TopAndMiddle()
+		self.Construct_TopAndMiddle()
 
 	def show_BT_HOME(self):
 		self.BT_BACK_HOME.setVisible(False)
@@ -463,12 +478,12 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= StyleSheets
 	#===================================================================================================================================
 
-	def apply_Stylesheets(self):
+	def rvbToHex(self,r,g,b):
+		# r = array_rgb[1], g=array_rgb[2], b=array_rgb[3]
+		hexColor = '#%02x%02x%02x' % (r, g, b)
+		return hexColor
 
-		def rvbToHex(r,g,b):
-			# r = array_rgb[1], g=array_rgb[2], b=array_rgb[3]
-			hexColor = '#%02x%02x%02x' % (r, g, b)
-			return hexColor
+	def apply_Stylesheets(self):
 
 	#======================================================= Globals Colors
 
@@ -545,7 +560,7 @@ class __QT_KBZ__(QtGui.QDialog):
 #========= Style Buttons
 
 		#========= Main Home  Buttons
-		hexColor = rvbToHex(25, 44, 50)
+		hexColor = self.rvbToHex(25, 44, 50)
 		
 		# self.BT_MAIN_1.setStyleSheet('QPushButton {background-color: '+hexColor+'; color: white; height: 40px;}')
 		self.BT_MAIN_1.setStyleSheet(
@@ -577,17 +592,10 @@ class __QT_KBZ__(QtGui.QDialog):
 							)
 
 		# #========= Back to Home  Button
-		if self.CURRENT_PROJECT 	== 'GRI':
-			self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_GRI
-		if self.CURRENT_PROJECT 	== 'LUN':
-			self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_LUN
-		if self.CURRENT_PROJECT 	== 'DM3':
-			self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_DM3
-
-		r = self.BT_BACK_HOME_COLOR[0]
-		g = self.BT_BACK_HOME_COLOR[1]
-		b = self.BT_BACK_HOME_COLOR[2]
-		hexColor = rvbToHex(r, g, b)
+		r = self.HOME_COLOR[0]
+		g = self.HOME_COLOR[1]
+		b = self.HOME_COLOR[2]
+		hexColor = self.rvbToHex(r, g, b)
 		
 		self.BT_BACK_HOME.setStyleSheet(
 								"color: white;"
