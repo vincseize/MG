@@ -14,6 +14,7 @@ import sys
 import random
 import glob
 from PyQt4 import QtGui, QtCore, Qt
+from PyQt4.QtGui import *
 import ink
 import ink.io
 import time
@@ -120,13 +121,25 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		txtBt = 'SCRIPTS ' + self.CURRENT_PROJECT
 		self.BT_MAIN_1 = QtGui.QPushButton(txtBt)
-		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_1'))		
+		name = 'BT_MAIN_1'
+		self.BT_MAIN_1.setObjectName(name)
+		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked(name))
+		self.BT_MAIN_1.installEventFilter(self)
+
 		txtBt = 'BT2 ' + self.CURRENT_PROJECT
 		self.BT_MAIN_2 = QtGui.QPushButton(txtBt)
-		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_2'))
+		name = 'BT_MAIN_2'
+		self.BT_MAIN_1.setObjectName(name)
+		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked(name))
+
+
 		txtBt = 'BT3 ' + self.CURRENT_PROJECT
 		self.BT_MAIN_3 = QtGui.QPushButton(txtBt)
-		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_3'))
+		name = 'BT_MAIN_3'
+		self.BT_MAIN_1.setObjectName(name)
+		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked(name))
+
+
 
 		#================================================== add button to Top Area content
 		self.TopAreaContent.addWidget(self.BT_BACK_HOME)
@@ -136,6 +149,75 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#========= add Area content to Top Area container
 		self.TopAreaContainer.setLayout(self.TopAreaContent)
+
+
+
+	def eventFilter(self, object, event):
+		# print >> sys.__stderr__, object
+
+
+
+		if event.type() == QtCore.QEvent.MouseButtonPress:
+			# msg = "You pressed the button"
+			# print >> sys.__stderr__, msg
+			msg = object.objectName()
+			print >> sys.__stderr__, msg
+			return True
+
+		# if event.type() == QtCore.QEvent.MouseMove:
+		# 	msg = "mon! CLick-meeee!!!"
+		# 	print >> sys.__stderr__, msg
+		# 	return True
+
+		if event.type() == QtCore.QEvent.HoverEnter:
+
+			r = self.HOME_COLOR[0]
+			g = self.HOME_COLOR[1]
+			b = self.HOME_COLOR[2]
+			hexColor = self.rvbToHex(r, g, b)
+			object.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"height: 40px;"
+								)
+
+			return True
+
+
+
+
+
+
+		if event.type() == QtCore.QEvent.HoverLeave:
+			hexColor = self.rvbToHex(25, 44, 50)
+			object.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"height: 40px;"
+								)
+			return True
+
+
+
+
+		return False
+
+
+
+
+
+
+
+
+
 
 
 	def construct_MiddleTabsArea(self):
@@ -622,13 +704,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		# 	min-width: 10em;
 		# 	padding: 6px;
 		# }
-
-
-
-
-
-
-
 
 
 
