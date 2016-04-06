@@ -225,32 +225,34 @@ class __QT_KBZ__(QtGui.QDialog):
 		myPrefs = json.load(open(self.MYPREFSFILE))
 		for v in myPrefs["scripts"]:
 			myChecked.append(v)
-		dirs = self.list_Scripts()
+		scripts = self.list_Scripts()
 		n = 0
-		for script in dirs:
+		for script in scripts:
 			if '.pyc' not in str(script) and '.py~' not in str(script) and '__init__.py' not in str(script) and '_kbz.json' not in str(script):
-				n = n+1
-				item = QtGui.QStandardItem(script)
-				item.setCheckable(True)
-				status_checked = QtCore.Qt.Unchecked
-				if n%2 == 0 :
-					item.setBackground(QtGui.QColor(255, 255, 255))
-				else:
-					item.setBackground(QtGui.QColor(217, 230, 240))
-				if str(script) in myChecked:
-					status_checked = QtCore.Qt.Checked
-					item.setBackground(QtGui.QColor(179, 255, 102))
-				item.setCheckState(status_checked)
+				if '.py' in str(script) or '.txt' in str(script) or '.json' in str(script) or '.py' in str(script) or '.mel' in str(script) or '.xml' in str(script) or '.csv' in str(script) or '.bat' in str(script):
+					n = n+1
+					item = QtGui.QStandardItem(script)
+					item.setCheckable(True)
+					status_checked = QtCore.Qt.Unchecked
+					if n%2 == 0 :
+						item.setBackground(QtGui.QColor(255, 255, 255))
+					else:
+						item.setBackground(QtGui.QColor(217, 230, 240))
+					if str(script) in myChecked:
+						status_checked = QtCore.Qt.Checked
+						item.setBackground(QtGui.QColor(179, 255, 102))
+					item.setCheckState(status_checked)
 
-				# item.setColor(allBlueAndShiny color)
-				# item.setForeground(QtGui.QColor('red')) # text color
+					# item.setColor(allBlueAndShiny color)
+					# item.setForeground(QtGui.QColor('red')) # text color
 
-				#========= item Signal
-				# # item.emit(QtCore.SIGNAL("self.populate_prefs('scripts')"))
-				# item.itemChanged.connect(self.populate_prefs)
+					#========= item Signal
+					# # item.emit(QtCore.SIGNAL("self.populate_prefs('scripts')"))
+					# item.itemChanged.connect(self.populate_prefs)
 
-				#================================================== add ckecked to List Area content
-				self.ScriptsAreaContent.appendRow(item)
+					#================================================== add ckecked to List Area content
+					self.ScriptsAreaContent.appendRow(item)
+
 		#========= add Area content to Scripts content
 		self.ScriptsAreaContainer.setModel(self.ScriptsAreaContent)
 
@@ -502,8 +504,8 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 
 	def list_Scripts(self):
-		dirs = os.listdir(self.CURRENT_SCRIPTS_PATH)
-		return dirs
+		scripts = os.listdir(self.CURRENT_SCRIPTS_PATH)
+		return scripts
 
 	def populate_prefs_scripts(self,item):
 		checkIfExist = False
