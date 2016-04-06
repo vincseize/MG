@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 01-04-2016                                                                #
+# Date : 06-04-2016                                                                #
 # ##################################################################################
 
 
@@ -43,6 +43,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.MYPREFSJSON["scripts"]		= []
 		if os.path.isfile(self.MYPREFSFILE) == False :
 			self.write_Prefs(self.MYPREFSJSON,False)
+		self.COLOR_PROJECT_GRI			= [71, 209, 71]
+		self.COLOR_PROJECT_LUN			= [0, 153, 255]
+		self.COLOR_PROJECT_DM3			= [204, 51, 255]
 	#======================================================================
 	#========= main vlayout
 	#======================================================================
@@ -105,6 +108,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContent.setObjectName("TopAreaContent")
 
 		#========= Top Area content button
+		txtBt = 'BACK to Home ' + self.CURRENT_PROJECT
+		self.BT_BACK_HOME = QtGui.QPushButton(txtBt)
+		self.BT_BACK_HOME.setVisible(False)
+
 		txtBt = 'SCRIPTS ' + self.CURRENT_PROJECT
 		self.BT_MAIN_1 = QtGui.QPushButton(txtBt)
 		self.BT_MAIN_1.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_1'))		
@@ -116,6 +123,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_MAIN_3.clicked.connect(lambda : self.on_BT_MAIN_clicked('BT_MAIN_3'))
 
 		#================================================== add button to Top Area content
+		self.TopAreaContent.addWidget(self.BT_BACK_HOME)
 		self.TopAreaContent.addWidget(self.BT_MAIN_1)
 		self.TopAreaContent.addWidget(self.BT_MAIN_2)
 		self.TopAreaContent.addWidget(self.BT_MAIN_3)
@@ -160,6 +168,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#========================================== add Area content to middle Area container
 		self.MiddleAreaContainer.setLayout(self.MiddleTabsContent)
+
 
 
 	def construct_BottomAreaContent(self):
@@ -222,8 +231,13 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.ScriptsAreaContainer.setModel(self.ScriptsAreaContent)
 
 		#=========  bt sync
-		txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to Others Projects'
+		msg_others_projects = ''
+		for p in self.ALL_PROJECTS:
+			if str(p).upper != self.CURRENT_PROJECT.upper():
+				msg_others_projects = msg_others_projects + ' | ' + str(p)
+		txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to ' + msg_others_projects + ' | Projects'
 		self.BT_SYNC_SCRIPTS = QtGui.QPushButton(txtBt)
+		self.BT_SYNC_SCRIPTS.setVisible(True)
 
 		#=========  connect fct
 		# self.connect(self.ScriptsAreaContent, QtCore.SIGNAL("itemClicked (QStandardItem *,int)"), self.populate_prefs)
@@ -235,7 +249,30 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= UI Buttons Functions
 	#======================================================================
 
+	def back_to_HOME(self):
+		self.show_BT_HOME()
+		# cunstruct to do
+
+	def show_BT_HOME(self):
+		self.BT_BACK_HOME.setVisible(False)
+		self.BT_MAIN_1.setVisible(True)
+		self.BT_MAIN_2.setVisible(True)
+		self.BT_MAIN_3.setVisible(True)
+		self.BT_SYNC_SCRIPTS.setVisible(False)
+
+	def hide_BT_HOME(self):
+		self.BT_BACK_HOME.setVisible(True)
+		self.BT_BACK_HOME.clicked.connect(self.on_BT_BACK_HOME_clicked)
+		self.BT_MAIN_1.setVisible(False)
+		self.BT_MAIN_2.setVisible(False)
+		self.BT_MAIN_3.setVisible(False)
+		# self.BT_SYNC_SCRIPTS.setVisible(False)
+
+	def on_BT_BACK_HOME_clicked(self):
+		self.back_to_HOME()
+
 	def on_BT_MAIN_clicked(self,BT):
+		self.hide_BT_HOME()
 		if BT == "BT_MAIN_1":
 			self.delete_TopAndMiddle()
 			self.Construct_MiddleScript()
@@ -248,53 +285,73 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def on_BT_SYNC_SCRIPTS_clicked(self):
 
-		now = datetime.datetime.now()
-		date = now.strftime("%Y%m%d-%H-%M-%S")
+			# self.hide_BT_MAIN_clicked()
 
-		array_scriptToSync = []
-		myPrefs = json.load(open(self.MYPREFSFILE))
+			now = datetime.datetime.now()
+			date = now.strftime("%Y%m%d-%H-%M-%S")
 
-		for v in myPrefs["scripts"]:
-			array_scriptToSync.append(v)
+			array_scriptToSync = []
+			myPrefs = json.load(open(self.MYPREFSFILE))
 
-		for ap in self.ALL_PROJECTS:
-			dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
-			if not os.path.exists(dir_distant_backup):
-				os.makedirs(dir_distant_backup)
-			APU = str(ap).upper()
-			ap 	= str(ap).lower()		
+			for v in myPrefs["scripts"]:
+				array_scriptToSync.append(v)
 
-			if str(self.CURRENT_PROJECT_lower) != str(ap):
-				msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
-				self.printSTD(' ')
-				self.printSTD('-----------------------------------------------------------------------')
-				self.printSTD(str(msg))
-				self.printSTD('-----------------------------------------------------------------------')
-				for s in array_scriptToSync:
-					filename = s.split('.')[0]
-					ext 	 = s.split('.')[1]
-					sbackup = filename+'_'+date+'.'+ext
-					path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
-					path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
-					path_distant_backup = dir_distant_backup+'/'+sbackup
-					self.printSTD(path_local)					
-					self.printSTD('->')
-					self.printSTD(path_distant)	
-					try:
-						if os.path.isfile(path_local):
-		#========= backup distant file before copy
-							if os.path.isfile(path_distant):
-								copyfile(path_distant, path_distant_backup)
-		#========= copy sync
-							copyfile(path_local, path_distant)
-							self.printSTD('[ SYNC OK ]')
-					except:
-						self.printSTD('[ SYNC ERROR ]')
+			for ap in self.ALL_PROJECTS:
+				dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
+				if not os.path.exists(dir_distant_backup):
+					os.makedirs(dir_distant_backup)
+				APU = str(ap).upper()
+				ap 	= str(ap).lower()		
 
+				if str(self.CURRENT_PROJECT_lower) != str(ap):
+					msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
+					self.printSTD(' ')
+					self.printSTD('-----------------------------------------------------------------------')
+					self.printSTD(str(msg))
+					self.printSTD('-----------------------------------------------------------------------\n\n')
+					for s in array_scriptToSync:
+						checkCopy 	= False
+						filename 	= s.split('.')[0]
+						ext 	 	= s.split('.')[1]
+						sbackup 	= filename+'_'+date+'.'+ext
+						path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
+						path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
+						path_distant_backup = dir_distant_backup+'/'+sbackup
+						self.printSTD(path_local)					
+						self.printSTD('->')
+						self.printSTD(path_distant)
+						try:
+							if os.path.isfile(path_local):
+			#========= 1 - FIRST , IMPORTANT backup distant file before copy
+								if os.path.isfile(path_distant):
+									copyfile(path_distant, path_distant_backup)
+								if not os.path.isfile(path_distant):
+									self.printSTD('---[ NEW FILE ]---')
+									checkCopy = True
+
+			#========= 2 -copy sync
+								copyfile(path_local, path_distant)
+								# if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) :
+								if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
+									self.printSTD('[ SYNC OK ]')
+								if os.path.isfile(path_local) and os.path.isfile(path_distant) and checkCopy == True:	
+									self.printSTD('[ COPY OK ]')
+								if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) and checkCopy == False:
+									self.printSTD('[ SYNC ERROR ]')
+								# if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) :
+								# 	self.printSTD('[ SYNC ERROR ]')
+						except:
+							self.printSTD('[ SYNC ERROR ]')
+
+						self.printSTD('-----------------------------------------------------------------------\n')
+
+					msg = '\nEND ' + msg
+					self.printSTD(str(msg))
 
 	#======================================================================
 	#========= UI Construct Functions
 	#======================================================================
+
 
 	def on_TAB_clicked(self):
 		self.printSTD("on_TAB_clicked")
@@ -485,8 +542,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		# pal.setColor(QtGui.QPalette.ColorRole(9),QtGui.QColor("#4B4B4B"))
 		# pal.setColor(QtGui.QPalette.ColorRole(6),QtGui.QColor("#CCCCCC"))
 
-	#========= Style Buttons
+#========= Style Buttons
 
+		#========= Main Home  Buttons
 		hexColor = rvbToHex(25, 44, 50)
 		
 		# self.BT_MAIN_1.setStyleSheet('QPushButton {background-color: '+hexColor+'; color: white; height: 40px;}')
@@ -518,9 +576,29 @@ class __QT_KBZ__(QtGui.QDialog):
 								"height: 40px;"
 							)
 
+		# #========= Back to Home  Button
+		# if self.CURRENT_PROJECT 	== 'GRI':
+		# 	self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_GRI
+		# if self.CURRENT_PROJECT 	== 'LUN':
+		# 	self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_LUN
+		# if self.CURRENT_PROJECT 	== 'DM3':
+		# 	self.BT_BACK_HOME_COLOR = self.COLOR_PROJECT_DM3
+
+		# r = self.BT_BACK_HOME_COLOR[0], g = self.BT_BACK_HOME_COLOR[1], b = self.BT_BACK_HOME_COLOR[2]
+		# hexColor = rvbToHex(r, g, b)
+		
+		self.BT_BACK_HOME.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"height: 40px;"
+							)
 
 
-		# other samples
+		#========= others samples
 
 		# self.BT_MAIN_1.setFlat(True)
 
