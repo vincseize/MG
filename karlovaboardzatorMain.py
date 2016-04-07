@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 06-04-2016                                                                #
+# Date : 07-04-2016                                                                #
 # ##################################################################################
 
 
@@ -24,18 +24,17 @@ import datetime
 
 class __QT_KBZ__(QtGui.QDialog):
 	
-	def __init__(self, parent = None): #
+	def __init__(self, parent = None):
 		super(__QT_KBZ__, self).__init__(parent) 
 
 	#======================================================================
 	#========= Globals Varaiables
 	#======================================================================
 		self.CURRENT_USER 				= os.getenv('USER')
-		self.ALL_PROJECTS	 			= ['gri','lun','dm3']
+		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255] }
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
-		# self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.DIR_BACKUP	 				= '_backup'		
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
@@ -43,15 +42,14 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.MYPREFSJSON["scripts"]		= []
 		if os.path.isfile(self.MYPREFSFILE) == False :
 			self.write_Prefs(self.MYPREFSJSON,False)
-		self.COLOR_PROJECT_GRI			= [71, 209, 71]
-		self.COLOR_PROJECT_LUN			= [0, 153, 255]
-		self.COLOR_PROJECT_DM3			= [204, 51, 255]
+
 		if self.CURRENT_PROJECT 	== 'GRI':
-			self.HOME_COLOR = self.COLOR_PROJECT_GRI
+			self.HOME_COLOR = self.ALL_PROJECTS['gri']
 		if self.CURRENT_PROJECT 	== 'LUN':
-			self.HOME_COLOR = self.COLOR_PROJECT_LUN
+			self.HOME_COLOR = self.ALL_PROJECTS['lun']
 		if self.CURRENT_PROJECT 	== 'DM3':
-			self.HOME_COLOR = self.COLOR_PROJECT_DM3
+			self.HOME_COLOR = self.ALL_PROJECTS['dm3']
+
 	#======================================================================
 	#========= main vlayout
 	#======================================================================
