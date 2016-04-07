@@ -56,6 +56,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		self.mainLayout = QtGui.QVBoxLayout()
 		self.mainLayout.setAlignment(QtCore.Qt.AlignTop)
+		# self.mainLayout.setAlignment(QtCore.Qt.AlignRight) # vertical or horizontal ?
 
 		#=============================================== Top Area container
 		self.TopAreaContainer = QtGui.QWidget()
@@ -112,7 +113,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContent.setObjectName("TopAreaContent")
 
 		#========= Top Area content button
-		txtBt = 'BACK to Home ' + self.CURRENT_PROJECT
+		txtBt = '<- BACK ' + self.CURRENT_PROJECT
 		self.BT_BACK_HOME = QtGui.QPushButton(txtBt)
 		self.BT_BACK_HOME.setVisible(False)
 
@@ -160,7 +161,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========================== Tab1
 		self.Tab1 = QtGui.QTreeWidget()
-		self.MiddleTabsArea.addTab(self.Tab1, "Arbo")
+		self.MiddleTabsArea.addTab(self.Tab1, "A7 Locked By me")
 		# self.connect(self.Tab1, QtCore.SIGNAL("itemDoubleClicked (QTreeWidgetItem *,int)"), self.on_Tab1_double_clicked)
 		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
 
@@ -261,12 +262,45 @@ class __QT_KBZ__(QtGui.QDialog):
 				msg_others_projects = msg_others_projects + ' | ' + str(p)
 		txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to ' + msg_others_projects + ' | Projects'
 		self.BT_SYNC_SCRIPTS = QtGui.QPushButton(txtBt)
+		self.BT_SYNC_SCRIPTS.setObjectName("BT_SYNC_SCRIPTS")
 		self.BT_SYNC_SCRIPTS.setVisible(True)
+		self.BT_SYNC_SCRIPTS.installEventFilter(self)
 
 		#=========  connect fct
 		# self.connect(self.ScriptsAreaContent, QtCore.SIGNAL("itemClicked (QStandardItem *,int)"), self.populate_prefs)
 		self.ScriptsAreaContent.itemChanged.connect(self.populate_prefs_scripts)
 		self.BT_SYNC_SCRIPTS.clicked.connect(self.on_BT_SYNC_SCRIPTS_clicked)
+		hexColor = self.rvbToHex(25, 44, 50)
+		hexColorBg = self.rvbToHex(self.rvb_darkGrey[0], self.rvb_darkGrey[1], self.rvb_darkGrey[2])
+		hexColorBorder = self.rvbToHex(self.HOME_COLOR[0], self.HOME_COLOR[1], self.HOME_COLOR[2])
+		self.BT_SYNC_SCRIPTS.setStyleSheet(
+						# "color: white;"
+						# "background-color: transparent;"
+						# "selection-color: yellow;"
+						# "selection-background-color: blue;"
+						# "font: bold 14px;"
+						# # "border-style: outset;"
+						# "border:3px solid "+hexColorBorder+";"
+						# # "border-top: 2px solid "+hexColorBorder+";"
+						# # "border-bottom: 2px solid "+hexColorBorder+";"
+						# # "border-right: 2px solid "+hexColorBorder+";"
+						# # "border-left: 2px solid "+hexColorBorder+";"
+						# "border-radius: 16px;"
+						# "height: 40px;"
+						# "max-width: 600px;"
+
+
+						"color: white;"
+						"background-color: "+hexColor+";"
+						"selection-color: yellow;"
+						"selection-background-color: blue;"
+						"font: bold 14px;"
+						"border-style: outset;"
+						"border-radius: 16px;"
+						"height: 40px;"						
+						"max-width: 600px;"
+
+					)
 
 
 	#======================================================================
@@ -394,15 +428,32 @@ class __QT_KBZ__(QtGui.QDialog):
 			r = self.HOME_COLOR[0]
 			g = self.HOME_COLOR[1]
 			b = self.HOME_COLOR[2]
-			hexColor = self.rvbToHex(r, g, b)
-			object.setStyleSheet(
+			hexColorHome = self.rvbToHex(r, g, b)
+
+			if str(name)=='BT_SYNC_SCRIPTS':
+				hexColor = self.rvbToHex(25, 44, 50)
+				object.setStyleSheet(
 								"color: white;"
-								"background-color: "+hexColor+";"
+								"background-color: "+hexColorHome+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"border-radius: 16px;"
+								"height: 40px;"						
+								"max-width: 600px;"
+								)
+			else:
+
+				object.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColorHome+";"
 								"selection-color: yellow;"
 								"selection-background-color: blue;"
 								"font: bold 14px;"
 								"border-style: outset;"
 								"height: 40px;"
+								"border-radius: 16px;"
 								)
 
 			return True
@@ -411,7 +462,21 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		if event.type() == QtCore.QEvent.HoverLeave:
 			hexColor = self.rvbToHex(25, 44, 50)
-			object.setStyleSheet(
+			if str(name)=='BT_SYNC_SCRIPTS':
+				object.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 14px;"
+								"border-style: outset;"
+								"border-radius: 16px;"
+								"height: 40px;"						
+								"max-width: 600px;"
+								)
+
+			else:
+				object.setStyleSheet(
 								"color: white;"
 								"background-color: "+hexColor+";"
 								"selection-color: yellow;"
@@ -419,6 +484,7 @@ class __QT_KBZ__(QtGui.QDialog):
 								"font: bold 14px;"
 								"border-style: outset;"
 								"height: 40px;"
+								"border-radius: 16px;"
 								)
 			return True
 
@@ -494,7 +560,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.ScriptsAreaContainer.setObjectName("ScriptsAreaContainer")
 		self.construct_ScriptsListArea()
 		self.mainLayout.addWidget(self.ScriptsAreaContainer)
-		self.mainLayout.addWidget(self.BT_SYNC_SCRIPTS)
+		self.mainLayout.addWidget(self.BT_SYNC_SCRIPTS, QtCore.Qt.AlignRight)
 
 
 	#======================================================================
@@ -567,68 +633,68 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================= Globals Colors
 
 	#========= general Colors	
-		rvb_White = [255, 255, 255]
+		self.rvb_White = [255, 255, 255]
 		self.palette_White = QtGui.QPalette()
 		self.palette_White.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 255, 255))
 
-		rvb_Black = [0, 0, 0]
+		self.rvb_Black = [0, 0, 0]
 		self.palette_Black = QtGui.QPalette()
 		self.palette_Black.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0))
 
-		rvb_Grey = [128, 128, 128]
+		self.rvb_Grey = [128, 128, 128]
 		self.palette_Grey = QtGui.QPalette()
 		self.palette_Grey.setColor(QtGui.QPalette.Background,QtCore.Qt.gray)
 
-		rvb_hellGrey = [230, 230, 230]
+		self.rvb_hellGrey = [230, 230, 230]
 		self.palette_hellGrey = QtGui.QPalette()
 		self.palette_hellGrey.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(128, 128, 128))
 
-		rvb_darkGrey = [255, 255, 255]
+		self.rvb_darkGrey = [255, 255, 255]
 		self.palette_darkGrey = QtGui.QPalette()
 		self.palette_darkGrey.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(66, 66, 66))
 
 	#============================================ Complementary blues Colors # http://paletton.com	
 
 	#========= blues Colors
-		rvb_Blue1 = [97, 114, 141]
+		self.rvb_Blue1 = [97, 114, 141]
 		self.palette_Blue1 = QtGui.QPalette()
 		self.palette_Blue1.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(97, 114, 141))
 
-		rvb_Blue2 = [64, 84, 115]
+		self.rvb_Blue2 = [64, 84, 115]
 		self.palette_Blue2 = QtGui.QPalette()
 		self.palette_Blue2.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(64, 84, 115))
 
-		rvb_Blue3 = [43, 61, 91]
+		self.rvb_Blue3 = [43, 61, 91]
 		self.palette_Blue3 = QtGui.QPalette()
 		self.palette_Blue3.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(43, 61, 91))
 
-		rvb_Blue4 = [25, 44, 75]
+		self.rvb_Blue4 = [25, 44, 75]
 		self.palette_Blue4 = QtGui.QPalette()
 		self.palette_Blue4.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(25, 44, 75))
 
-		rvb_Blue5 = [10, 25, 50]
+		self.rvb_Blue5 = [10, 25, 50]
 		self.palette_Blue5 = QtGui.QPalette()
 		self.palette_Blue5.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(10, 25, 50))
 
 
 	#========= blues Colors
-		rvb_Orange1 = [255, 196, 77]
+		self.rvb_Orange1 = [255, 196, 77]
 		self.palette_Orange1 = QtGui.QPalette()
 		self.palette_Orange1.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 196, 77))
 
-		rvb_Orange1 = [255, 179, 27]
+		self.rvb_Orange2 = [255, 179, 27]
 		self.palette_Orange2 = QtGui.QPalette()
 		self.palette_Orange2.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 179, 27))
 
-		rvb_Orange1 = [255, 170, 0]
+		self.rvb_Orange3 = [255, 170, 0]
 		self.palette_Orange3 = QtGui.QPalette()
 		self.palette_Orange3.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(255, 170, 0))
 
-		rvb_Orange1 = [206, 137, 0]
+		self.rvb_Orange4 = [206, 137, 0]
 		self.palette_Orange4 = QtGui.QPalette()
 		self.palette_Orange4.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(206, 137, 0))
 
-		rvb_Orange1 = [160, 107, 0]
+		self.rvb_Orange5 = [160, 107, 0]
 		self.palette_Orange5 = QtGui.QPalette()
 		self.palette_Orange5.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(160, 107, 0))
 
@@ -650,6 +716,7 @@ class __QT_KBZ__(QtGui.QDialog):
 								"font: bold 14px;"
 								"border-style: outset;"
 								"height: 40px;"
+								"border-radius: 16px;"
 							)
 		self.BT_MAIN_2.setStyleSheet(
 								"color: white;"
@@ -659,6 +726,7 @@ class __QT_KBZ__(QtGui.QDialog):
 								"font: bold 14px;"
 								"border-style: outset;"
 								"height: 40px;"
+								"border-radius: 16px;"								
 							)
 		self.BT_MAIN_3.setStyleSheet(
 								"color: white;"
@@ -668,6 +736,7 @@ class __QT_KBZ__(QtGui.QDialog):
 								"font: bold 14px;"
 								"border-style: outset;"
 								"height: 40px;"
+								"border-radius: 16px;"
 							)
 
 		# #========= Back to Home  Button
@@ -686,6 +755,22 @@ class __QT_KBZ__(QtGui.QDialog):
 								"height: 40px;"
 							)
 
+		# #========= sync scripts  Button
+		# r = self.HOME_COLOR[0]
+		# g = self.HOME_COLOR[1]
+		# b = self.HOME_COLOR[2]
+		# hexColor = self.rvbToHex(r, g, b)
+		
+		# self.BT_SYNC_SCRIPTS.setStyleSheet(
+		# 						"color: white;"
+		# 						# "background-color: "+hexColor+";"
+		# 						"selection-color: yellow;"
+		# 						"selection-background-color: blue;"
+		# 						"font: bold 14px;"
+		# 						"border-style: outset;"
+		# 						"height: 40px;"
+		# 						"width: 100px;"
+		# 					)
 
 		#========= others samples
 
