@@ -267,40 +267,21 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_SYNC_SCRIPTS.installEventFilter(self)
 
 		#=========  connect fct
-		# self.connect(self.ScriptsAreaContent, QtCore.SIGNAL("itemClicked (QStandardItem *,int)"), self.populate_prefs)
 		self.ScriptsAreaContent.itemChanged.connect(self.populate_prefs_scripts)
-		self.BT_SYNC_SCRIPTS.clicked.connect(self.on_BT_SYNC_SCRIPTS_clicked)
 		hexColor = self.rvbToHex(25, 44, 50)
 		hexColorBg = self.rvbToHex(self.rvb_darkGrey[0], self.rvb_darkGrey[1], self.rvb_darkGrey[2])
 		hexColorBorder = self.rvbToHex(self.HOME_COLOR[0], self.HOME_COLOR[1], self.HOME_COLOR[2])
 		self.BT_SYNC_SCRIPTS.setStyleSheet(
-						# "color: white;"
-						# "background-color: transparent;"
-						# "selection-color: yellow;"
-						# "selection-background-color: blue;"
-						# "font: bold 14px;"
-						# # "border-style: outset;"
-						# "border:3px solid "+hexColorBorder+";"
-						# # "border-top: 2px solid "+hexColorBorder+";"
-						# # "border-bottom: 2px solid "+hexColorBorder+";"
-						# # "border-right: 2px solid "+hexColorBorder+";"
-						# # "border-left: 2px solid "+hexColorBorder+";"
-						# "border-radius: 16px;"
-						# "height: 40px;"
-						# "max-width: 600px;"
-
-
-						"color: white;"
-						"background-color: "+hexColor+";"
-						"selection-color: yellow;"
-						"selection-background-color: blue;"
-						"font: bold 14px;"
-						"border-style: outset;"
-						"border-radius: 16px;"
-						"height: 40px;"						
-						"max-width: 600px;"
-
-					)
+											"color: white;"
+											"background-color: "+hexColor+";"
+											"selection-color: yellow;"
+											"selection-background-color: blue;"
+											"font: bold 14px;"
+											"border-style: outset;"
+											"border-radius: 16px;"
+											"height: 40px;"						
+											"max-width: 600px;"
+										)
 
 
 	#======================================================================
@@ -419,6 +400,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		if event.type() == QtCore.QEvent.MouseButtonPress:
 			if str(name)=='BT_HOME_SCRIPTS':
 				self.on_BT_MAIN_clicked(name)
+			if str(name)=='BT_SYNC_SCRIPTS':
+				self.on_BT_SYNC_SCRIPTS_clicked()
 			return True
 
 		#========= Mouse Over
