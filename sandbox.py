@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	     #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 24-03-2016                                                         #
+# Last Update : 05-04-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -20,6 +20,8 @@ if '__InK__connect' in sys.modules:
 else:
     import __InK__connect
     from __InK__connect import *
+
+
 #==================================================================================================================== Ink external useful CLASSES
 __PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
 #================================================================================================================================================
@@ -27,7 +29,7 @@ __PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) 
 #================================================================================================================================== local CLASSES
 
 class __ORGANIZER__():   
-    
+    # print sys.modules
     def __init__(self,X_move_nask=0,Y_move_nask=-1.5,X_ecart_nask=3,ecart=2,ecartClip_Y=1):
         '''   '''
         self.X_move_nask    = X_move_nask
@@ -200,12 +202,15 @@ class __ORGANIZER__():
 
     def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower):
         ''' retrieve information for path if USECASE or specials cases '''
-           
-        if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():                  
+
+        # if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper(): 
+        if type_layout == 'Usecase' :       
+            # print 'OK' + a_name         
             A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
             a_catFamily      = A7_infos['a_catFamily']
-            a_name           = A7_infos['a_name'] 
-            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
+            # a_name           = A7_infos['a_name'] 
+            # pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
+            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
@@ -217,12 +222,7 @@ class __ORGANIZER__():
         except:
             pass
 
-
 #===========================================================================================================================  end Classes
-
-
-
-
 
 
 
@@ -328,25 +328,26 @@ K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxqt'
 
 
 
-
-
-# if 'karlovaboardzator' in sys.modules:
-#     del(sys.modules["karlovaboardzator"])
-#     import karlovaboardzator
-# else:
-#     import karlovaboardzator
-
-
-if 'karlovaboardzatorMain' in sys.modules:
-    del(sys.modules["karlovaboardzatorMain"])
-    import karlovaboardzatorMain
-else:
-    import karlovaboardzatorMain
-
-
-
 def AA00_MYTOOLZ():
     ''' TOOLz 4 Von KARLOVA '''
+    print 'T4'
+    import sys, ink.proto
+    path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+    sys.path.append(path_modules)
+
+    if '__InK__connect' in sys.modules:
+        del(sys.modules["__InK__connect"])
+        import __InK__connect
+        from __InK__connect import * 
+    else:
+        import __InK__connect
+        from __InK__connect import *
+
+    if 'karlovaboardzatorMain' in sys.modules:
+        del(sys.modules["karlovaboardzatorMain"])
+        import karlovaboardzatorMain
+    else:
+        import karlovaboardzatorMain
 
     return None
 
@@ -1265,7 +1266,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     for pa in selection: 
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
         nm_asset      = A7_infos['nm_asset']
-        a_types       = A7_infos['a_types']
+        a_types       = A7_infos['a_types']    
         GraphName     = str(nm_asset)
 
         #========= retrieve graphname
@@ -1468,7 +1469,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= Retrieve Type Graph
         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
         nm_asset      = A7_infos['nm_asset']
-        a_types       = A7_infos['a_types']
+        a_types       = A7_infos['a_types'] 
         GraphName     = str(nm_asset)
 
         #========= retrieve graphname
@@ -1566,7 +1567,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
             checkString = str(mySeq) + '_EDIT-'
 
         if type_layout == 'Usecase':
-            checkString = str(a_name).upper() + '_EDIT-'   
+            # checkString = str(a_name).upper() + '_EDIT-'   
+            checkString = str(mySeq).upper() + '_EDIT-' 
 
         for pa in selection:             
             if str(checkString) in str(pa):
