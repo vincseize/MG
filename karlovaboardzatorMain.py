@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 07-04-2016                                                                #
+# Date : 11-04-2016                                                                #
 # ##################################################################################
 
 
@@ -28,7 +28,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		super(__QT_KBZ__, self).__init__(parent) 
 
 	#======================================================================
-	#========= Globals Varaiables
+	#========= Globals Variables
 	#======================================================================
 		self.CURRENT_USER 				= os.getenv('USER')
 		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255] }
@@ -97,6 +97,33 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= apply stylsheets
 		self.apply_Stylesheets()
 		self.setPalette(self.palette_darkGrey)
+
+
+
+
+
+
+
+	# 	self.overlay = self.paintEvent(self)
+	# # 	# self.overlay.hide()
+
+	# def paintEvent(self, event):        
+	# 	painter = QtGui.QPainter()
+	# 	painter.begin(self)
+	# 	painter.setRenderHint(QtGui.QPainter.Antialiasing)
+	# 	painter.fillRect(event.rect(), QtGui.QBrush(QtGui.QColor(255, 255, 0, 127)))
+	# 	painter.drawLine(self.width()/8, self.height()/8, 7*self.width()/8, 7*self.height()/8)
+	# 	painter.drawLine(self.width()/8, 7*self.height()/8, 7*self.width()/8, self.height()/8)
+	# 	painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))  
+
+
+
+
+
+
+
+
+
 
 	#===================================================================================================================================
 	#========= Functions
@@ -284,9 +311,55 @@ class __QT_KBZ__(QtGui.QDialog):
 										)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	#======================================================================
 	#========= UI Buttons Functions
 	#======================================================================
+
+
+
+
+
+	# def clicked(self):
+	# 	QtGui.QMessageBox.about(self, "My message box","toto")
+
+
+
+
+	def confirmBox_on_BT_SYNC_SCRIPTS_clicked(self):    
+		# MESSAGE = "toto"
+		# reply = QtGui.QMessageBox.question(self, "QMessageBox.question()",
+		# QtCore.Qt.Dialog.MESSAGE, 
+		# QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel)
+		# if reply == QtGui.QMessageBox.Yes:
+		# 	self.questionLabel.setText("Yes")
+		# 	self.printSTD('[ SYNC YES ]')
+		# 	on_BT_SYNC_SCRIPTS_clicked()
+		# else:
+		# 	self.questionLabel.setText("Cancel")
+		# 	self.printSTD('[ SYNC CANCEL ]')
+
+
+		QtGui.QMessageBox.question(self, 'Confirm', ''' Are you sure Sync : ''',
+		QtGui.QMessageBox.Ok  | QtGui.QMessageBox.Cancel)
+
+
+
 
 	def back_to_HOME(self):
 		self.show_BT_HOME()
@@ -325,9 +398,14 @@ class __QT_KBZ__(QtGui.QDialog):
 		# 	self.delete_TopAndMiddle()
 		# 	self.Construct_TopAndMiddle()
 
+
+	# def on_BT_SYNC_SCRIPTS_clicked(self):
+	# 		self.confirmBox()
+
+
 	def on_BT_SYNC_SCRIPTS_clicked(self):
 
-			# self.hide_BT_MAIN_clicked()
+			# self.confirmBox()
 
 			now = datetime.datetime.now()
 			date = now.strftime("%Y%m%d-%H-%M-%S")
@@ -401,7 +479,8 @@ class __QT_KBZ__(QtGui.QDialog):
 			if str(name)=='BT_HOME_SCRIPTS':
 				self.on_BT_MAIN_clicked(name)
 			if str(name)=='BT_SYNC_SCRIPTS':
-				self.on_BT_SYNC_SCRIPTS_clicked()
+				# self.on_BT_SYNC_SCRIPTS_clicked()
+				self.confirmBox_on_BT_SYNC_SCRIPTS_clicked()
 			return True
 
 		#========= Mouse Over
@@ -769,14 +848,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		# 	min-width: 10em;
 		# 	padding: 6px;
 		# }
-
-
-
-
-
-
-
-
 
 
 #===================================================================================================================================
