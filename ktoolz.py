@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 05-04-2016                                                         #
+# Last Update : 12-04-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -199,15 +199,12 @@ class __ORGANIZER__():
 
     def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower):
         ''' retrieve information for path if USECASE or specials cases '''
-
-        # if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper(): 
-        if type_layout == 'Usecase' :       
-            # print 'OK' + a_name         
+        if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():       
             A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
             a_catFamily      = A7_infos['a_catFamily']
-            # a_name           = A7_infos['a_name'] 
-            # pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
-            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+            if str(a_catFamily) == None:
+                a_catFamily = mySeq
+            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
