@@ -2,10 +2,10 @@
 '''     List of Samples Functions to learn  InK UI-API  - Verbose Documentation  '''
 
 # ##################################################################################
-# MG ILLUMINATION                                                           	     #
+# MG ILLUMINATION                                                                    #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 05-04-2016                                                         #
+# Last Update : 12-04-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -202,15 +202,12 @@ class __ORGANIZER__():
 
     def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower):
         ''' retrieve information for path if USECASE or specials cases '''
-
-        # if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper(): 
-        if type_layout == 'Usecase' :       
-            # print 'OK' + a_name         
+        if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():       
             A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
             a_catFamily      = A7_infos['a_catFamily']
-            # a_name           = A7_infos['a_name'] 
-            # pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+a_name+'_'+mySHOT+'.inkGraph'
-            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+            if str(a_catFamily) == None:
+                a_catFamily = mySeq
+            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
@@ -257,12 +254,12 @@ def K01_SAMPLE_2():
   
   
 #=========================== UI
-K01_SAMPLE_2.__position__            = 2							                                 # todo to understand
-#K01_SAMPLE_2.__toolDesc__           = ( 002, 'kroumch', 'audioIcon.png', 'Pipe', '' )	 # todo to understand
+K01_SAMPLE_2.__position__            = 2                                                             # todo to understand
+#K01_SAMPLE_2.__toolDesc__           = ( 002, 'kroumch', 'audioIcon.png', 'Pipe', '' )   # todo to understand
 K01_SAMPLE_2.__icon__                = 'pipe/createGraphOccLight.png'
 K01_SAMPLE_2.__category__            = 'B - FIRST SAMPLES'
 K01_SAMPLE_2.__author__              = 'Le Baron Rouge'
-K01_SAMPLE_2.__shortText__           = 'Icon Title'					                           # Text write on Icon Tool
+K01_SAMPLE_2.__shortText__           = 'Icon Title'                                            # Text write on Icon Tool
 
 
 
