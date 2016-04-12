@@ -140,7 +140,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContent.setObjectName("TopAreaContent")
 
 		#========= Top Area content button
-		txtBt = '<- BACK ' + self.CURRENT_PROJECT
+		txtBt = '<- BACK '
 		self.BT_BACK_HOME = QtGui.QPushButton(txtBt)
 		self.BT_BACK_HOME.setVisible(False)
 
@@ -331,35 +331,14 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= UI Buttons Functions
 	#======================================================================
 
-
-
-
-
-	# def clicked(self):
-	# 	QtGui.QMessageBox.about(self, "My message box","toto")
-
-
-
-
-	def confirmBox_on_BT_SYNC_SCRIPTS_clicked(self):    
-		# MESSAGE = "toto"
-		# reply = QtGui.QMessageBox.question(self, "QMessageBox.question()",
-		# QtCore.Qt.Dialog.MESSAGE, 
-		# QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel)
-		# if reply == QtGui.QMessageBox.Yes:
-		# 	self.questionLabel.setText("Yes")
-		# 	self.printSTD('[ SYNC YES ]')
-		# 	on_BT_SYNC_SCRIPTS_clicked()
-		# else:
-		# 	self.questionLabel.setText("Cancel")
-		# 	self.printSTD('[ SYNC CANCEL ]')
-
-
-		QtGui.QMessageBox.question(self, 'Confirm', ''' Are you sure Sync : ''',
+	def confirmBox(self,title,msg=''):    
+		reply = QtGui.QMessageBox.question(self, title, msg,
 		QtGui.QMessageBox.Ok  | QtGui.QMessageBox.Cancel)
-
-
-
+		if reply == QtGui.QMessageBox.Ok:
+			self.printSTD('\n[ SYNC '+self.CURRENT_PROJECT+' Script(s) Confirmed ]\n')
+			self.on_BT_SYNC_SCRIPTS_clicked()
+		else:
+			self.printSTD('\n[ SYNC '+self.CURRENT_PROJECT+' Script(s) Canceled ]\n')
 
 	def back_to_HOME(self):
 		self.show_BT_HOME()
@@ -386,7 +365,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.back_to_HOME()
 
 	def on_BT_MAIN_clicked(self,BT):
-		# self.hide_BT_HOME()
 		if BT == "BT_HOME_SCRIPTS":
 			self.hide_BT_HOME()
 			self.delete_TopAndMiddle()
@@ -397,11 +375,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		# if BT == "BT_MAIN_3":
 		# 	self.delete_TopAndMiddle()
 		# 	self.Construct_TopAndMiddle()
-
-
-	# def on_BT_SYNC_SCRIPTS_clicked(self):
-	# 		self.confirmBox()
-
 
 	def on_BT_SYNC_SCRIPTS_clicked(self):
 
@@ -480,7 +453,7 @@ class __QT_KBZ__(QtGui.QDialog):
 				self.on_BT_MAIN_clicked(name)
 			if str(name)=='BT_SYNC_SCRIPTS':
 				# self.on_BT_SYNC_SCRIPTS_clicked()
-				self.confirmBox_on_BT_SYNC_SCRIPTS_clicked()
+				self.confirmBox('Confirm Sync')
 			return True
 
 		#========= Mouse Over
