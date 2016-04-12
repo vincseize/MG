@@ -199,16 +199,16 @@ class __ORGANIZER__():
 
     def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower):
         ''' retrieve information for path if USECASE or specials cases '''
+
+        A7_infos         = __PIPEIN_GRAPH.getA7_infos(a7)
+        a_catFamily      = A7_infos['a_catFamily']
+
         if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():       
-            A7_infos      = __PIPEIN_GRAPH.getA7_infos(a7)
-            a_catFamily      = A7_infos['a_catFamily']
-            if str(a_catFamily) == None:
-                a_catFamily = mySeq
-            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+            pathGraphSave        = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
             if type_layout == 'Anim':
                 pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
         try:
@@ -228,7 +228,7 @@ class __ORGANIZER__():
 def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',protoGraphM=None): 
     ''' 
     | /
-    | \ Tool - Last update 24-03-2016
+    | \ Tool - Last update 12-04-2016
       ----------------------------------------------------------------------
       - Organize Context Layout for layout, anim, previz, usecase 
       -> get streams      
@@ -317,11 +317,15 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
                 a_catFamily      = A7_infos_us['a_catFamily']
                 a_name           = A7_infos_us['a_name']              
-
     #========= retrieve information for path if USECASE or specials cases 
             result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
             if result != None:
                 pathGraphSave = result   
+    #========= Patch special case, no cat , to do better
+        if 'NONE' in str(pathGraphSave).upper() and str(type_layout) == 'Usecase':
+            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+
+
     #========= set position layout.a7 Upstreams
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
@@ -383,16 +387,13 @@ AK01_GRAPH_Organizer.__paramsType__       = {
 def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     ''' 
     | /
-    | \ Tool - Last update 24-03-2016
+    | \ Tool - Last update 12-04-2016
     ----------------------------------------------------------------------
       - Organize and Save Graph(s) 
       
       Select one or several anim, layout .a7
       (previz, usecase enable, slun enable)
 
-      todo:
-            -> test mlun
-            -> real pathSave when Multi
     ----------------------------------------------------------------------
     '''
 
@@ -510,6 +511,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #========= get infos
+
         if str(type_layout) == 'Usecase':
             for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(mySeq).upper() in str(a7).upper():
@@ -520,7 +522,9 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
                 if result != None:
                     pathGraphSave = result  
-
+        #========= Patch special case, no cat , to do better
+            if 'NONE' in str(pathGraphSave).upper():
+                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
         #======================================================================
         #========= add EDIT a7s 
         #======================================================================
@@ -535,11 +539,14 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         protoGraph.SelectAll()
         selection = protoGraph.GetSelection()   
 
-        if type_layout == 'Layout' or type_layout == 'Anim' or type_layout == 'Previz':
-            checkString = str(mySeq) + '_EDIT-'
 
-        if type_layout == 'Usecase':
-            checkString = str(a_name).upper() + '_EDIT-'   
+        checkString = str(mySeq) + '_EDIT-'
+
+        # if type_layout == 'Layout' or type_layout == 'Anim' or type_layout == 'Previz':
+        #     checkString = str(mySeq) + '_EDIT-'
+
+        # if type_layout == 'Usecase':
+        #     checkString = str(a_name).upper() + '_EDIT-'   
 
         for pa in selection:             
             if str(checkString) in str(pa):
