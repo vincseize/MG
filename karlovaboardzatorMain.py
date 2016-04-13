@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 11-04-2016                                                                #
+# Date   : 13-04-2016                                                              #
 # ##################################################################################
 
 
@@ -377,17 +377,58 @@ class __QT_KBZ__(QtGui.QDialog):
 		# 	self.Construct_TopAndMiddle()
 
 	def on_BT_SYNC_SCRIPTS_clicked(self):
+		'''   '''
 
-			# self.confirmBox()
+		def applyUI_OK():
+			'''   '''
+			model = self.ScriptsAreaContent
+			colIndex = 0
+			nRows = model.rowCount()
+			self.printSTD(nRows)
+			for n in range(nRows):
+				Item_QModelIndex = model.index(n, colIndex)
+				# self.printSTD(Item_QModelIndex)
+				# self.printSTD('------------------------')
+				# item = Item_QModelIndex.data # return <built-in method data of QModelIndex object at 0x6102140>
+				# self.printSTD(item)
+				# item = Item_QModelIndex.data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
+				# self.printSTD(item)
+				itemChecked = Item_QModelIndex.data(QtCore.Qt.CheckStateRole) # 
+				if itemChecked == 2: # checked
+					self.printSTD('------------------------')
+					self.printSTD(itemChecked)
+					# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
+					# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
+					# self.printSTD(role)  # ne retourne pas d erreur
+					model.setData(
+					model.index(n, colIndex),
+					QtGui.QColor(QtCore.Qt.green),
+					QtCore.Qt.BackgroundColorRole
+					)
+
+		#====================================================================== Fin Scripts
+
 
 			now = datetime.datetime.now()
 			date = now.strftime("%Y%m%d-%H-%M-%S")
 
-			array_scriptToSync = []
-			myPrefs = json.load(open(self.MYPREFSFILE))
+			# array_scriptToSync = []
+			# myPrefs = json.load(open(self.MYPREFSFILE))
+			array_scriptToSync = self.list_Scripts()
+			# applyUI_OK()
+
+
+
+			# check if script to sync, show hide Bt
 
 			for v in myPrefs["scripts"]:
 				array_scriptToSync.append(v)
+
+
+
+			array_scriptToSync = self.list_Scripts()
+
+
 
 			for ap in self.ALL_PROJECTS:
 				dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
@@ -424,10 +465,11 @@ class __QT_KBZ__(QtGui.QDialog):
 
 			#========= 2 -copy sync
 								copyfile(path_local, path_distant)
-								# if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) :
 								if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
+									applyUI_OK()									
 									self.printSTD('[ SYNC OK ]')
 								if os.path.isfile(path_local) and os.path.isfile(path_distant) and checkCopy == True:	
+									applyUI_OK()	
 									self.printSTD('[ COPY OK ]')
 								if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) and checkCopy == False:
 									self.printSTD('[ SYNC ERROR ]')
