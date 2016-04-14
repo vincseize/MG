@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date   : 13-04-2016                                                              #
+# Date   : 14-04-2016                                                              #
 # ##################################################################################
 
 
@@ -13,7 +13,22 @@ import os
 import sys
 import random
 import glob
+
 from PyQt4 import QtGui, QtCore, Qt
+from PyQt4.QtCore import (pyqtProperty, pyqtSignal, pyqtSlot, QBuffer,
+                          QByteArray, QDir, QEvent, QEventLoop, QFileInfo,
+                          QObject, QPoint, QRect, QSize, QSizeF, Qt, QUrl,
+                          qDebug)
+from PyQt4.QtGui import (QApplication, QDesktopServices, QImage,
+                         QMouseEvent, QPainter, QPalette, QPrinter,
+                         QRegion, qRgba)
+from PyQt4.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PyQt4.QtWebKit import QWebPage, QWebSettings
+
+
+
+
+
 import ink
 import ink.io
 import time
@@ -34,6 +49,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255] }
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
+		self.START_DIR 					= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.DIR_BACKUP	 				= '_backup'		
@@ -177,6 +193,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def construct_MiddleTabsArea(self):
 		'''   '''
+
 		#========= Middle Area content
 		self.MiddleTabsContent = QtGui.QHBoxLayout()
 		self.MiddleTabsContent.setObjectName("MiddleTabsContent")
@@ -186,27 +203,79 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.MiddleTabsArea.setTabPosition(QtGui.QTabWidget.North)
 		self.MiddleTabsArea.setObjectName("MiddleTabsArea")
 
-		#=========================== Tab1
-		self.Tab1 = QtGui.QTreeWidget()
-		self.MiddleTabsArea.addTab(self.Tab1, "A7 Locked By me")
-		# self.connect(self.Tab1, QtCore.SIGNAL("itemDoubleClicked (QTreeWidgetItem *,int)"), self.on_Tab1_double_clicked)
+
+
+		#==================================================
+		#=========================== Tab1	
+		#==================================================
+
+		#=========================== FileSystem
+		model = QtGui.QFileSystemModel()
+		# model.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllEntries)
+		model.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
+		model.setRootPath(self.START_DIR)
+
+		# model.setFilter(QDir.Files)
+		# model.setFilterKeyColumn(0)
+		# model.setFilterWildcard("*.txt")
+
+		#=========================== Treeview
+		self.Tab1 = QtGui.QTreeView()
 		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
+		self.Tab1.objectName = "Tab1"
+		# self.Tab1.setAnimated(True)
+		# self.Tab1.setRootIsDecorated(True)
+		self.Tab1.setAlternatingRowColors(True)
+		# self.Tab1.header().setStretchLastSection(True)
+		# self.Tab1.headerItem().setText(0, "Name ")
+		# self.Tab1.headerItem().setText(1, "Property")
+		# self.Tab1.headerItem().setText(2, "Value")
+		# self.Tab1.setColumnWidth(0, 400)
+		# self.Tab1.setColumnWidth(1, 150)
 
-		self.Tab1.setAnimated(True)
-		self.Tab1.setRootIsDecorated(True)
-		self.Tab1.setAlternatingRowColors(False)
-		self.Tab1.header().setStretchLastSection(True)
-		self.Tab1.headerItem().setText(0, "")
-		self.Tab1.headerItem().setText(1, "Property")
-		self.Tab1.headerItem().setText(2, "Value")
-		self.Tab1.setColumnWidth(0, 100)
-		self.Tab1.setColumnWidth(1, 150)
+		# projectLower = 'dm3'
+		# self.filter = ['/u/'+projectLower+'/Users/COM/Presets/Graphs/']
 
-		#=========================== Tab2		
+		#=========================== populate tab1
+		self.Tab1.setModel(model)
+		self.Tab1.setRootIndex(model.index(self.START_DIR))
+		self.Tab1.resizeColumnToContents(0)
+		# self.Tab1.sortByColumn(0, Qt.AscendingOrder)
+
+
+		# setDir   = QtCore.QDir(self.START_DIR)
+		# self.Tab1.setRootIndex(model.index(QtCore.QDir.path(setDir), 0 ))
+
+
+
+
+		#==================================================
+		#=========================== Tab2
+		#==================================================
+
+		self.Tab2 = QtGui.QTreeWidget()
+		# self.connect(self.Tab2, QtCore.SIGNAL("itemDoubleClicked (QTreeWidgetItem *,int)"), self.on_Tab2_double_clicked)
+		self.connect(self.Tab2, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
+		self.Tab2.objectName = "Tab2"
+		# self.Tab2.setAnimated(True)
+		# self.Tab2.setRootIsDecorated(True)
+		# self.Tab2.setAlternatingRowColors(False)
+		# self.Tab2.header().setStretchLastSection(True)
+		# self.Tab2.headerItem().setText(0, "Name ")
+		# self.Tab2.headerItem().setText(1, "Property")
+		# self.Tab2.headerItem().setText(2, "Value")
+		# self.Tab2.setColumnWidth(0, 100)
+		# self.Tab2.setColumnWidth(1, 150)
+
 
 		#=========================== Tab X
 
-		#================================================== add Tabs to Middle Area content
+
+		#================================================== add Tabs to MiddleTabsArea
+		self.MiddleTabsArea.addTab(self.Tab1, "A7 Locked By me")
+		self.MiddleTabsArea.addTab(self.Tab2, "wip")
+
+		#================================================== add MiddleTabsArea to Middle Area content
 		self.MiddleTabsContent.addWidget(self.MiddleTabsArea)
 
 		#========================================== add Area content to middle Area container
