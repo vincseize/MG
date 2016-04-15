@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date   : 14-04-2016                                                              #
+# Date : 15-04-2016                                                                #
 # ##################################################################################
 
 
@@ -13,22 +13,7 @@ import os
 import sys
 import random
 import glob
-
 from PyQt4 import QtGui, QtCore, Qt
-from PyQt4.QtCore import (pyqtProperty, pyqtSignal, pyqtSlot, QBuffer,
-                          QByteArray, QDir, QEvent, QEventLoop, QFileInfo,
-                          QObject, QPoint, QRect, QSize, QSizeF, Qt, QUrl,
-                          qDebug)
-from PyQt4.QtGui import (QApplication, QDesktopServices, QImage,
-                         QMouseEvent, QPainter, QPalette, QPrinter,
-                         QRegion, qRgba)
-from PyQt4.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from PyQt4.QtWebKit import QWebPage, QWebSettings
-
-
-
-
-
 import ink
 import ink.io
 import time
@@ -46,10 +31,11 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= Globals Variables
 	#======================================================================
 		self.CURRENT_USER 				= os.getenv('USER')
-		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255] }
+		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0] }		
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
-		self.START_DIR 					= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
+		self.START_DIR_PUBLIC 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
+		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.DIR_BACKUP	 				= '_backup'		
@@ -65,6 +51,8 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.HOME_COLOR = self.ALL_PROJECTS['lun']
 		if self.CURRENT_PROJECT 	== 'DM3':
 			self.HOME_COLOR = self.ALL_PROJECTS['dm3']
+		if self.CURRENT_PROJECT 	== 'MAX':
+			self.HOME_COLOR = self.ALL_PROJECTS['max']
 
 	#======================================================================
 	#========= main vlayout
@@ -194,91 +182,89 @@ class __QT_KBZ__(QtGui.QDialog):
 	def construct_MiddleTabsArea(self):
 		'''   '''
 
-		#========= Middle Area content
+		#=======================================================================================
+		#=========================== Middle Area content
+		#=======================================================================================
+
 		self.MiddleTabsContent = QtGui.QHBoxLayout()
 		self.MiddleTabsContent.setObjectName("MiddleTabsContent")
 
-		# #========= Tab Area Widget
+		#==========================================================================
+		#=========================== Tabs Areas Widget
+		#==========================================================================
+
 		self.MiddleTabsArea = QtGui.QTabWidget()
 		self.MiddleTabsArea.setTabPosition(QtGui.QTabWidget.North)
 		self.MiddleTabsArea.setObjectName("MiddleTabsArea")
-
-
 
 		#==================================================
 		#=========================== Tab1	
 		#==================================================
 
 		#=========================== FileSystem
-		model = QtGui.QFileSystemModel()
-		# model.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllEntries)
-		model.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
-		model.setRootPath(self.START_DIR)
 
-		# model.setFilter(QDir.Files)
-		# model.setFilterKeyColumn(0)
-		# model.setFilterWildcard("*.txt")
+		modelTab1 = QtGui.QFileSystemModel()
+		# modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllEntries)
+		modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
+		# modelTab1.setRootPath(self.START_DIR_PUBLIC)
+		modelTab1.setRootPath(self.START_DIR_LOCKED)
+		
+
+		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
+		# f1   = QFileInfo('/u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT/NasK_Casting/GRI_S1250_EDIT-NasK_Casting.csv')
+		# 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
+		# info = f1.isWritable()
+		# self.printSTD(info)
+
+		# info = f1.owner()
+		# self.printSTD(info)
+
 
 		#=========================== Treeview
 		self.Tab1 = QtGui.QTreeView()
 		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
 		self.Tab1.objectName = "Tab1"
-		# self.Tab1.setAnimated(True)
-		# self.Tab1.setRootIsDecorated(True)
 		self.Tab1.setAlternatingRowColors(True)
-		# self.Tab1.header().setStretchLastSection(True)
-		# self.Tab1.headerItem().setText(0, "Name ")
-		# self.Tab1.headerItem().setText(1, "Property")
-		# self.Tab1.headerItem().setText(2, "Value")
-		# self.Tab1.setColumnWidth(0, 400)
-		# self.Tab1.setColumnWidth(1, 150)
-
-		# projectLower = 'dm3'
-		# self.filter = ['/u/'+projectLower+'/Users/COM/Presets/Graphs/']
 
 		#=========================== populate tab1
-		self.Tab1.setModel(model)
-		self.Tab1.setRootIndex(model.index(self.START_DIR))
+		self.Tab1.setModel(modelTab1)
+		self.Tab1.setRootIndex(modelTab1.index(self.START_DIR_LOCKED))
 		self.Tab1.resizeColumnToContents(0)
-		# self.Tab1.sortByColumn(0, Qt.AscendingOrder)
-
-
-		# setDir   = QtCore.QDir(self.START_DIR)
-		# self.Tab1.setRootIndex(model.index(QtCore.QDir.path(setDir), 0 ))
-
-
-
 
 		#==================================================
-		#=========================== Tab2
+		#=========================== Tab2	
 		#==================================================
 
-		self.Tab2 = QtGui.QTreeWidget()
-		# self.connect(self.Tab2, QtCore.SIGNAL("itemDoubleClicked (QTreeWidgetItem *,int)"), self.on_Tab2_double_clicked)
-		self.connect(self.Tab2, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
+		#=========================== FileSystem
+		modelTab2 = QtGui.QFileSystemModel()
+		modelTab2.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
+		modelTab2.setRootPath(self.START_DIR_PUBLIC)
+
+		#=========================== Treeview
+		self.Tab2 = QtGui.QTreeView()
+		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
 		self.Tab2.objectName = "Tab2"
-		# self.Tab2.setAnimated(True)
-		# self.Tab2.setRootIsDecorated(True)
-		# self.Tab2.setAlternatingRowColors(False)
-		# self.Tab2.header().setStretchLastSection(True)
-		# self.Tab2.headerItem().setText(0, "Name ")
-		# self.Tab2.headerItem().setText(1, "Property")
-		# self.Tab2.headerItem().setText(2, "Value")
-		# self.Tab2.setColumnWidth(0, 100)
-		# self.Tab2.setColumnWidth(1, 150)
+		self.Tab1.setAlternatingRowColors(True)
+
+		#=========================== populate tab2
+		self.Tab2.setModel(modelTab2)
+		self.Tab2.setRootIndex(modelTab2.index(self.START_DIR_PUBLIC))
+		self.Tab2.resizeColumnToContents(0)
+
+		# #==================================================
+		# #=========================== Tab x
+		# #==================================================
 
 
-		#=========================== Tab X
 
+		#========================================================================= add Tabs to MiddleTabsArea
+		self.MiddleTabsArea.addTab(self.Tab1, ' Local a7 ')
+		self.MiddleTabsArea.addTab(self.Tab2, ' Public a7 ')
 
-		#================================================== add Tabs to MiddleTabsArea
-		self.MiddleTabsArea.addTab(self.Tab1, "A7 Locked By me")
-		self.MiddleTabsArea.addTab(self.Tab2, "wip")
-
-		#================================================== add MiddleTabsArea to Middle Area content
+		#========================================================== add MiddleTabsArea to Middle Area content
 		self.MiddleTabsContent.addWidget(self.MiddleTabsArea)
 
-		#========================================== add Area content to middle Area container
+		#========================================================== add Area content to middle Area container
 		self.MiddleAreaContainer.setLayout(self.MiddleTabsContent)
 
 
@@ -324,7 +310,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		n = 0
 		for script in scripts:
 			if '.pyc' not in str(script) and '.py~' not in str(script) and '__init__.py' not in str(script) and '_kbz.json' not in str(script):
-				if '.py' in str(script) or '.txt' in str(script) or '.json' in str(script) or '.py' in str(script) or '.mel' in str(script) or '.xml' in str(script) or '.csv' in str(script) or '.bat' in str(script):
+				if '.py' in str(script) or '.txt' in str(script) or '.json' in str(script) or '.py' in str(script) or '.mel' in str(script) or '.xml' in str(script) or '.csv' in str(script) or '.bat' in str(script) or '.db' in str(script):
 					n = n+1
 					item = QtGui.QStandardItem(script)
 					item.setCheckable(True)
@@ -378,22 +364,6 @@ class __QT_KBZ__(QtGui.QDialog):
 											"height: 40px;"						
 											"max-width: 600px;"
 										)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	#======================================================================
@@ -450,12 +420,12 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		def applyUI_OK():
 			'''   '''
-			model = self.ScriptsAreaContent
+			modelScript = self.ScriptsAreaContent
 			colIndex = 0
-			nRows = model.rowCount()
+			nRows = modelScript.rowCount()
 			self.printSTD(nRows)
 			for n in range(nRows):
-				Item_QModelIndex = model.index(n, colIndex)
+				Item_QModelIndex = modelScript.index(n, colIndex)
 				# self.printSTD(Item_QModelIndex)
 				# self.printSTD('------------------------')
 				# item = Item_QModelIndex.data # return <built-in method data of QModelIndex object at 0x6102140>
@@ -464,13 +434,13 @@ class __QT_KBZ__(QtGui.QDialog):
 				# self.printSTD(item)
 				itemChecked = Item_QModelIndex.data(QtCore.Qt.CheckStateRole) # 
 				if itemChecked == 2: # checked
-					self.printSTD('------------------------')
-					self.printSTD(itemChecked)
+					# self.printSTD('------------------------')
+					# self.printSTD(itemChecked)
 					# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
 					# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
 					# self.printSTD(role)  # ne retourne pas d erreur
-					model.setData(
-					model.index(n, colIndex),
+					modelScript.setData(
+					modelScript.index(n, colIndex),
 					QtGui.QColor(QtCore.Qt.green),
 					QtCore.Qt.BackgroundColorRole
 					)
@@ -478,80 +448,69 @@ class __QT_KBZ__(QtGui.QDialog):
 		#====================================================================== Fin Scripts
 
 
-			now = datetime.datetime.now()
-			date = now.strftime("%Y%m%d-%H-%M-%S")
+		now = datetime.datetime.now()
+		date = now.strftime("%Y%m%d-%H-%M-%S")
 
-			# array_scriptToSync = []
-			# myPrefs = json.load(open(self.MYPREFSFILE))
-			array_scriptToSync = self.list_Scripts()
-			# applyUI_OK()
+		array_scriptToSync = []
+		myPrefs = json.load(open(self.MYPREFSFILE))
 
+		for v in myPrefs["scripts"]:
+			array_scriptToSync.append(v)
 
+		for ap in self.ALL_PROJECTS:
+			dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
+			if not os.path.exists(dir_distant_backup):
+				os.makedirs(dir_distant_backup)
+			APU = str(ap).upper()
+			ap 	= str(ap).lower()		
 
-			# check if script to sync, show hide Bt
+			if str(self.CURRENT_PROJECT_lower) != str(ap):
+				msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
+				self.printSTD(' ')
+				self.printSTD('-----------------------------------------------------------------------')
+				self.printSTD(str(msg))
+				self.printSTD('-----------------------------------------------------------------------\n\n')
+				for s in array_scriptToSync:
+					checkCopy 	= False
+					filename 	= s.split('.')[0]
+					ext 	 	= s.split('.')[1]
+					sbackup 	= filename+'_'+date+'.'+ext
+					path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
+					path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
+					path_distant_backup = dir_distant_backup+'/'+sbackup
+					self.printSTD(path_local)					
+					self.printSTD('->')
+					self.printSTD(path_distant)
+					try:
+						if os.path.isfile(path_local):
+		#========= 1 - FIRST , IMPORTANT backup distant file before copy
+							if os.path.isfile(path_distant):
+								copyfile(path_distant, path_distant_backup)
+							if not os.path.isfile(path_distant):
+								self.printSTD('---[ NEW FILE ]---')
+								checkCopy = True
 
-			for v in myPrefs["scripts"]:
-				array_scriptToSync.append(v)
+		#========= 2 -copy sync
+							copyfile(path_local, path_distant)
+							if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
+								applyUI_OK()									
+								self.printSTD('[ SYNC OK ]')
+							if os.path.isfile(path_local) and os.path.isfile(path_distant) and checkCopy == True:	
+								applyUI_OK()	
+								self.printSTD('[ COPY OK ]')
+							if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) and checkCopy == False:
+								self.printSTD('[ SYNC ERROR ]')
 
+					except:
+						self.printSTD('[ SYNC ERROR ]')
 
+					self.printSTD('-----------------------------------------------------------------------\n')
 
-			array_scriptToSync = self.list_Scripts()
+				msg = '\nEND ' + msg
+				self.printSTD(str(msg))
 
-
-
-			for ap in self.ALL_PROJECTS:
-				dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
-				if not os.path.exists(dir_distant_backup):
-					os.makedirs(dir_distant_backup)
-				APU = str(ap).upper()
-				ap 	= str(ap).lower()		
-
-				if str(self.CURRENT_PROJECT_lower) != str(ap):
-					msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
-					self.printSTD(' ')
-					self.printSTD('-----------------------------------------------------------------------')
-					self.printSTD(str(msg))
-					self.printSTD('-----------------------------------------------------------------------\n\n')
-					for s in array_scriptToSync:
-						checkCopy 	= False
-						filename 	= s.split('.')[0]
-						ext 	 	= s.split('.')[1]
-						sbackup 	= filename+'_'+date+'.'+ext
-						path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
-						path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
-						path_distant_backup = dir_distant_backup+'/'+sbackup
-						self.printSTD(path_local)					
-						self.printSTD('->')
-						self.printSTD(path_distant)
-						try:
-							if os.path.isfile(path_local):
-			#========= 1 - FIRST , IMPORTANT backup distant file before copy
-								if os.path.isfile(path_distant):
-									copyfile(path_distant, path_distant_backup)
-								if not os.path.isfile(path_distant):
-									self.printSTD('---[ NEW FILE ]---')
-									checkCopy = True
-
-			#========= 2 -copy sync
-								copyfile(path_local, path_distant)
-								if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
-									applyUI_OK()									
-									self.printSTD('[ SYNC OK ]')
-								if os.path.isfile(path_local) and os.path.isfile(path_distant) and checkCopy == True:	
-									applyUI_OK()	
-									self.printSTD('[ COPY OK ]')
-								if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) and checkCopy == False:
-									self.printSTD('[ SYNC ERROR ]')
-								# if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) :
-								# 	self.printSTD('[ SYNC ERROR ]')
-						except:
-							self.printSTD('[ SYNC ERROR ]')
-
-						self.printSTD('-----------------------------------------------------------------------\n')
-
-					msg = '\nEND ' + msg
-					self.printSTD(str(msg))
-
+		#========= write liste , for secu, to do better
+		self.write_Prefs(myPrefs,False)
 
 
 	def eventFilter(self, object, event):
