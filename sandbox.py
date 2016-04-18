@@ -2091,15 +2091,149 @@ AK03_LAYOUT_BuildHumanShape.__paramsType__        = {
 
 
 
+#========================================================================================================================= AK03_LAYOUT_BuildHumanShape
+
+
+def AK04_PATCHZATOR(SaveGraph='False'):
+    ''' 
+    | /
+    | \ Tool - Last update 15-04-2016
+      ----------------------------------------------------------------------
+      - Patch
+
+      ----------------------------------------------------------------------
+
+      Select shading.a7
+
+    '''
+
+    #=========
+    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+    layout      = protoGraph.GetLayout()
+    selection   = protoGraph.GetSelection()
+    type_layout = None 
+
+
+    up1 = "LightSet-Shading_BigProps.a7"
+    up2 = "LightSet-Shading_Props.a7"
+
+# LIB/LIGHTS/LightSet/Shading/LightSet-Shading_Props.a7
+# LIBREF/PROPS/FAMILY/XNAMEX/Shading/XNAMEX-Shading.a7
+# LIB/LIGHTS/LightSet/Shading/LightSet-Shading_BigProps.a7
+
+
+# LIB/PROPS/ABCD/BookPileMax/Shading/BookPileMax-Shading.a7
+# LIB/PROPS/ABCD/Blender/Shading/Blender-Shading.a7
+# LIB/PROPS/ABCD/BillBundle/Shading/BillBundle-Shading.a7
+# LIB/PROPS/ABCD/BowlFruits/Shading/BowlFruits-Shading.a7
+
+    if not selection:
+        raise Exception('Please select at least one a7 !')
+
+    assetList=[]
+
+    for pa in selection:  
+        assetList.append(pa)
+        # layout.SetPos(pa, (0,0) )
+
+    protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
+
+    n = 0
+    for pa in assetList:
+        n += 1
+        layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+        layA7Pos_X  = layA7Pos[0]
+        layA7Pos_Y  = layA7Pos[1]
+        #========= List of A7 that will be saved in new Graph
+        assetList_forGraphtoSave = []
+        #========= populate List
+        assetList_forGraphtoSave.append(pa)
+        #=========
+        protoGraphName = 'GRAPHNAME_'+str(n)
+        pathGraphSave = protoGraphName
+
+        protoGraph.SetSelection([pa])
+        protoGraph.Show()
+        protoGraph.Apply()
+
+        #======================================================================
+        #========= Retrieve Upstreams if already exist
+        #======================================================================
+        # OkFilter = nomen.Nomen.Empty().SetLib('LIB').SetFamilies(['LIGHTS']).SetName ('LightSet')
+        # StreamProtoList = protoGraph.GetUpstreams( pa, niFilter=OkFilter)
+
+
+        # exportShadingRnd   = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/'+ink.io.ConnectUserInfo()[1]+'/Files/surf/'+Myfilm+'/'+Myseq+'/'+Myshot+'/Export_Shading/'+Myfilm+'_'+Myseq+'_'+Myshot+'-Export_Shading.rnd'
+        # exportShadingMgs   = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/'+ink.io.ConnectUserInfo()[1]+'/Files/text/'+Myfilm+'/'+Myseq+'/'+Myshot+'/Export_Shading/'+Myfilm+'_'+Myseq+'_'+Myshot+'-Export_Shading.mgs'
+
+
+        assetList_forGraphtoSave = assetList_forGraphtoSave + StreamProtoList
+        #------ apply graph
+        protoGraph.Apply()
+        protoGraph.Show(update=True)  # todo, to understand update = true
+
+
+        #========= layout Pos
+        protoGraph.SelectAll()
+        selection = protoGraph.GetSelection() 
+        for pa in selection:
+            A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa) 
+            nm_asset        = A7_infos['nm_asset'] 
+            # print nm_asset    
+            if 'SHADING_BIGPROPS' in str(nm_asset).upper():
+                layout.SetPos(pa, (layA7Pos_X-4, layA7Pos_Y+1) )
+            if 'SHADING_PROPS' in str(nm_asset).upper():
+                layout.SetPos(pa, (layA7Pos_X-4, layA7Pos_Y-1) )
+
+        protoGraph.Show()
+        protoGraph.Apply()
+        protoGraph.SelectAll()
+
+        # protoGraph.Write(protoGraphName, private=True)
+
+
+
+
+        #======================================================================
+        # SAVE LAYOUT GRAPH
+        #======================================================================
+        if str(SaveGraph) == 'False':
+            if 'NONE' in str(pathGraphSave).upper():
+                print '\n\nERROR, bad path : ' + pathGraphSave
+            else:
+                print '\AK04_PATCHZATOR is Happy :)\n'
+                print pathGraphSave , 'ready to be saved ...'
+        if str(SaveGraph) == 'True': 
+
+            if 'NONE' in str(pathGraphSave).upper():
+                print '\n\nERROR, bad path : ' + pathGraphSave
+            else:            
+                protoGraphS  = ink.proto.Graph.FromQuery(str(protoGraphName), assetList_forGraphtoSave) 
+                l = protoGraphS.GetLayout()                           
+                l.LoadGraphPos(assetList_forGraphtoSave)         
+
+                protoGraphS.Write(str(pathGraphSave), private=True)
+
+                if os.path.isfile(pathGraphSave):
+                    print '\AK04_PATCHZATOR is Happy :)\n'
+                    print pathGraphSave , 'Have been saved !!!'
+                    pass
+                else :
+                    print pathGraphSave + '\n\nSaving FAILED !!!'
 
 
 
 
 
 
+# #=========================== UI
 
-
-
+AK04_PATCHZATOR.__category__          = 'A - PIPE-IN TOOLZ'
+AK04_PATCHZATOR.__author__            = 'cpottier'
+AK04_PATCHZATOR.__textColor__         = '#6699ff'
+AK04_PATCHZATOR.__paramsType__        = {
+'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
+}
 
 
 
