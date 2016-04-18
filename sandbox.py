@@ -2099,7 +2099,7 @@ def AK04_PATCHZATOR(SaveGraph='False'):
     | /
     | \ Tool - Last update 15-04-2016
       ----------------------------------------------------------------------
-      - Patch
+      - Patch Only for SETS
 
       ----------------------------------------------------------------------
 
@@ -2117,15 +2117,15 @@ def AK04_PATCHZATOR(SaveGraph='False'):
     up1 = "LightSet-Shading_BigProps.a7"
     up2 = "LightSet-Shading_Props.a7"
 
-# LIB/LIGHTS/LightSet/Shading/LightSet-Shading_Props.a7
-# LIBREF/PROPS/FAMILY/XNAMEX/Shading/XNAMEX-Shading.a7
-# LIB/LIGHTS/LightSet/Shading/LightSet-Shading_BigProps.a7
+    # LIB/LIGHTS/LightSet/Shading/LightSet-Shading_Props.a7
+    # LIBREF/PROPS/FAMILY/XNAMEX/Shading/XNAMEX-Shading.a7
+    # LIB/LIGHTS/LightSet/Shading/LightSet-Shading_BigProps.a7
 
 
-# LIB/PROPS/ABCD/BookPileMax/Shading/BookPileMax-Shading.a7
-# LIB/PROPS/ABCD/Blender/Shading/Blender-Shading.a7
-# LIB/PROPS/ABCD/BillBundle/Shading/BillBundle-Shading.a7
-# LIB/PROPS/ABCD/BowlFruits/Shading/BowlFruits-Shading.a7
+    # LIB/PROPS/ABCD/BookPileMax/Shading/BookPileMax-Shading.a7
+    # LIB/PROPS/ABCD/Blender/Shading/Blender-Shading.a7
+    # LIB/PROPS/ABCD/BillBundle/Shading/BillBundle-Shading.a7
+    # LIB/PROPS/ABCD/BowlFruits/Shading/BowlFruits-Shading.a7
 
     if not selection:
         raise Exception('Please select at least one a7 !')
@@ -2139,20 +2139,21 @@ def AK04_PATCHZATOR(SaveGraph='False'):
     protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
 
     n = 0
-    for pa in assetList:
+    for A7ref in assetList:
         n += 1
-        layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+        assetPropsList=[]
+        layA7Pos    = __PIPEIN_GRAPH.getPosition(A7ref,layout)
         layA7Pos_X  = layA7Pos[0]
         layA7Pos_Y  = layA7Pos[1]
         #========= List of A7 that will be saved in new Graph
         assetList_forGraphtoSave = []
         #========= populate List
-        assetList_forGraphtoSave.append(pa)
+        assetList_forGraphtoSave.append(A7ref)
         #=========
         protoGraphName = 'GRAPHNAME_'+str(n)
         pathGraphSave = protoGraphName
 
-        protoGraph.SetSelection([pa])
+        protoGraph.SetSelection([A7ref])
         protoGraph.Show()
         protoGraph.Apply()
 
@@ -2160,14 +2161,77 @@ def AK04_PATCHZATOR(SaveGraph='False'):
         #========= Retrieve Upstreams if already exist
         #======================================================================
         # OkFilter = nomen.Nomen.Empty().SetLib('LIB').SetFamilies(['LIGHTS']).SetName ('LightSet')
-        # StreamProtoList = protoGraph.GetUpstreams( pa, niFilter=OkFilter)
+        # StreamProtoList = protoGraph.GetUpstreams( A7ref, niFilter=OkFilter)
+        # assetList_forGraphtoSave = assetList_forGraphtoSave + StreamProtoList
+
+        assetList_forGraphtoSave = []
+        LightSetCategory = 'Props'
 
 
-        # exportShadingRnd   = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/'+ink.io.ConnectUserInfo()[1]+'/Files/surf/'+Myfilm+'/'+Myseq+'/'+Myshot+'/Export_Shading/'+Myfilm+'_'+Myseq+'_'+Myshot+'-Export_Shading.rnd'
-        # exportShadingMgs   = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/'+ink.io.ConnectUserInfo()[1]+'/Files/text/'+Myfilm+'/'+Myseq+'/'+Myshot+'/Export_Shading/'+Myfilm+'_'+Myseq+'_'+Myshot+'-Export_Shading.mgs'
+        # #  Chars 
+        # if LightSetCategory == 'Props' :
+        #     # path_ctxt_params    = 'LIB/LIGHTS/LightSet/Shading_Props/LightSet-Shading_Props'
+        #     # Props_rnd           = 'surf/'+path_ctxt_params+'.rnd'
+        #     # Props_mat           = 'surf/'+path_ctxt_params+'.mat'
+        #     # Props_mgs           = 'text/'+path_ctxt_params+'.mgs'
+        #     # Props_face          = 'face/'+path_ctxt_params
+
+        # ql  = ink.query.Dir(dirPath=A7path, rootCom=True)
+        # for q in ql :
+        # qa = ink.query.Asset.FromProto( protoGraph.Add( q.GetNomen() ) ) 
+        # asset = q.GetNomen()
+
+        # protoGraph.Show()
+        # protoGraph.Apply()
+
+        # if selected=='True':
+
+        # # ShotShadingOk = nomen.Nomen.NewFilm(Myfilm, Myseq, Myshot)
+        # # Shading_Props.SetTypes(types)
+        # Shading_Props = 'LIB/LIGHTS/LightSet/Shading/LightSet-Shading_Props.a7'
+        # # Shading_PropsParams = {'MgsMode':'Pack', 'RndMode':'Pack', 'PartSys':'True'}         
+        # # paShading_Props = protoGraph.Add( Shading_Props, editAction='3D/Symbor', execAction='3D/SymborPack', execParams=Shading_PropsParams )
+       
 
 
-        assetList_forGraphtoSave = assetList_forGraphtoSave + StreamProtoList
+        # # Fichiers associes au lightset Shading_Props
+
+        # # A7lib       = nomen.Nomen.NewLib( lib='LIB', name='Paint', family=['MATERIALS'], types='Maps', stage='' )           
+        # paShading_Props = protoGraph.Add( Shading_Props )
+       
+        # paShading_Props.AddFile('mgs')
+        # paShading_Props.AddFile('mat')
+        # paShading_Props.AddFile('rnd')
+        # paShading_Props.AddFile('', mgDir='text')
+        # paShading_Props.AddFile('', mgDir='face')
+        # paShading_Props.AddFile('', mgDir='surf')
+        # Shading_Props.append( paShading_Props )
+
+
+        #------ add LightSet-Shading_Props
+        A7path = 'LIB/LIGHTS/LightSet/Shading/LightSet-Shading_Props.a7'
+        ql  = ink.query.Dir(dirPath=A7path, rootCom=True)
+        for q in ql :
+            qa = ink.query.Asset.FromProto( protoGraph.Add( q.GetNomen() ) ) 
+            asset = q.GetNomen()
+        assetProps     = protoGraph.Add(asset) 
+        assetProps.AddFile('mgs')   
+        protoGraph.AddLink( pa, assetProps, ink.proto.LINK_DEP )
+        assetList_forGraphtoSave.append(assetProps)
+        assetPropsList.append(assetProps)
+
+        #------ add LightSet-Shading_Props
+        A7path = 'LIB/LIGHTS/LightSet/Shading/LightSet-Shading_BigProps.a7'
+        ql  = ink.query.Dir(dirPath=A7path, rootCom=True)
+        for q in ql :
+            qa = ink.query.Asset.FromProto( protoGraph.Add( q.GetNomen() ) ) 
+            asset = q.GetNomen()
+        assetBigProps     = protoGraph.Add(asset) 
+        assetBigProps.AddFile('mgs')   
+        protoGraph.AddLink(  pa,  assetBigProps, ink.proto.LINK_DEP )
+        assetList_forGraphtoSave.append(assetBigProps)
+        assetPropsList.append(assetBigProps)
+
         #------ apply graph
         protoGraph.Apply()
         protoGraph.Show(update=True)  # todo, to understand update = true
@@ -2190,6 +2254,38 @@ def AK04_PATCHZATOR(SaveGraph='False'):
         protoGraph.SelectAll()
 
         # protoGraph.Write(protoGraphName, private=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # protoGraph.SetSelection(assetPropsList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
+        # for p in assetPropsList:  
+        #     print p
+        #     protoGraph.SetSelection([p],selectionMode = ink.proto.SEL_ADD, , clearBeforeOp=ink.proto.SEL_NOCLEAR)
+
+
+        #     protoGraph.Show()
+        #     protoGraph.Apply()
+
+
+
+        protoGraph.SetSelection(assetPropsList , selectionMode = ink.proto.SEL_ADD, clearBeforeOp=ink.proto.SEL_CLEAR)
 
 
 
