@@ -2249,9 +2249,9 @@ def AK04_PATCHZATOR(SaveGraph='False'):
             nm_asset        = A7_infos['nm_asset'] 
             # print nm_asset    
             if 'SHADING_BIGPROPS' in str(nm_asset).upper():
-                layout.SetPos(pa, (layA7Pos_X-6.5, layA7Pos_Y-6) )
+                layout.SetPos(pa, (layA7Pos_X-3, layA7Pos_Y-3.5) )
             if 'SHADING_PROPS' in str(nm_asset).upper():
-                layout.SetPos(pa, (layA7Pos_X-6.5, layA7Pos_Y-7) )
+                layout.SetPos(pa, (layA7Pos_X-3, layA7Pos_Y-4.5) )
 
         protoGraph.Show()
         protoGraph.Apply()
