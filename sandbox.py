@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                    #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 12-04-2016                                                         #
+# Last Update : 19-04-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -2136,12 +2136,16 @@ def AK04_PATCHZATOR(SaveGraph='False'):
         assetList.append(pa)
         # layout.SetPos(pa, (0,0) )
 
-    protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
+    # protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
 
     n = 0
     for A7ref in assetList:
         n += 1
+
+        protoGraph.SetSelection(assetList , selectionMode = ink.proto.SEL_DELETE, clearBeforeOp=ink.proto.SEL_CLEAR)
+
         assetPropsList=[]
+        assetPropsList.append(A7ref)
         layA7Pos    = __PIPEIN_GRAPH.getPosition(A7ref,layout)
         layA7Pos_X  = layA7Pos[0]
         layA7Pos_Y  = layA7Pos[1]
@@ -2164,8 +2168,8 @@ def AK04_PATCHZATOR(SaveGraph='False'):
         # StreamProtoList = protoGraph.GetUpstreams( A7ref, niFilter=OkFilter)
         # assetList_forGraphtoSave = assetList_forGraphtoSave + StreamProtoList
 
-        assetList_forGraphtoSave = []
-        LightSetCategory = 'Props'
+        # assetList_forGraphtoSave = []
+        # LightSetCategory = 'Props'
 
 
         # #  Chars 
@@ -2216,7 +2220,7 @@ def AK04_PATCHZATOR(SaveGraph='False'):
             asset = q.GetNomen()
         assetProps     = protoGraph.Add(asset) 
         assetProps.AddFile('mgs')   
-        protoGraph.AddLink( pa, assetProps, ink.proto.LINK_DEP )
+        protoGraph.AddLink( assetProps, A7ref, ink.proto.LINK_REF )
         assetList_forGraphtoSave.append(assetProps)
         assetPropsList.append(assetProps)
 
@@ -2228,7 +2232,7 @@ def AK04_PATCHZATOR(SaveGraph='False'):
             asset = q.GetNomen()
         assetBigProps     = protoGraph.Add(asset) 
         assetBigProps.AddFile('mgs')   
-        protoGraph.AddLink(  pa,  assetBigProps, ink.proto.LINK_DEP )
+        protoGraph.AddLink(  assetBigProps, A7ref ,   ink.proto.LINK_REF )
         assetList_forGraphtoSave.append(assetBigProps)
         assetPropsList.append(assetBigProps)
 
@@ -2245,9 +2249,9 @@ def AK04_PATCHZATOR(SaveGraph='False'):
             nm_asset        = A7_infos['nm_asset'] 
             # print nm_asset    
             if 'SHADING_BIGPROPS' in str(nm_asset).upper():
-                layout.SetPos(pa, (layA7Pos_X-4, layA7Pos_Y+1) )
+                layout.SetPos(pa, (layA7Pos_X-6.5, layA7Pos_Y-6) )
             if 'SHADING_PROPS' in str(nm_asset).upper():
-                layout.SetPos(pa, (layA7Pos_X-4, layA7Pos_Y-1) )
+                layout.SetPos(pa, (layA7Pos_X-6.5, layA7Pos_Y-7) )
 
         protoGraph.Show()
         protoGraph.Apply()
@@ -2285,8 +2289,8 @@ def AK04_PATCHZATOR(SaveGraph='False'):
 
 
 
-        protoGraph.SetSelection(assetPropsList , selectionMode = ink.proto.SEL_ADD, clearBeforeOp=ink.proto.SEL_CLEAR)
-
+        # protoGraph.SetSelection(assetPropsList , selectionMode = ink.proto.SEL_ADD, clearBeforeOp=ink.proto.SEL_CLEAR)
+        protoGraph.SetSelection(assetList_forGraphtoSave , selectionMode = ink.proto.SEL_ADD, clearBeforeOp=ink.proto.SEL_CLEAR)
 
 
 
