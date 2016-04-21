@@ -140,6 +140,97 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= Functions
 	#===================================================================================================================================
 
+
+
+
+
+	def checkLocal_locked(self):
+		'''   '''
+		root = self.modelTab1.index(self.START_DIR_LOCKED)		
+		rows = self.modelTab1.rowCount(root)
+		# self.printSTD(rows)
+		for i in range(rows):
+			# item = root.child(i,0) # object at first (col,row
+			# item = root.child(i,0).data # return <built-in method data of QModelIndex object at 0x6102140>
+			item = root.child(i,0).data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
+
+
+			# self.printSTD(item.child(i,0).data())
+
+			# self.printSTD(root.child.isDir())
+			self.printSTD(item)
+
+
+
+	def _fetchAndExpand(self):
+		index = self.modelTab1.index(self.START_DIR_LOCKED)
+		# self.Tab1.expand(index)  # expand the item
+		for i in range(self.modelTab1.rowCount(index)):
+			item = index.child(i,0).data()
+			self.printSTD(item)
+			# fetch all the sub-folders
+			child = index.child(i, 0)
+			if self.modelTab1.isDir(child):
+				self.modelTab1.setRootPath(self.modelTab1.filePath(child))
+
+
+	
+	def Expand_GetLocked(self, index):
+		# self.printSTD('Expand_GetLocked')
+		# self.printSTD(index.model().itemFromIndex(index).text())
+		# self.printSTD(index)
+		# for i in range(self.modelTab1.rowCount(index)):
+		# 	item = index.child(i,0).data()
+		# 	self.printSTD(item)
+
+
+		# for root, dirs, files in os.walk('/u/dm3/Users/cpottier/etc/LIB/PROPS/ABCD'):
+		# for root, dirs, files in os.walk(self.START_DIR_LOCKED):
+		# 	self.printSTD(dirs)
+		# 	# self.model.setRootPath(root)
+		# 	for f in files:
+		# 		self.printSTD(os.path.join(root, f))
+
+
+		# model = self.Tab1
+		model = self.modelTab1
+
+		indexItem = model.index(index.row(), 0, index.parent())
+
+		fileName = model.fileName(indexItem)
+		filePath = model.filePath(indexItem)
+
+		# self.lineEditFileName.setText(fileName)
+		# self.lineEditFilePath.setText(filePath)
+
+		self.printSTD(index)
+
+		self.printSTD(fileName)
+		self.printSTD(filePath)
+
+				# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
+		f1   = QtCore.QFileInfo(filePath)
+		# 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
+		info = f1.isWritable()
+		self.printSTD(info)
+
+		info = f1.owner()
+		self.printSTD(info)
+		self.printSTD('----------')
+
+
+
+
+	def checkLocal_locked_walk(self):
+		'''   '''
+		for root, dirs, files in os.walk(self.START_DIR_LOCKED):
+			# self.model.setRootPath(root)
+			for name in files:
+				# self.printSTD(os.path.join(root, name))
+				pass
+			# for name in dirs:
+			# 	self.printSTD(os.path.join(root, name))
+
 	#======================================================================
 	#========= UI Areas Constructions Functions
 	#======================================================================
@@ -184,29 +275,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#========= add Area content to Top Area container
 		self.TopAreaContainer.setLayout(self.TopAreaContent)
-
-
-
-
-	def checkLocal_locked(self):
-		'''   '''
-		# for i in range(self.modelTab1.count()):
-		# 	yield self.item(i)
-		# 	# item1 = self.item(i).text(0) # text at first (0) column
-		# 	# self.printSTD(item1)
-
-		parentIndex = self.modelTab1.index(self.START_DIR_LOCKED)		
-		rows = self.modelTab1.rowCount(parentIndex)
-
-		# self.printSTD(self.modelTab1.isDir(parentIndex))
-
-
-		self.printSTD(rows)
-
-
-		# root = self.modelTab1.invisibleRootItem()
-		# rows = self.modelTab1.rowCount(root)
-		# self.printSTD(rows)
 
 
 	def construct_MiddleTabsArea(self):
@@ -309,7 +377,9 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========================== Treeview
 		self.Tab1 = QtGui.QTreeView()
-		self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
+		# self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
+		# self.Tab1.clicked.connect(self.Expand_GetLocked)
+		self.Tab1.connect(self.Tab1, QtCore.SIGNAL('clicked(QModelIndex)'), self.Expand_GetLocked)
 		self.Tab1.objectName = "Tab1"
 		self.Tab1.setAlternatingRowColors(True)
 
@@ -322,9 +392,10 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========================== check locked file
 
-		self.timer = QtCore.QTimer(self)
-		self.timer.singleShot(1, self.checkLocal_locked)
-
+		# self.timer = QtCore.QTimer(self)
+		# self.timer.singleShot(1, self._fetchAndExpand)
+		
+		# self.checkLocal_locked_walk()
 
 		# checkLocal_locked()
 		# for item in checkLocal_locked():
