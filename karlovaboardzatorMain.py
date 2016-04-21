@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 15-04-2016                                                                #
+# Date : 21-04-2016                                                                #
 # ##################################################################################
 
 
@@ -108,6 +108,13 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
+		# self.timer = QtCore.QTimer(self)
+		# self.timer.singleShot(1, self.checkLocal_locked)
+
+
+
+
+
 	# 	self.overlay = self.paintEvent(self)
 	# # 	# self.overlay.hide()
 
@@ -179,8 +186,87 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContainer.setLayout(self.TopAreaContent)
 
 
+
+
+	def checkLocal_locked(self):
+		'''   '''
+		# for i in range(self.modelTab1.count()):
+		# 	yield self.item(i)
+		# 	# item1 = self.item(i).text(0) # text at first (0) column
+		# 	# self.printSTD(item1)
+
+		parentIndex = self.modelTab1.index(self.START_DIR_LOCKED)		
+		rows = self.modelTab1.rowCount(parentIndex)
+
+		# self.printSTD(self.modelTab1.isDir(parentIndex))
+
+
+		self.printSTD(rows)
+
+
+		# root = self.modelTab1.invisibleRootItem()
+		# rows = self.modelTab1.rowCount(root)
+		# self.printSTD(rows)
+
+
 	def construct_MiddleTabsArea(self):
 		'''   '''
+
+		# def checkLocal_locked():
+		# 	'''   '''
+
+
+
+		# 	for i in range(self.modelTab1.count()):
+		# 		yield self.item(i)
+		# 		# item1 = self.item(i).text(0) # text at first (0) column
+		# 		# self.printSTD(item1)
+
+
+
+
+
+
+
+
+
+			# local_TreeView = self.Tab1
+			# colIndex = 0
+
+
+			# root = self.modelTab1.invisibleRootItem()
+			# child_count = root.childCount()
+			# for i in range(child_count):
+			# 	item = root.child(i)
+			# 	item1 = item.text(0) # text at first (0) column
+			# 	# item.setText(1, 'result from %s' % url) # update result column (1)
+
+
+
+			# 	self.printSTD(item1)
+
+
+
+			# for n in range(nRows):
+			# 	Item_QModelIndex = modelScript.index(n, colIndex)
+			# 	# self.printSTD(Item_QModelIndex)
+			# 	# self.printSTD('------------------------')
+			# 	# item = Item_QModelIndex.data # return <built-in method data of QModelIndex object at 0x6102140>
+			# 	# self.printSTD(item)
+			# 	# item = Item_QModelIndex.data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
+			# 	# self.printSTD(item)
+			# 	itemChecked = Item_QModelIndex.data(QtCore.Qt.CheckStateRole) # 
+			# 	if itemChecked == 2: # checked
+			# 		# self.printSTD('------------------------')
+			# 		# self.printSTD(itemChecked)
+			# 		# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
+			# 		# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
+			# 		# self.printSTD(role)  # ne retourne pas d erreur
+			# 		modelScript.setData(
+			# 		modelScript.index(n, colIndex),
+			# 		QtGui.QColor(QtCore.Qt.green),
+			# 		QtCore.Qt.BackgroundColorRole
+			# 		)
 
 		#=======================================================================================
 		#=========================== Middle Area content
@@ -203,11 +289,12 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========================== FileSystem
 
-		modelTab1 = QtGui.QFileSystemModel()
-		# modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllEntries)
-		modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
-		# modelTab1.setRootPath(self.START_DIR_PUBLIC)
-		modelTab1.setRootPath(self.START_DIR_LOCKED)
+		self.modelTab1 = QtGui.QFileSystemModel()
+		# self.modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllEntries)
+		self.modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)			
+		# self.modelTab1.setFilter( QtCore.QDir.AllDirs | QtCore.QDir.AllEntries | QtCore.QDir.CaseSensitive | QtCore.QDir.NoDotAndDotDot )		
+		# self.modelTab1.setRootPath(self.START_DIR_PUBLIC)
+		self.modelTab1.setRootPath(self.START_DIR_LOCKED)
 		
 
 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
@@ -227,18 +314,45 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.Tab1.setAlternatingRowColors(True)
 
 		#=========================== populate tab1
-		self.Tab1.setModel(modelTab1)
-		self.Tab1.setRootIndex(modelTab1.index(self.START_DIR_LOCKED))
+		self.Tab1.setModel(self.modelTab1)
+		self.Tab1.setRootIndex(self.modelTab1.index(self.START_DIR_LOCKED))
 		self.Tab1.resizeColumnToContents(0)
+		# self.fileTreeView.header().setResizeMode(QHeaderView.ResizeToContents)		
+		self.Tab1.setColumnWidth(0, 400)
+
+		#=========================== check locked file
+
+		self.timer = QtCore.QTimer(self)
+		self.timer.singleShot(1, self.checkLocal_locked)
+
+
+		# checkLocal_locked()
+		# for item in checkLocal_locked():
+		#     self.printSTD(item)
+
+
+		# root = self.Tab1.childCount()
+		# self.printSTD(root) 
+		# # for i in range(self.Tab1):
+		# # 	self.printSTD(i.text())
+
+		# root = self.modelTab1.itemFromIndex(self.START_DIR_LOCKED)
+
+		# parentIndex = self.modelTab1.index(QtCore.QDir.currentPath())		
+		# rows = self.modelTab1.rowCount(parentIndex)
+		# self.printSTD(rows)
+
+
+
 
 		#==================================================
 		#=========================== Tab2	
 		#==================================================
 
 		#=========================== FileSystem
-		modelTab2 = QtGui.QFileSystemModel()
-		modelTab2.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
-		modelTab2.setRootPath(self.START_DIR_PUBLIC)
+		self.modelTab2 = QtGui.QFileSystemModel()
+		self.modelTab2.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)					
+		self.modelTab2.setRootPath(self.START_DIR_PUBLIC)
 
 		#=========================== Treeview
 		self.Tab2 = QtGui.QTreeView()
@@ -247,13 +361,14 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.Tab1.setAlternatingRowColors(True)
 
 		#=========================== populate tab2
-		self.Tab2.setModel(modelTab2)
-		self.Tab2.setRootIndex(modelTab2.index(self.START_DIR_PUBLIC))
+		self.Tab2.setModel(self.modelTab2)
+		self.Tab2.setRootIndex(self.modelTab2.index(self.START_DIR_PUBLIC))
 		self.Tab2.resizeColumnToContents(0)
+		self.Tab2.setColumnWidth(0, 400)		
 
-		# #==================================================
-		# #=========================== Tab x
-		# #==================================================
+		#==================================================
+		#=========================== Tab x
+		#==================================================
 
 
 
@@ -617,7 +732,6 @@ class __QT_KBZ__(QtGui.QDialog):
 	#========= UI Construct Functions
 	#======================================================================
 
-
 	def on_TAB_clicked(self):
 		self.printSTD("on_TAB_clicked")
 
@@ -647,7 +761,6 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.clear_LayoutOrWidget(self.ScriptsAreaContainer)
 		except:
 			pass
-
 
 	def Construct_TopAndMiddle(self):
 		self.MiddleAreaContainer = QtGui.QWidget()
@@ -906,12 +1019,14 @@ def start(parent, data):
 	array_welcome = array_welcome + ['Xos', 'Ongietorri', 'I mirepritur']
 	welcome = random.choice(array_welcome)
 	main.setWindowTitle( ink.io.ConnectUserInfo()[2].upper() + ' | KARLOVA DASHBOARDZATOR | '+ welcome +' ' + os.getenv('USER') )
-	main.showMaximized()
+	# main.showMaximized()
 
 	# sG = QtGui.QApplication.desktop().screenGeometry()
 	# w = sG.width
 	# h = sG.height
-	# main.resize(550, 750)
+
+
+	main.resize(550, 750)
 
 	# main.move(300, 300)
 	# main.setGeometry(300, 300, 150, 200)
