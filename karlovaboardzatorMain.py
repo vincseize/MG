@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 21-04-2016                                                                #
+# Date : 25-04-2016                                                                #
 # ##################################################################################
 
 
@@ -35,7 +35,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
 		self.START_DIR_PUBLIC 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
-		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
+		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
+		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.DIR_BACKUP	 				= '_backup'		
@@ -53,6 +54,9 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.HOME_COLOR = self.ALL_PROJECTS['dm3']
 		if self.CURRENT_PROJECT 	== 'MAX':
 			self.HOME_COLOR = self.ALL_PROJECTS['max']
+
+		self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
+		self.INCLUDE_EXT_LOCKED = ['csv','xml','inkGraph']
 
 	#======================================================================
 	#========= main vlayout
@@ -203,22 +207,87 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.lineEditFileName.setText(fileName)
 		# self.lineEditFilePath.setText(filePath)
 
-		self.printSTD(index)
+		# self.printSTD(index)
 
-		self.printSTD(fileName)
-		self.printSTD(filePath)
+		# self.printSTD(fileName)
+		# self.printSTD(filePath)
 
-				# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
+		# 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
 		f1   = QtCore.QFileInfo(filePath)
-		# 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
+		# # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
+
 		info = f1.isWritable()
 		self.printSTD(info)
+		# isfile = f1.isFile()
 
-		info = f1.owner()
-		self.printSTD(info)
-		self.printSTD('----------')
+		writable = f1.isWritable()
+		owner = f1.owner()
+		self.printSTD(infoOwner)
+		# self.printSTD('----------')
+
+		result = self.fileList(filePath)
+		# self.printSTD(result)
 
 
+
+		# if fileName.upper() not in self.EXCLUDE_DIR_LOCKED:
+		# 	# self.printSTD(dirs)
+
+
+		# 	# for root, dirs, files in os.walk(filePath):
+		# 	for files in os.walk(filePath):
+		# 		self.printSTD(files)
+		# 		ext = None
+
+		# 		try:
+		# 			ext = files.split('.')[1][1:]
+		# 		except:
+		# 			pass
+		# 		self.printSTD(ext)
+		# 		if ext in self.INCLUDE_EXT_LOCKED: 
+		# 			self.printSTD(files)
+
+		# 			# self.printSTD(index)
+
+		# 			# self.printSTD(fileName)
+		# 			# self.printSTD(filePath)
+
+		# 			# 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
+		# 			# f1   = QtCore.QFileInfo(filePath)
+		# 			# # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
+		# 			# info = f1.isWritable()
+		# 			# self.printSTD(info)
+
+		# 			# info = f1.owner()
+		# 			# self.printSTD(info)
+		# 			# self.printSTD(writable)
+		# 			# self.printSTD(owner)
+		# 			self.printSTD('----------')
+
+
+
+
+
+	def fileList(self, source):
+		matches = []
+		for root, dirnames, filenames in os.walk(source, topdown=False):
+
+			if not dirnames:			
+				for filename in filenames:
+					ext = os.path.splitext(filename)[1][1:]
+					# if filename.endswith(('.csv', '.MOV', '.avi', '.mpg')):
+					if ext in self.INCLUDE_EXT_LOCKED:
+						filePath = os.path.join(root, filename)
+						matches.append(os.path.join(root, filename))
+						fileInfo   = QtCore.QFileInfo(filePath)
+
+			# for dirpath, dirnames, filenames in os.walk(source):
+			# 	if not dirnames:
+			# 	print dirpath, "has 0 subdirectories and", len(filenames), "files"
+
+
+
+		return matches
 
 
 	def checkLocal_locked_walk(self):
