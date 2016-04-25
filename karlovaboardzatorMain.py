@@ -216,12 +216,12 @@ class __QT_KBZ__(QtGui.QDialog):
 		f1   = QtCore.QFileInfo(filePath)
 		# # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
 
-		info = f1.isWritable()
-		self.printSTD(info)
+		infoWrite = f1.isWritable()
+		self.printSTD(infoWrite)
 		# isfile = f1.isFile()
 
 		writable = f1.isWritable()
-		owner = f1.owner()
+		infoOwner = f1.owner()
 		self.printSTD(infoOwner)
 		# self.printSTD('----------')
 
@@ -279,7 +279,7 @@ class __QT_KBZ__(QtGui.QDialog):
 					if ext in self.INCLUDE_EXT_LOCKED:
 						filePath = os.path.join(root, filename)
 						matches.append(os.path.join(root, filename))
-						fileInfo   = QtCore.QFileInfo(filePath)
+						# fileInfo   = QtCore.QFileInfo(filePath)
 
 			# for dirpath, dirnames, filenames in os.walk(source):
 			# 	if not dirnames:
