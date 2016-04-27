@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	   #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 22-03-2016                                                                #
+# Date : 27-04-2016                                                                #
 # ##################################################################################
 
 # Required modules
@@ -31,6 +31,9 @@ import shutil
 import time
 import datetime
 import subprocess
+import glob
+import json
+import shutil
 
 # QT modules
 from PyQt4 import QtGui
@@ -67,18 +70,20 @@ LOCALPATH               = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'
 
 
 # Useful Classes
-if '__InK__classes_forDev' in sys.modules:
-	del(sys.modules["__InK__classes_forDev"])
-	if str(USER) == 'cpottier': # for dev
+if str(USER) == 'cpottier': # for dev
+	if '__InK__classes_forDev' in sys.modules:
+		del(sys.modules["__InK__classes_forDev"])
 		import __InK__classes_forDev
 		from __InK__classes_forDev import __PIPEIN_GRAPH__
 	else:
-		import __InK__classes 
-		from __InK__classes import __PIPEIN_GRAPH__
-else:
-	if str(USER) == 'cpottier':
 		import __InK__classes_forDev
 		from __InK__classes_forDev import __PIPEIN_GRAPH__
+else:
+	if '__InK__classes' in sys.modules:
+		del(sys.modules["__InK__classes"])
+		import __InK__classes
+		from __InK__classes import __PIPEIN_GRAPH__
 	else:
 		import __InK__classes
 		from __InK__classes import __PIPEIN_GRAPH__
+	print sys.modules
