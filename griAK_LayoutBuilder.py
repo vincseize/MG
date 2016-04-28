@@ -5,8 +5,24 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 27-04-2016                                                         #
+# Last Update : 28-04-2016                                                         #
 # ##################################################################################
+
+#================================================================================================================================== PRIMARY CLASS
+import sys, ink.proto
+path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+sys.path.append(path_modules)
+if '__InK__connect' in sys.modules:
+    del(sys.modules["__InK__connect"])
+    import __InK__connect
+    from __InK__connect import * 
+else:
+    import __InK__connect
+    from __InK__connect import *
+#==================================================================================================================== Ink external useful CLASSES
+__PIPEIN_GRAPH          = __InK__connect.__PIPEIN_GRAPH__(graphs.DEFAULT, None) # protograph, verbose mode
+#================================================================================================================================================
+
 
 # ===========================================================================================================================  AK02_LAYOUT_BuildCameraModel
 
