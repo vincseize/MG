@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 25-04-2016                                                                #
+# Date : 29-04-2016                                                                #
 # ##################################################################################
 
 
@@ -18,7 +18,7 @@ import ink
 import ink.io
 import time
 import json
-from shutil import copyfile
+import shutil
 import datetime
 
 
@@ -30,13 +30,16 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 	#========= Globals Variables
 	#======================================================================
+		self.SCREEN 					= QtGui.QDesktopWidget().screenGeometry()
 		self.CURRENT_USER 				= os.getenv('USER')
 		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0] }		
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
 		self.START_DIR_PUBLIC 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
 		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
-		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
+		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
+		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'+self.CURRENT_USER+'/Assets/'		
+		# /u/gri/Users/*/Assets/
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.DIR_BACKUP	 				= '_backup'		
@@ -56,7 +59,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.HOME_COLOR = self.ALL_PROJECTS['max']
 
 		self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
-		self.INCLUDE_EXT_LOCKED = ['csv','xml','inkGraph']
+		self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
 
 	#======================================================================
 	#========= main vlayout
@@ -212,93 +215,133 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.printSTD(fileName)
 		# self.printSTD(filePath)
 
-		# 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
-		f1   = QtCore.QFileInfo(filePath)
-		# # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
-
-		infoWrite = f1.isWritable()
-		self.printSTD(infoWrite)
-		# isfile = f1.isFile()
-
-		writable = f1.isWritable()
-		infoOwner = f1.owner()
-		self.printSTD(infoOwner)
-		# self.printSTD('----------')
-
-		result = self.fileList(filePath)
-		# self.printSTD(result)
 
 
+		# # 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
+		# f1   = QtCore.QFileInfo(filePath)
+		# # # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
 
-		# if fileName.upper() not in self.EXCLUDE_DIR_LOCKED:
-		# 	# self.printSTD(dirs)
+		# infoWrite = f1.isWritable()
+		# self.printSTD(infoWrite)
+		# # isfile = f1.isFile()
+
+		# # writable = f1.isWritable()
+		# infoOwner = f1.owner()
+		# self.printSTD(infoOwner)
+		# # self.printSTD('----------')
+
+		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+		getText = self.logOutputBottom.toPlainText()
+
+		result = self.get_fileList(filePath)
 
 
-		# 	# for root, dirs, files in os.walk(filePath):
-		# 	for files in os.walk(filePath):
-		# 		self.printSTD(files)
-		# 		ext = None
 
-		# 		try:
-		# 			ext = files.split('.')[1][1:]
-		# 		except:
-		# 			pass
-		# 		self.printSTD(ext)
-		# 		if ext in self.INCLUDE_EXT_LOCKED: 
-		# 			self.printSTD(files)
+		if len(result) > 0 :
+			self.logOutputBottom.setVisible(True)
+			self.logOutputBottom.setFixedHeight(200)		
+			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
 
-		# 			# self.printSTD(index)
+			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			# self.logOutputBottom.insertPlainText(filePath)
+			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			# self.logOutputBottom.insertPlainText('\n-----------------------------------------------------------\n\n')
 
-		# 			# self.printSTD(fileName)
-		# 			# self.printSTD(filePath)
+			# # self.printSTD(filePath)
+			# # self.printSTD(result)
 
-		# 			# 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
-		# 			# f1   = QtCore.QFileInfo(filePath)
-		# 			# # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
-		# 			# info = f1.isWritable()
-		# 			# self.printSTD(info)
+			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
-		# 			# info = f1.owner()
-		# 			# self.printSTD(info)
-		# 			# self.printSTD(writable)
-		# 			# self.printSTD(owner)
-		# 			self.printSTD('----------')
+			for line in result:
+				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+				self.logOutputBottom.insertPlainText(str(line)+'\n')
 
 
 
 
 
-	def fileList(self, source):
+		# indexItem.setData(indexItem , QtGui.QColor(QtCore.Qt.red),QtCore.Qt.BackgroundColorRole)
+
+
+			# 		# self.printSTD(role)  # ne retourne pas d erreur
+			# 		modelScript.setData(
+			# 		modelScript.index(n, colIndex),
+			# 		QtGui.QColor(QtCore.Qt.green),
+			# 		QtCore.Qt.BackgroundColorRole
+			# 		)
+		# modelScript = self.ScriptsAreaContent
+		# model.setData(index,QtGui.QColor(QtCore.Qt.red),QtCore.Qt.BackgroundColorRole) # return rien
+
+		# model.item( index.row(), 0 ).setBackground(QtGui.QColor(QtCore.Qt.red))
+
+
+
+
+
+
+	def model_changeColor(self, model):
+		model.setData(model.index(1, 5), 1)
+		model.setData(model.index(2, 5), 2)
+		model.emit(QtCore.SIGNAL('dataChanged(QModelIndex,QModelIndex)'), model.index(1, 5), model.index(2, 5))
+
+
+
+
+
+
+
+	def get_fileList(self, source):
 		matches = []
-		for root, dirnames, filenames in os.walk(source, topdown=False):
-
+		# for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=True):
+		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
 			if not dirnames:			
 				for filename in filenames:
-					ext = os.path.splitext(filename)[1][1:]
-					# if filename.endswith(('.csv', '.MOV', '.avi', '.mpg')):
-					if ext in self.INCLUDE_EXT_LOCKED:
-						filePath = os.path.join(root, filename)
-						matches.append(os.path.join(root, filename))
-						# fileInfo   = QtCore.QFileInfo(filePath)
-
-			# for dirpath, dirnames, filenames in os.walk(source):
-			# 	if not dirnames:
-			# 	print dirpath, "has 0 subdirectories and", len(filenames), "files"
-
-
+					# self.printSTD(filename)
+					ext = None
+					try:
+						ext = os.path.splitext(filename)[1][1:]
+					except:
+						pass
+					# self.printSTD(ext)	
+					if ext.upper() in self.INCLUDE_EXT_LOCKED:
+						filePath 	= os.path.join(root, filename)
+						result 		= self.get_fileInfo(filePath)
+						infoWrite 	= result[0]
+						infoOwner 	= result[1]
+						# self.printSTD('####################')
+						# self.printSTD(infoWrite)
+						# self.printSTD(infoOwner)
+						# self.printSTD('####################')
+						if infoWrite == True and infoOwner == self.CURRENT_USER:
+							matches.append(os.path.join(root, filename))
 
 		return matches
 
 
-	def checkLocal_locked_walk(self):
-		'''   '''
-		for root, dirs, files in os.walk(self.START_DIR_LOCKED):
-			# self.model.setRootPath(root)
-			for name in files:
-				# self.printSTD(os.path.join(root, name))
-				pass
-			# for name in dirs:
-			# 	self.printSTD(os.path.join(root, name))
+	def get_fileInfo(self, source):
+		fileInfo   = QtCore.QFileInfo(source)
+		infoWrite = fileInfo.isWritable()
+		infoOwner = fileInfo.owner()
+		return infoWrite, infoOwner
+
+
+
+
+	# def checkLocal_locked_walk(self):
+	# 	'''   '''
+	# 	for root, dirs, files in os.walk(self.START_DIR_LOCKED):
+	# 		# self.model.setRootPath(root)
+	# 		for name in files:
+	# 			# self.printSTD(os.path.join(root, name))
+	# 			pass
+	# 		# for name in dirs:
+	# 		# 	self.printSTD(os.path.join(root, name))
+
+
+
+
 
 	#======================================================================
 	#========= UI Areas Constructions Functions
@@ -530,20 +573,32 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent = QtGui.QHBoxLayout()
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
 		#========= Bottom Area content Date
-		now = time.strftime("%Y/%d/%m %H:%M:%S")
-		txtLbl = now
-		self.labelBottom = QtGui.QLabel()
-		self.labelBottom.setText(txtLbl)
-		r = self.HOME_COLOR[0]
-		g = self.HOME_COLOR[1]
-		b = self.HOME_COLOR[2]
-		hexColor = self.rvbToHex(r, g, b)
-		self.labelBottom.setStyleSheet(
-								"color: "+hexColor+";"
-								"font: italic;"
-							)
+		# now = time.strftime("%Y/%d/%m %H:%M:%S")
+		# txtLbl = now
+		# self.labelBottom = QtGui.QLabel()
+		# self.labelBottom.setText(txtLbl)
+		# r = self.HOME_COLOR[0]
+		# g = self.HOME_COLOR[1]
+		# b = self.HOME_COLOR[2]
+		# hexColor = self.rvbToHex(r, g, b)
+		# self.labelBottom.setStyleSheet(
+		# 						"color: "+hexColor+";"
+		# 						"font: italic;"
+		# 					)
+		#========= Bottom Area content logOutputBottom
+		self.logOutputBottom = QtGui.QTextEdit()
+		self.logOutputBottom.setObjectName("logOutputBottom")		
+		self.logOutputBottom.setFixedWidth(self.SCREEN.width()-30)
+		self.logOutputBottom.setFixedHeight(1)		
+		self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+		self.logOutputBottomSb = self.logOutputBottom.verticalScrollBar()
+		self.logOutputBottomSb.setValue(self.logOutputBottomSb.maximum())
+		self.logOutputBottomCursor = self.logOutputBottom.textCursor()
+		self.logOutputBottom.setVisible(False)
+
 		#================================================== add Date to Bottom Area content
-		self.BottomAreaContent.addWidget(self.labelBottom)
+		# self.BottomAreaContent.addWidget(self.labelBottom)
+		self.BottomAreaContent.addWidget(self.logOutputBottom)
 
 		#========= add Area content to Bottom Area container
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
@@ -740,13 +795,13 @@ class __QT_KBZ__(QtGui.QDialog):
 						if os.path.isfile(path_local):
 		#========= 1 - FIRST , IMPORTANT backup distant file before copy
 							if os.path.isfile(path_distant):
-								copyfile(path_distant, path_distant_backup)
+								shutil.copyfile(path_distant, path_distant_backup)
 							if not os.path.isfile(path_distant):
 								self.printSTD('---[ NEW FILE ]---')
 								checkCopy = True
 
 		#========= 2 -copy sync
-							copyfile(path_local, path_distant)
+							shutil.copyfile(path_local, path_distant)
 							if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
 								applyUI_OK()									
 								self.printSTD('[ SYNC OK ]')
@@ -1159,14 +1214,14 @@ def start(parent, data):
 	array_welcome = array_welcome + ['Xos', 'Ongietorri', 'I mirepritur']
 	welcome = random.choice(array_welcome)
 	main.setWindowTitle( ink.io.ConnectUserInfo()[2].upper() + ' | KARLOVA DASHBOARDZATOR | '+ welcome +' ' + os.getenv('USER') )
-	# main.showMaximized()
+	main.showMaximized()
 
 	# sG = QtGui.QApplication.desktop().screenGeometry()
 	# w = sG.width
 	# h = sG.height
 
 
-	main.resize(550, 750)
+	# main.resize(550, 750)
 
 	# main.move(300, 300)
 	# main.setGeometry(300, 300, 150, 200)
