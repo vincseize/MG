@@ -53,49 +53,29 @@ import datetime
 
 rand = random.Random()
 class WorkerThread(QtCore.QThread):
-	def __init__(self, name, receiver):
+	def __init__(self, filePath, receiver):
 		QtCore.QThread.__init__(self)
-		self.name = name
+		self.filePath = filePath
 		self.receiver = receiver
 		self.stopped = 0
+
 	def run(self):
-		# while not self.stopped: boucle infinie non bloquante
-		for n in range (1,200):
+		for n in range (1,150):
 			time.sleep(rand.random() * 0.3)
-			# msg = rand.random()
-			msg = self.name + " " + str(n)
+			msg = str(self.filePath) + " " + str(n)
 			print >> sys.__stderr__, msg
-
-			# event = QCustomEvent(10000)
-			# event.setData("%s: %f" % (self.name, msg))
-			# QThread.postEvent(self.receiver, event)
-
+			# result = self.get_fileList(filePath)
 
 	def stop(self):
 		self.stopped = 1
 
-
-
-class ThreadExample(QtGui.QTextEdit):
+class ThreadExample():
 	def __init__(self, *args):
-		# QtGui.QTextEdit.__init__(self, *args)
-		# self.setText("Threading Example")
+		filePath = args[0]
 		self.threads = []
-		for name in ["t1", "t2", "t3"]:
-			t = WorkerThread(name, self)
-			t.start()
-			self.threads.append(t)
-
-
-
-		# for n in range (1,200):
-		# 	self.printSTD(n)
-
-
-	def customEvent(self,event):
-		if event.type() == 10000:
-			s = event.data()
-			self.append(s)
+		t = WorkerThread(filePath, self)
+		t.start()
+		self.threads.append(t)
 
 	def __del__(self):
 		for t in self.threads:
@@ -280,7 +260,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-		threadExample = ThreadExample()
+
 
 
 
@@ -295,20 +275,26 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		getText = self.logOutputBottom.toPlainText()
 
-		result = self.get_fileList(filePath)
+		# result = self.get_fileList(filePath)
 
 
 
-		if len(result) > 0 :
-			self.logOutputBottom.setVisible(True)
-			self.logOutputBottom.setFixedHeight(200)		
-			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+		threadExample = ThreadExample(filePath)
 
-			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
-			for line in result:
-				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-				self.logOutputBottom.insertPlainText(str(line)+'\n')
+
+
+
+		# if len(result) > 0 :
+		# 	self.logOutputBottom.setVisible(True)
+		# 	self.logOutputBottom.setFixedHeight(200)		
+		# 	self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+
+		# 	self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+		# 	for line in result:
+		# 		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+		# 		self.logOutputBottom.insertPlainText(str(line)+'\n')
 
 
 
