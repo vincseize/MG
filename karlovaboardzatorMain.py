@@ -14,12 +14,96 @@ import sys
 import random
 import glob
 from PyQt4 import QtGui, QtCore, Qt
+from PyQt4.QtCore import QThread
 import ink
 import ink.io
 import time
 import json
 import shutil
 import datetime
+
+
+
+
+# class YourThreadName(QtCore.QThread):
+#     def __init__(self):
+#         QThread.__init__(self)
+
+#     def __del__(self):
+#         self.wait()
+
+# 	def run(self):
+# 		self.printSTD("run")
+# 		self.logOutputBottom.setVisible(True)
+# 		self.logOutputBottom.insertPlainText("run")
+
+# 		# self.terminate()
+
+
+# 		# for n in range (1,20):
+# 		# 	# self.printSTD(n)
+# 		# 	time.sleep(0.3) # artificial time delay
+# 		# 	# self.emit( QtCore.SIGNAL('update(QString)'), "from work thread " + str(n) )
+# 		# 	self.printSTD(n)
+# 		# 	self.terminate()
+
+# 	# def stop(self):
+# 	# 	self._isRunning = False
+
+
+rand = random.Random()
+class WorkerThread(QtCore.QThread):
+	def __init__(self, name, receiver):
+		QtCore.QThread.__init__(self)
+		self.name = name
+		self.receiver = receiver
+		self.stopped = 0
+	def run(self):
+		# while not self.stopped: boucle infinie non bloquante
+		for n in range (1,200):
+			time.sleep(rand.random() * 0.3)
+			# msg = rand.random()
+			msg = self.name + " " + str(n)
+			print >> sys.__stderr__, msg
+
+			# event = QCustomEvent(10000)
+			# event.setData("%s: %f" % (self.name, msg))
+			# QThread.postEvent(self.receiver, event)
+
+
+	def stop(self):
+		self.stopped = 1
+
+
+
+class ThreadExample(QtGui.QTextEdit):
+	def __init__(self, *args):
+		# QtGui.QTextEdit.__init__(self, *args)
+		# self.setText("Threading Example")
+		self.threads = []
+		for name in ["t1", "t2", "t3"]:
+			t = WorkerThread(name, self)
+			t.start()
+			self.threads.append(t)
+
+
+
+		# for n in range (1,200):
+		# 	self.printSTD(n)
+
+
+	def customEvent(self,event):
+		if event.type() == 10000:
+			s = event.data()
+			self.append(s)
+
+	def __del__(self):
+		for t in self.threads:
+			running = t.running()
+			t.stop()
+			if not t.finished():
+				t.wait()
+
 
 
 class __QT_KBZ__(QtGui.QDialog):
@@ -183,52 +267,29 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	
 	def Expand_GetLocked(self, index):
-		# self.printSTD('Expand_GetLocked')
-		# self.printSTD(index.model().itemFromIndex(index).text())
-		# self.printSTD(index)
-		# for i in range(self.modelTab1.rowCount(index)):
-		# 	item = index.child(i,0).data()
-		# 	self.printSTD(item)
+
+		# Thread
+		# self.thread = QThread()
+		# self.thread.start()
+
+		# self.worker = YourThreadName()
+		# self.worker.moveToThread(self.thread)
+		
+		# self.thread.quit()
+		# self.thread.wait()
 
 
-		# for root, dirs, files in os.walk('/u/dm3/Users/cpottier/etc/LIB/PROPS/ABCD'):
-		# for root, dirs, files in os.walk(self.START_DIR_LOCKED):
-		# 	self.printSTD(dirs)
-		# 	# self.model.setRootPath(root)
-		# 	for f in files:
-		# 		self.printSTD(os.path.join(root, f))
+
+		threadExample = ThreadExample()
 
 
-		# model = self.Tab1
+
+
+
 		model = self.modelTab1
-
 		indexItem = model.index(index.row(), 0, index.parent())
-
 		fileName = model.fileName(indexItem)
 		filePath = model.filePath(indexItem)
-
-		# self.lineEditFileName.setText(fileName)
-		# self.lineEditFilePath.setText(filePath)
-
-		# self.printSTD(index)
-
-		# self.printSTD(fileName)
-		# self.printSTD(filePath)
-
-
-
-		# # 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
-		# f1   = QtCore.QFileInfo(filePath)
-		# # # 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
-
-		# infoWrite = f1.isWritable()
-		# self.printSTD(infoWrite)
-		# # isfile = f1.isFile()
-
-		# # writable = f1.isWritable()
-		# infoOwner = f1.owner()
-		# self.printSTD(infoOwner)
-		# # self.printSTD('----------')
 
 		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
@@ -244,15 +305,6 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
 
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-			# self.logOutputBottom.insertPlainText(filePath)
-			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-			# self.logOutputBottom.insertPlainText('\n-----------------------------------------------------------\n\n')
-
-			# # self.printSTD(filePath)
-			# # self.printSTD(result)
-
-			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 			for line in result:
 				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
