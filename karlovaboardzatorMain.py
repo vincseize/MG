@@ -27,7 +27,7 @@ import datetime
 #======================================================================
 
 class WorkerThread_get_fileList(QtCore.QThread):
-	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, receiver):
+	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, receiver):
 	# def __init__(self, filePath, receiver):
 		QtCore.QThread.__init__(self)
 		self.filePath = filePath
@@ -39,15 +39,32 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		# self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
 		# self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
 
-		self.filePath 			= filePath
-		self.CURRENT_USER 		= CURRENT_USER
-		self.CURRENT_PROJECT 	= CURRENT_PROJECT
-		self.EXCLUDE_DIR_LOCKED = EXCLUDE_DIR_LOCKED
-		self.INCLUDE_EXT_LOCKED = INCLUDE_EXT_LOCKED
+		self.filePath 				= filePath
+		self.CURRENT_USER 			= CURRENT_USER
+		self.CURRENT_PROJECT 		= CURRENT_PROJECT
+		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
+		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
+		self.TMP_PATH				= TMP_PATH
 
 
 	def run(self):
 		result = self.get_fileList(self.filePath)
+		if len(result) > 0 :
+			for line in result:
+				f = open(self.TMP_PATH,'a')
+				f.write(line+'\n') # python will convert \n to os.linesep
+				f.close()
+
+
+		# 	self.logOutputBottom.setVisible(True)
+		# 	self.logOutputBottom.setFixedHeight(200)		
+		# 	self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+
+		# 	self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+		# 	for line in result:
+		# 		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+		# 		self.logOutputBottom.insertPlainText(str(line)+'\n')		
 
 	#====== functions
 
@@ -63,35 +80,28 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
 			if not dirnames:			
 				for filename in filenames:
-					print >> sys.__stderr__, filename
+					# print >> sys.__stderr__, filename
 					ext = None
 					try:
 						ext = os.path.splitext(filename)[1][1:]
 					except:
 						pass	
-					if ext.upper() in self.INCLUDE_EXT_LOCKED:
-						filePath 	= os.path.join(root, filename)
-						result 		= self.get_fileInfo(filePath)
-						infoWrite 	= result[0]
-						infoOwner 	= result[1]
-						if infoWrite == True and infoOwner == self.CURRENT_USER:
-							matches.append(os.path.join(root, filename))
+					try:						
+						if ext.upper() in self.INCLUDE_EXT_LOCKED:
+							filePath 	= os.path.join(root, filename)
+							result 		= self.get_fileInfo(filePath)
+							infoWrite 	= result[0]
+							infoOwner 	= result[1]
+							# matches.append(os.path.join(root, filename))
+							if infoWrite == True and infoOwner == self.CURRENT_USER:
+								matches.append(os.path.join(root, filename))
+								print >> sys.__stderr__, filePath
+					except:
+						pass
+
 		return matches
 
 	#====== end functions
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	def stop(self):
 		self.stopped = 1
@@ -101,13 +111,14 @@ class WorkerThread_get_fileList(QtCore.QThread):
 class Thread_get_fileList():
 	def __init__(self, *args):
 		filePath = args[0]
-		CURRENT_USER 		= args[1]
-		CURRENT_PROJECT 	= args[2]
-		EXCLUDE_DIR_LOCKED 	= args[3]
-		INCLUDE_EXT_LOCKED 	= args[4]
+		CURRENT_USER 			= args[1]
+		CURRENT_PROJECT 		= args[2]
+		EXCLUDE_DIR_LOCKED 		= args[3]
+		INCLUDE_EXT_LOCKED 		= args[4]
+		TMP_PATH 				= args[5]
 		self.threads = []
 		# t = WorkerThread_get_fileList(filePath, self)
-		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, self)
+		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, self)
 		t.start()
 		self.threads.append(t)
 
@@ -140,6 +151,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		# /u/gri/Users/*/Assets/
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
+		self.TMP_PATH 					= self.CURRENT_SCRIPTS_PATH+'/'+self.CURRENT_USER+'_A7LockedBy.tmp'
 		self.DIR_BACKUP	 				= '_backup'		
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
 		self.MYPREFSJSON				= {}
@@ -309,27 +321,49 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		getText = self.logOutputBottom.toPlainText()
 
-		# result = self.get_fileList(filePath)
+		result = 0
+		try:
+			with open(self.TMP_PATH) as f:
+				result = sum(1 for _ in f)
+				lines = f.readlines()
+		except:
+			pass
+		self.printSTD(result)
+
+
+
+
+		if result > 0 :
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH)]
+			self.printSTD(lines)
+
+
+
+			self.logOutputBottom.setVisible(True)
+			self.logOutputBottom.setFixedHeight(200)		
+			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+
+			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+
+
+
+
+
+			for line in lines:
+				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+				self.logOutputBottom.insertPlainText(str(line)+'\n')
+
+
+
 
 
 
 		# MY_Thread_get_fileList = Thread_get_fileList(filePath)
-		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED)
+		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH)
+		# self.printSTD(MY_Thread_get_fileList.get_fileList())
 
 
-
-
-
-		# if len(result) > 0 :
-		# 	self.logOutputBottom.setVisible(True)
-		# 	self.logOutputBottom.setFixedHeight(200)		
-		# 	self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-
-		# 	self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-
-		# 	for line in result:
-		# 		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-		# 		self.logOutputBottom.insertPlainText(str(line)+'\n')
 
 
 
