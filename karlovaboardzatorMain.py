@@ -136,7 +136,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'+self.CURRENT_USER+'/Assets/'		
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
-		self.TMP_PATH_FILE_LOCKED 					= self.CURRENT_SCRIPTS_PATH+'/'+self.CURRENT_USER+'_A7LockedBy.tmp'
+		self.TMP_FILE_LOCKED 			= self.CURRENT_USER+'_A7LockedBy.tmp'
+		self.TMP_PATH_FILE_LOCKED 		= self.CURRENT_SCRIPTS_PATH+'/'+self.TMP_FILE_LOCKED
 		self.DIR_BACKUP	 				= '_backup'		
 		self.DIR_DISTANT_BACKUP 		= '/u/'+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
@@ -321,9 +322,9 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-		if result > 0 :
+		if result > 0 : # todo to mutu
 			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			self.printSTD(lines)
+			# self.printSTD(lines)
 
 
 
@@ -1039,12 +1040,26 @@ class __QT_KBZ__(QtGui.QDialog):
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
 		'''   '''
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
-			self.printSTD(name)
+			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
 
 		if str(name)=='BT_SEE_LOCKEDFILE_Local':
-			self.printSTD(name)
+			# self.printSTD(name)
+
+			# todo to mutu
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			# self.printSTD(lines)
 
 
+
+			self.logOutputBottom.setVisible(True)
+			self.logOutputBottom.setFixedHeight(200)		
+			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+
+			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+			for line in lines:
+				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+				self.logOutputBottom.insertPlainText(str(line)+'\n')
 
 
 
