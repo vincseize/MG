@@ -24,27 +24,47 @@ import datetime
 
 
 
-#======================================================================
+#====================================================================== Thread classes
+
+#====== Thread Instance ( container )
+
+class Thread_get_fileList():
+	def __init__(self, *args):
+		filePath = args[0]
+		CURRENT_USER 			= args[1]
+		CURRENT_PROJECT 		= args[2]
+		EXCLUDE_DIR_LOCKED 		= args[3]
+		INCLUDE_EXT_LOCKED 		= args[4]
+		TMP_PATH 				= args[5]
+		self.threads = []
+		# t = WorkerThread_get_fileList(filePath, self)
+		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, self)
+		t.start()
+		self.threads.append(t)
+
+	def __del__(self):
+		for t in self.threads:
+			running = t.running()
+			t.stop()
+			if not t.finished():
+				t.wait()
+
+#====== Thread Worker
 
 class WorkerThread_get_fileList(QtCore.QThread):
-	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, receiver):
-	# def __init__(self, filePath, receiver):
-		QtCore.QThread.__init__(self)
-		self.filePath = filePath
-		self.receiver = receiver
-		self.stopped = 0
 
-		# self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
-		# self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
-		# self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
-		# self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
+	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, receiver):
+		QtCore.QThread.__init__(self)
 
 		self.filePath 				= filePath
 		self.CURRENT_USER 			= CURRENT_USER
 		self.CURRENT_PROJECT 		= CURRENT_PROJECT
 		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
 		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
-		self.TMP_PATH				= TMP_PATH
+		self.TMP_PATH				= TMP_PATH		
+		self.receiver = receiver
+
+		self.stopped = 0
 
 
 	def run(self):
@@ -54,17 +74,6 @@ class WorkerThread_get_fileList(QtCore.QThread):
 				f = open(self.TMP_PATH,'a')
 				f.write(line+'\n') # python will convert \n to os.linesep
 				f.close()
-
-
-		# 	self.logOutputBottom.setVisible(True)
-		# 	self.logOutputBottom.setFixedHeight(200)		
-		# 	self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-
-		# 	self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-
-		# 	for line in result:
-		# 		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-		# 		self.logOutputBottom.insertPlainText(str(line)+'\n')		
 
 	#====== functions
 
@@ -80,7 +89,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
 			if not dirnames:			
 				for filename in filenames:
-					# print >> sys.__stderr__, filename
+					print >> sys.__stderr__, filename
 					ext = None
 					try:
 						ext = os.path.splitext(filename)[1][1:]
@@ -106,30 +115,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 	def stop(self):
 		self.stopped = 1
 
-#======
-
-class Thread_get_fileList():
-	def __init__(self, *args):
-		filePath = args[0]
-		CURRENT_USER 			= args[1]
-		CURRENT_PROJECT 		= args[2]
-		EXCLUDE_DIR_LOCKED 		= args[3]
-		INCLUDE_EXT_LOCKED 		= args[4]
-		TMP_PATH 				= args[5]
-		self.threads = []
-		# t = WorkerThread_get_fileList(filePath, self)
-		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, self)
-		t.start()
-		self.threads.append(t)
-
-	def __del__(self):
-		for t in self.threads:
-			running = t.running()
-			t.stop()
-			if not t.finished():
-				t.wait()
-
-#======================================================================
+#====================================================================== QT Class 
 
 class __QT_KBZ__(QtGui.QDialog):
 	
@@ -148,7 +134,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
 		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
 		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'+self.CURRENT_USER+'/Assets/'		
-		# /u/gri/Users/*/Assets/
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.TMP_PATH 					= self.CURRENT_SCRIPTS_PATH+'/'+self.CURRENT_USER+'_A7LockedBy.tmp'
@@ -328,7 +313,7 @@ class __QT_KBZ__(QtGui.QDialog):
 				lines = f.readlines()
 		except:
 			pass
-		self.printSTD(result)
+		# self.printSTD(result)
 
 
 
@@ -703,10 +688,26 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.logOutputBottomCursor = self.logOutputBottom.textCursor()
 		self.logOutputBottom.setVisible(False)
 
-		#================================================== add Date to Bottom Area content
+		#========= Bottom Area content Buttons
+		txtBt = 'See Locked A7'
+		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
+		nameBtsee = 'BT_SEE_LOCKEDFILE_Local'
+		self.BT_SEE_LOCKEDFILE_Local.setObjectName(nameBtsee)
+		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtsee))
+		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
+		txtBt = 'Clear Locked Info'
+		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
+		nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
+		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(nameBtclear)
+		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
+
+		#================================================== add LogOutputBottom to Bottom Area content
 		# self.BottomAreaContent.addWidget(self.labelBottom)
 		self.BottomAreaContent.addWidget(self.logOutputBottom)
 
+		#================================================== add Locked Buttons to Bottom Area content
+		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
+		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
 		#========= add Area content to Bottom Area container
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
 
@@ -1030,6 +1031,21 @@ class __QT_KBZ__(QtGui.QDialog):
 		return False
 
 
+
+
+	def on_BT_LOCKEDFILE_Local_clicked(self,name):
+		'''   '''
+		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
+			self.printSTD(name)
+
+		if str(name)=='BT_SEE_LOCKEDFILE_Local':
+			self.printSTD(name)
+
+
+
+
+
+
 	#======================================================================
 	#========= UI Construct Functions
 	#======================================================================
@@ -1275,38 +1291,25 @@ class __QT_KBZ__(QtGui.QDialog):
 								"height: 40px;"
 							)
 
-		# #========= sync scripts  Button
-		# r = self.HOME_COLOR[0]
-		# g = self.HOME_COLOR[1]
-		# b = self.HOME_COLOR[2]
-		# hexColor = self.rvbToHex(r, g, b)
-		
-		# self.BT_SYNC_SCRIPTS.setStyleSheet(
-		# 						"color: white;"
-		# 						# "background-color: "+hexColor+";"
-		# 						"selection-color: yellow;"
-		# 						"selection-background-color: blue;"
-		# 						"font: bold 14px;"
-		# 						"border-style: outset;"
-		# 						"height: 40px;"
-		# 						"width: 100px;"
-		# 					)
-
-		#========= others samples
-
-		# self.BT_HOME_SCRIPTS.setFlat(True)
-
-		# QPushButton#self.BT_HOME_SCRIPTS {
-		# 	background-color: red;
-		# 	border-style: outset;
-		# 	border-width: 2px;
-		# 	border-radius: 10px;
-		# 	border-color: beige;
-		# 	font: bold 14px;
-		# 	min-width: 10em;
-		# 	padding: 6px;
-		# }
-
+		# #========= Locked  Buttons
+		self.BT_SEE_LOCKEDFILE_Local.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 10px;"
+								"border-style: outset;"
+								"height: 15px;"
+							)
+		self.BT_CLEAR_LOCKEDFILE_Local.setStyleSheet(
+								"color: white;"
+								"background-color: "+hexColor+";"
+								"selection-color: yellow;"
+								"selection-background-color: blue;"
+								"font: bold 10px;"
+								"border-style: outset;"
+								"height: 15px;"
+							)
 
 #===================================================================================================================================
 #========= Start QT 
