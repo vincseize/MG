@@ -35,10 +35,10 @@ class Thread_get_fileList():
 		CURRENT_PROJECT 		= args[2]
 		EXCLUDE_DIR_LOCKED 		= args[3]
 		INCLUDE_EXT_LOCKED 		= args[4]
-		TMP_PATH 				= args[5]
+		TMP_PATH_FILE_LOCKED 				= args[5]
 		self.threads = []
 		# t = WorkerThread_get_fileList(filePath, self)
-		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, self)
+		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, self)
 		t.start()
 		self.threads.append(t)
 
@@ -53,7 +53,7 @@ class Thread_get_fileList():
 
 class WorkerThread_get_fileList(QtCore.QThread):
 
-	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH, receiver):
+	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, receiver):
 		QtCore.QThread.__init__(self)
 
 		self.filePath 				= filePath
@@ -61,7 +61,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		self.CURRENT_PROJECT 		= CURRENT_PROJECT
 		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
 		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
-		self.TMP_PATH				= TMP_PATH		
+		self.TMP_PATH_FILE_LOCKED				= TMP_PATH_FILE_LOCKED		
 		self.receiver = receiver
 
 		self.stopped = 0
@@ -71,7 +71,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		result = self.get_fileList(self.filePath)
 		if len(result) > 0 :
 			for line in result:
-				f = open(self.TMP_PATH,'a')
+				f = open(self.TMP_PATH_FILE_LOCKED,'a')
 				f.write(line+'\n') # python will convert \n to os.linesep
 				f.close()
 
@@ -136,8 +136,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'+self.CURRENT_USER+'/Assets/'		
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
-		self.TMP_PATH 					= self.CURRENT_SCRIPTS_PATH+'/'+self.CURRENT_USER+'_A7LockedBy.tmp'
+		self.TMP_PATH_FILE_LOCKED 					= self.CURRENT_SCRIPTS_PATH+'/'+self.CURRENT_USER+'_A7LockedBy.tmp'
 		self.DIR_BACKUP	 				= '_backup'		
+		self.DIR_DISTANT_BACKUP 		= '/u/'+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
 		self.MYPREFSJSON				= {}
 		self.MYPREFSJSON["scripts"]		= []
@@ -204,9 +205,11 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.apply_Stylesheets()
 		self.setPalette(self.palette_darkGrey)
 
-
-
-
+	#======================================================================
+	#========= check if some files exist
+	#======================================================================
+		if not os.path.exists(self.TMP_PATH_FILE_LOCKED):
+			open(self.TMP_PATH_FILE_LOCKED, 'a').close()
 
 
 
@@ -308,7 +311,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		result = 0
 		try:
-			with open(self.TMP_PATH) as f:
+			with open(self.TMP_PATH_FILE_LOCKED) as f:
 				result = sum(1 for _ in f)
 				lines = f.readlines()
 		except:
@@ -319,7 +322,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 		if result > 0 :
-			lines = [line.rstrip('\n') for line in open(self.TMP_PATH)]
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
 			self.printSTD(lines)
 
 
@@ -345,7 +348,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 		# MY_Thread_get_fileList = Thread_get_fileList(filePath)
-		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH)
+		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
 		# self.printSTD(MY_Thread_get_fileList.get_fileList())
 
 
@@ -876,9 +879,9 @@ class __QT_KBZ__(QtGui.QDialog):
 			array_scriptToSync.append(v)
 
 		for ap in self.ALL_PROJECTS:
-			dir_distant_backup = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
-			if not os.path.exists(dir_distant_backup):
-				os.makedirs(dir_distant_backup)
+			# DIR_DISTANT_BACKUP = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
+			if not os.path.exists(self.DIR_DISTANT_BACKUP):
+				os.makedirs(self.DIR_DISTANT_BACKUP)
 			APU = str(ap).upper()
 			ap 	= str(ap).lower()		
 
@@ -895,7 +898,7 @@ class __QT_KBZ__(QtGui.QDialog):
 					sbackup 	= filename+'_'+date+'.'+ext
 					path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
 					path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
-					path_distant_backup = dir_distant_backup+'/'+sbackup
+					path_distant_backup = self.DIR_DISTANT_BACKUP+'/'+sbackup
 					self.printSTD(path_local)					
 					self.printSTD('->')
 					self.printSTD(path_distant)
