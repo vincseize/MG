@@ -24,56 +24,90 @@ import datetime
 
 
 
+#======================================================================
 
-# class YourThreadName(QtCore.QThread):
-#     def __init__(self):
-#         QThread.__init__(self)
-
-#     def __del__(self):
-#         self.wait()
-
-# 	def run(self):
-# 		self.printSTD("run")
-# 		self.logOutputBottom.setVisible(True)
-# 		self.logOutputBottom.insertPlainText("run")
-
-# 		# self.terminate()
-
-
-# 		# for n in range (1,20):
-# 		# 	# self.printSTD(n)
-# 		# 	time.sleep(0.3) # artificial time delay
-# 		# 	# self.emit( QtCore.SIGNAL('update(QString)'), "from work thread " + str(n) )
-# 		# 	self.printSTD(n)
-# 		# 	self.terminate()
-
-# 	# def stop(self):
-# 	# 	self._isRunning = False
-
-
-rand = random.Random()
-class WorkerThread(QtCore.QThread):
-	def __init__(self, filePath, receiver):
+class WorkerThread_get_fileList(QtCore.QThread):
+	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, receiver):
+	# def __init__(self, filePath, receiver):
 		QtCore.QThread.__init__(self)
 		self.filePath = filePath
 		self.receiver = receiver
 		self.stopped = 0
 
+		# self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
+		# self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
+		# self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
+		# self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
+
+		self.filePath 			= filePath
+		self.CURRENT_USER 		= CURRENT_USER
+		self.CURRENT_PROJECT 	= CURRENT_PROJECT
+		self.EXCLUDE_DIR_LOCKED = EXCLUDE_DIR_LOCKED
+		self.INCLUDE_EXT_LOCKED = INCLUDE_EXT_LOCKED
+
+
 	def run(self):
-		for n in range (1,150):
-			time.sleep(rand.random() * 0.3)
-			msg = str(self.filePath) + " " + str(n)
-			print >> sys.__stderr__, msg
-			# result = self.get_fileList(filePath)
+		result = self.get_fileList(self.filePath)
+
+	#====== functions
+
+	def get_fileInfo(self,source):
+		fileInfo   = QtCore.QFileInfo(source)
+		infoWrite = fileInfo.isWritable()
+		infoOwner = fileInfo.owner()
+		return infoWrite, infoOwner
+
+
+	def get_fileList(self,source):
+		matches = []
+		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
+			if not dirnames:			
+				for filename in filenames:
+					print >> sys.__stderr__, filename
+					ext = None
+					try:
+						ext = os.path.splitext(filename)[1][1:]
+					except:
+						pass	
+					if ext.upper() in self.INCLUDE_EXT_LOCKED:
+						filePath 	= os.path.join(root, filename)
+						result 		= self.get_fileInfo(filePath)
+						infoWrite 	= result[0]
+						infoOwner 	= result[1]
+						if infoWrite == True and infoOwner == self.CURRENT_USER:
+							matches.append(os.path.join(root, filename))
+		return matches
+
+	#====== end functions
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	def stop(self):
 		self.stopped = 1
 
-class ThreadExample():
+#======
+
+class Thread_get_fileList():
 	def __init__(self, *args):
 		filePath = args[0]
+		CURRENT_USER 		= args[1]
+		CURRENT_PROJECT 	= args[2]
+		EXCLUDE_DIR_LOCKED 	= args[3]
+		INCLUDE_EXT_LOCKED 	= args[4]
 		self.threads = []
-		t = WorkerThread(filePath, self)
+		# t = WorkerThread_get_fileList(filePath, self)
+		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, self)
 		t.start()
 		self.threads.append(t)
 
@@ -84,7 +118,7 @@ class ThreadExample():
 			if not t.finished():
 				t.wait()
 
-
+#======================================================================
 
 class __QT_KBZ__(QtGui.QDialog):
 	
@@ -279,7 +313,8 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-		threadExample = ThreadExample(filePath)
+		# MY_Thread_get_fileList = Thread_get_fileList(filePath)
+		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED)
 
 
 
