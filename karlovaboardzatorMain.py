@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 29-04-2016                                                                #
+# Date : 12-05-2016                                                                #
 # ##################################################################################
 
 
@@ -155,7 +155,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TMP_FILE_LOCKED 			= self.CURRENT_USER+'_A7LockedBy.tmp'
 		self.TMP_PATH_FILE_LOCKED 		= self.CURRENT_SCRIPTS_PATH+'/'+self.TMP_FILE_LOCKED
 		self.DIR_BACKUP	 				= '_backup'		
-		self.DIR_DISTANT_BACKUP 		= '/u/'+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
 		self.MYPREFSJSON				= {}
 		self.MYPREFSJSON["scripts"]		= []
@@ -911,7 +910,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		#====================================================================== Fin Scripts
 
 
-		now = datetime.datetime.now()
+		# now = datetime.datetime.now()
+		now = datetime.now()
 		date = now.strftime("%Y%m%d-%H-%M-%S")
 
 		array_scriptToSync = []
@@ -921,9 +921,10 @@ class __QT_KBZ__(QtGui.QDialog):
 			array_scriptToSync.append(v)
 
 		for ap in self.ALL_PROJECTS:
-			# DIR_DISTANT_BACKUP = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
-			if not os.path.exists(self.DIR_DISTANT_BACKUP):
-				os.makedirs(self.DIR_DISTANT_BACKUP)
+			DIR_DISTANT_BACKUP = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
+			# self.printSTD(DIR_DISTANT_BACKUP) 
+			if not os.path.exists(DIR_DISTANT_BACKUP):
+				os.makedirs(DIR_DISTANT_BACKUP)
 			APU = str(ap).upper()
 			ap 	= str(ap).lower()		
 
@@ -940,7 +941,7 @@ class __QT_KBZ__(QtGui.QDialog):
 					sbackup 	= filename+'_'+date+'.'+ext
 					path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
 					path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
-					path_distant_backup = self.DIR_DISTANT_BACKUP+'/'+sbackup
+					path_distant_backup = DIR_DISTANT_BACKUP+'/'+sbackup
 					self.printSTD(path_local)					
 					self.printSTD('->')
 					self.printSTD(path_distant)
