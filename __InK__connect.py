@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                           	   #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 27-04-2016                                                                #
+# Date : 12-05-2016                                                                #
 # ##################################################################################
 
 # Required modules
@@ -25,26 +25,28 @@ import nask.sdk.hit
 import proj.pipe.ink.graphs as prodgraphs
 from subprocess import Popen, PIPE
 
+# Maya modules
+import sip
+
 # Optionals modules
 import re
 import shutil
 import time
 import datetime
+from datetime import datetime
 import subprocess
 import glob
 import json
 import shutil
-
-# QT modules
-from PyQt4 import QtGui
-import shutil
 import string
-import os
 import subprocess
 import collections
 from collections import OrderedDict
-import sip
-from PyQt4 import QtGui,QtCore,QtOpenGL
+
+# QT modules
+from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore, Qt, QtOpenGL
+from PyQt4.QtCore import QThread
 
 # qt module for InK
 try:
