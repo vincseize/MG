@@ -93,7 +93,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		randwait = ['.','..','...'] # for deco
 
 		matches = []
-		
+
 		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
 			# if dirnames:
 			# 	msg = random.choice(randwait)
@@ -296,6 +296,21 @@ class __QT_KBZ__(QtGui.QDialog):
 				self.modelTab1.setRootPath(self.modelTab1.filePath(child))
 
 
+
+
+	def readlines_files(self,_filepath):
+		result = 0
+		try:
+			with open(self.TMP_PATH_FILE_LOCKED) as f:
+				result = sum(1 for _ in f)
+				lines = f.readlines()
+		except:
+			pass
+		return result
+
+
+
+
 	
 	def Expand_GetLocked(self, index):
 
@@ -326,38 +341,43 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		getText = self.logOutputBottom.toPlainText()
 
-		result = 0
-		try:
-			with open(self.TMP_PATH_FILE_LOCKED) as f:
-				result = sum(1 for _ in f)
-				lines = f.readlines()
-		except:
-			pass
-		# self.printSTD(result)
+		# result = 0
+		# try:
+		# 	with open(self.TMP_PATH_FILE_LOCKED) as f:
+		# 		result = sum(1 for _ in f)
+		# 		lines = f.readlines()
+		# except:
+		# 	pass
+		# # self.printSTD(result)
 
-
+ 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
 
 
 		if result > 0 : # todo to mutu
-			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			# self.printSTD(lines)
 
 
 
-			self.logOutputBottom.setVisible(True)
-			self.logOutputBottom.setFixedHeight(200)		
-			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+			self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
-			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-
+			# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			# # self.printSTD(lines)
 
 
 
+			# self.logOutputBottom.setVisible(True)
+			# self.logOutputBottom.setFixedHeight(200)		
+			# self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+
+			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 
-			for line in lines:
-				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-				self.logOutputBottom.insertPlainText(str(line)+'\n')
+
+
+
+
+			# for line in lines:
+			# 	self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			# 	self.logOutputBottom.insertPlainText(str(line)+'\n')
 
 
 
