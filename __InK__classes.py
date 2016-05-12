@@ -5,15 +5,15 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Date : 16-03-2016                                                                #
+# Last Update : 12-05-2016                                                         #
 # ##################################################################################
 
+#================================================================================================================================== PRIMARY CLASS
 import sys, ink.proto
 path_modules = "/u/"+ink.io.ConnectUserInfo()[2]+"/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples"
 sys.path.append(path_modules)
 import __InK__connect
 from __InK__connect import *
-
 #=======================================================================================================================  CLASS __PIPEIN_GRAPH__
 
 
@@ -80,87 +80,77 @@ class __PIPEIN_GRAPH__():
             for GraphBuilder 
             todo : new class only for Builder toolz
         '''
-        print 'getGraph_infos',pa
-        check = str(pa).split('_')[2] # todo better with filter
-        MASTER      = check.split('-')[0]
-        SEQUENCE    = str(pa).split('_')[1]
-        SHOT        = 'None'
-        CATEGORY    = 'None'
 
+        myNomen     = pa.GetNomen()
+        myFilm      = myNomen.GetFilm()
+        mySeq       = myNomen.GetSeq()
+        myShot      = myNomen.GetShot()
+        mySHOT      = 'None' # for specials cases as previz or usecase
+
+        # retreive shot if specials cases, as previz, usecase 
         try:
             checkShot = str(pa).split('_P')[1] # todo better with filter
-            SHOT = 'P'+checkShot[0:4]
+            mySHOT = 'P'+checkShot[0:4]
         except:
             pass
         try:
             checkShot = str(pa).split('_Z')[1] # todo better with filter
-            SHOT = 'Z'+checkShot[0:4]
+            mySHOT = 'Z'+checkShot[0:4]
         except:
             pass
 
         if verbose == True:
-            print MASTER, SEQUENCE, SHOT, CATEGORY
+            print myNomen, myFilm, mySeq, myShot, mySHOT
 
-        return  MASTER, SEQUENCE, SHOT, CATEGORY
-
+        return  myNomen, myFilm, mySeq, myShot, mySHOT # eg: GRI/S0025/M0010/Layout/GRI_S0025_M0010-Layout.a7 GRI S0025 M0010
 
 
 
     #------------------------- Layout
 
-                          # pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,True
-    def getTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,MASTER,CATEGORY,SEQUENCE,SHOT,verbose=False):
+    def getTypeLayout(self,pa,a_types,nm_asset,projectLower,PROJECT,myShot,myCat,mySeq,mySHOT,verbose=False):
         ''' 
             for GraphBuilder 
             todo : new class only for Builder toolz
         '''
+        
         # case Layout
         if len(a_types) == 1 and a_types[0] == 'Layout' and 'PREVIZ' not in str(nm_asset):
             type_layout = 'Layout'
             check_clips = '-Layout_Clip'
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+SEQUENCE+'/'+SEQUENCE+'_'+MASTER+'.inkGraph'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
 
         # case Previz
         if len(a_types) == 1 and a_types[0] == 'Layout' and 'PREVIZ' in str(nm_asset):
             type_layout = 'Previz'
             check_clips = '-Layout_Clip'
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/PREVIZ/'+SEQUENCE+'/'+SEQUENCE+'_'+MASTER+'.inkGraph'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/PREVIZ/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
 
         # case Anim 
         if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' not in str(nm_asset):
             type_layout = 'Anim'
             check_clips = '-Anim_Clip'
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+PROJECT+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph'
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+PROJECT+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
 
         # case Usecase
         if len(a_types) == 1 and a_types[0] == 'Anim' and 'USECASE' in str(nm_asset):
             type_layout = 'Usecase'
             check_clips = '-Anim_Clip'
             tmp = str(pa).split('USECASE_')[1] # todo better with filter
-            SEQUENCE = tmp.split('_')[0]
+            mySeq = tmp.split('_')[0]
             tmp2 = tmp.split('_')[1]
-            SHOT = tmp2.split('-')[0]
+            mySHOT = tmp2.split('-')[0]
 
             # Prov, premiere pass to do better
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+CATEGORY+'/'+SEQUENCE+'/'+SEQUENCE+'_'+SHOT+'.inkGraph' 
-
-            # Assets # sample 1
-            # USECASE/MANI/Test101/Anim/USECASE_MANI_Test101-Anim.a7 
-            # Assets # sample 2
-            # USECASE/LOOKDEV/BathroomOffset/Anim/USECASE_LOOKDEV_BathroomOffset-Anim.a7 
-
-            # Graphs # sample 1
-            # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/TERTIARY/MANI/ManI_Test101.inkGraph # private 
-            # Graphs # sample 2
-            # /u/gri/Users/COM/Presets/Graphs/ANIM/USECASE/LOOKDEV/BathroomOffset.inkGraph 
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+myCat+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph' 
 
         if verbose==True:
             print 'type_layout : ' + type_layout
             print 'check_clips : ' + check_clips
             print 'pathGraphSave : ' + pathGraphSave
-            print 'SHOT : ' + SHOT
+            print 'mySHOT : ' + mySHOT
 
-        return type_layout, check_clips, pathGraphSave, SHOT
+        return type_layout, check_clips, pathGraphSave, mySHOT
 
 
 
@@ -202,9 +192,9 @@ class __PIPEIN_GRAPH__():
     def getA7_infos(self,pa,verbose=False):
         ''' get a7 infos 
 
-        todo            - find all available infos
+            - todo: find more, or all available infos
         '''
-        print 'getA7_infos',pa
+
         nm_asset        = 'None' # 1
         nm_path         = 'None' # 2
         a_libname       = 'None' # 3
@@ -653,29 +643,16 @@ class __PIPEIN_GRAPH__():
 
         return params
 
+    #========== Files Functions
+
+    def readlines_files(self,_filepath):
+        result = 0
+        try:
+            with open(self.TMP_PATH_FILE_LOCKED) as f:
+                result = sum(1 for _ in f)
+                lines = f.readlines()
+        except:
+            pass
+        return result
+
 #======================================================================================================================= End class __PIPEIN_GRAPH__ 
-
-
-
-
-
-
-
-#==============================================================================================================================  CLASS __SENDMAIL__
-
-# class __SENDMAIL__():
-
-#     hostname = MAIL_HOSTNAME
-
-#     def __init__(self,mailTo,mailFrom,mailSubject,mailContent):
-#         self.hostname = MAIL_HOSTNAME      
-#         self.mailTo = mailTo
-#         self.mailFrom = mailFrom
-#         self.mailSubject = mailSubject
-#         self.mailContent = mailContent
-        
-#     def sendmail(self):
-#         return self.hostname,self.mailTo,self.mailFrom,self.mailSubject,self.mailContent
-
-#========================================================================================================================== end  CLASS __SENDMAIL__
-
