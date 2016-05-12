@@ -226,7 +226,10 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 		if not os.path.exists(self.TMP_PATH_FILE_LOCKED):
 			open(self.TMP_PATH_FILE_LOCKED, 'a').close()
-
+		else:
+			result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
+			if result > 0 : # todo to mutu
+				self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
 
 		# self.timer = QtCore.QTimer(self)
@@ -262,24 +265,21 @@ class __QT_KBZ__(QtGui.QDialog):
 	#===================================================================================================================================
 
 
+	# def checkLocal_locked(self):
+	# 	'''   '''
+	# 	root = self.modelTab1.index(self.START_DIR_LOCKED)		
+	# 	rows = self.modelTab1.rowCount(root)
+	# 	# self.printSTD(rows)
+	# 	for i in range(rows):
+	# 		# item = root.child(i,0) # object at first (col,row
+	# 		# item = root.child(i,0).data # return <built-in method data of QModelIndex object at 0x6102140>
+	# 		item = root.child(i,0).data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
 
 
+	# 		self.printSTD(item.child(i,0).data())
 
-	def checkLocal_locked(self):
-		'''   '''
-		root = self.modelTab1.index(self.START_DIR_LOCKED)		
-		rows = self.modelTab1.rowCount(root)
-		# self.printSTD(rows)
-		for i in range(rows):
-			# item = root.child(i,0) # object at first (col,row
-			# item = root.child(i,0).data # return <built-in method data of QModelIndex object at 0x6102140>
-			item = root.child(i,0).data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
-
-
-			# self.printSTD(item.child(i,0).data())
-
-			# self.printSTD(root.child.isDir())
-			# self.printSTD(item)
+	# 		# self.printSTD(root.child.isDir())
+	# 		# self.printSTD(item)
 
 
 
@@ -296,7 +296,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-
 	def readlines_files(self,_filepath):
 		result = 0
 		try:
@@ -308,29 +307,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		return result
 
 
-
-
 	
 	def Expand_GetLocked(self, index):
-
-		# Thread
-		# self.thread = QThread()
-		# self.thread.start()
-
-		# self.worker = YourThreadName()
-		# self.worker.moveToThread(self.thread)
-		
-		# self.thread.quit()
-		# self.thread.wait()
-
-
-
-
-
-
-
-
-
+		'''   '''
 		model = self.modelTab1
 		indexItem = model.index(index.row(), 0, index.parent())
 		fileName = model.fileName(indexItem)
@@ -340,52 +319,11 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		getText = self.logOutputBottom.toPlainText()
 
-		# result = 0
-		# try:
-		# 	with open(self.TMP_PATH_FILE_LOCKED) as f:
-		# 		result = sum(1 for _ in f)
-		# 		lines = f.readlines()
-		# except:
-		# 	pass
-		# # self.printSTD(result)
-
  		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
-
-
 		if result > 0 : # todo to mutu
-
-
-
 			self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
-			# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			# # self.printSTD(lines)
-
-
-
-			# self.logOutputBottom.setVisible(True)
-			# self.logOutputBottom.setFixedHeight(200)		
-			# self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-
-			# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-
-
-
-
-
-
-			# for line in lines:
-			# 	self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-			# 	self.logOutputBottom.insertPlainText(str(line)+'\n')
-
-
-
-
-
-
-		# MY_Thread_get_fileList = Thread_get_fileList(filePath)
 		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
-		# self.printSTD(MY_Thread_get_fileList.get_fileList())
 
 
 
