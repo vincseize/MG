@@ -21,7 +21,7 @@ import time
 import json
 import shutil
 import datetime
-
+from datetime import datetime
 
 
 #====================================================================== Thread classes
@@ -85,11 +85,22 @@ class WorkerThread_get_fileList(QtCore.QThread):
 
 
 	def get_fileList(self,source):
+		'''   '''
+		startTime = datetime.now()
+
+		msg = '----- Search[ ' + self.CURRENT_USER + ' ] Locked Files in Progress'
+		print >> sys.__stderr__, msg
+		randwait = ['.','..','...'] # for deco
+
 		matches = []
+		
 		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
+			# if dirnames:
+			# 	msg = random.choice(randwait)
+			# 	print >> sys.__stderr__, msg
 			if not dirnames:			
 				for filename in filenames:
-					print >> sys.__stderr__, filename
+					# print >> sys.__stderr__, filename
 					ext = None
 					try:
 						ext = os.path.splitext(filename)[1][1:]
@@ -103,10 +114,15 @@ class WorkerThread_get_fileList(QtCore.QThread):
 							infoOwner 	= result[1]
 							# matches.append(os.path.join(root, filename))
 							if infoWrite == True and infoOwner == self.CURRENT_USER:
-								matches.append(os.path.join(root, filename))
-								print >> sys.__stderr__, filePath
+								matches.append(os.path.join(root, filename))								
+								msg = filePath + ' [ LOCKED ]'
+								print >> sys.__stderr__, msg
 					except:
 						pass
+		msg = '--------------------------------- ' + root + ' [ DONE ] '
+		print >> sys.__stderr__, msg
+		msg = datetime.now() - startTime
+		print >> sys.__stderr__, msg
 
 		return matches
 
@@ -264,7 +280,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			# self.printSTD(item.child(i,0).data())
 
 			# self.printSTD(root.child.isDir())
-			self.printSTD(item)
+			# self.printSTD(item)
 
 
 
@@ -273,7 +289,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.Tab1.expand(index)  # expand the item
 		for i in range(self.modelTab1.rowCount(index)):
 			item = index.child(i,0).data()
-			self.printSTD(item)
+			# self.printSTD(item)
 			# fetch all the sub-folders
 			child = index.child(i, 0)
 			if self.modelTab1.isDir(child):
@@ -389,9 +405,14 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 	def get_fileList(self, source):
+		D = None
 		matches = []
 		# for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=True):
 		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
+			# if D != dirnames:		
+			# 	D = dirnames
+			# 	self.printSTD(D)
+
 			if not dirnames:			
 				for filename in filenames:
 					# self.printSTD(filename)
@@ -845,7 +866,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			modelScript = self.ScriptsAreaContent
 			colIndex = 0
 			nRows = modelScript.rowCount()
-			self.printSTD(nRows)
+			# self.printSTD(nRows)
 			for n in range(nRows):
 				Item_QModelIndex = modelScript.index(n, colIndex)
 				# self.printSTD(Item_QModelIndex)
