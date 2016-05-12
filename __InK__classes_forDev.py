@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 22-03-2016                                                         #
+# Last Update : 12-05-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -85,7 +85,7 @@ class __PIPEIN_GRAPH__():
         myFilm      = myNomen.GetFilm()
         mySeq       = myNomen.GetSeq()
         myShot      = myNomen.GetShot()
-        mySHOT      = 'None' # for specials cases as previz or usecase
+        mySHOT      = 'None' # for specials cases as previz or usecase # todo
 
         # retreive shot if specials cases, as previz, usecase 
         try:
@@ -102,7 +102,7 @@ class __PIPEIN_GRAPH__():
         if verbose == True:
             print myNomen, myFilm, mySeq, myShot, mySHOT
 
-        return  myNomen, myFilm, mySeq, myShot, mySHOT # eg: GRI/S0025/M0010/Layout/GRI_S0025_M0010-Layout.a7 GRI S0025 M0010
+        return  myNomen, myFilm, mySeq, myShot, mySHOT # eg: GRI/S0025/M0010/Layout/GRI_S0025_M0010-Layout.a7 GRI S0025 M0010 None
 
 
 
@@ -143,21 +143,7 @@ class __PIPEIN_GRAPH__():
             mySHOT = tmp2.split('-')[0]
 
             # Prov, premiere pass to do better
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+myCat+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph' 
-
-            # Assets # sample 1
-            # USECASE/MANI/Test101/Anim/USECASE_MANI_Test101-Anim.a7 
-            # Assets # sample 2
-            # USECASE/LOOKDEV/BathroomOffset/Anim/USECASE_LOOKDEV_BathroomOffset-Anim.a7 
-
-            # Graphs # sample 1
-            # /u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/TERTIARY/MANI/ManI_Test101.inkGraph # private 
-            # Graphs # sample 2
-            # /u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/LOOKDEV/BathroomOffset.inkGraph 
-
-            # /u/dm3/Users/COM/Presets/Graphs/ANIM/DM3/S1575/S1575_P0193.inkGraph
-            # Graphs 
-            # /u/dm3/Users/COM/Presets/Graphs/ANIM/DM3/S1575/S1575_P0193.inkGraph 
+            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+myCat+'/'+mySeq+'/'+mySeq+'_'+myShot+'.inkGraph'
 
         if verbose==True:
             print 'type_layout : ' + type_layout
@@ -657,6 +643,19 @@ class __PIPEIN_GRAPH__():
         params['X_space_betweenGroup'] = autoEcart_X*1.1 
 
         return params
+
+    #========== Files Functions
+
+    def readlines_files(self,_filepath):
+        result = 0
+        try:
+            with open(self.TMP_PATH_FILE_LOCKED) as f:
+                result = sum(1 for _ in f)
+                lines = f.readlines()
+        except:
+            pass
+        return result
+
 
 #======================================================================================================================= End class __PIPEIN_GRAPH__ 
 
