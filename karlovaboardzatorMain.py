@@ -61,7 +61,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		self.CURRENT_PROJECT 		= CURRENT_PROJECT
 		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
 		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
-		self.TMP_PATH_FILE_LOCKED				= TMP_PATH_FILE_LOCKED		
+		self.TMP_PATH_FILE_LOCKED	= TMP_PATH_FILE_LOCKED		
 		self.receiver = receiver
 
 		self.stopped = 0
@@ -475,62 +475,6 @@ class __QT_KBZ__(QtGui.QDialog):
 	def construct_MiddleTabsArea(self):
 		'''   '''
 
-		# def checkLocal_locked():
-		# 	'''   '''
-
-
-
-		# 	for i in range(self.modelTab1.count()):
-		# 		yield self.item(i)
-		# 		# item1 = self.item(i).text(0) # text at first (0) column
-		# 		# self.printSTD(item1)
-
-
-
-
-
-
-
-
-
-			# local_TreeView = self.Tab1
-			# colIndex = 0
-
-
-			# root = self.modelTab1.invisibleRootItem()
-			# child_count = root.childCount()
-			# for i in range(child_count):
-			# 	item = root.child(i)
-			# 	item1 = item.text(0) # text at first (0) column
-			# 	# item.setText(1, 'result from %s' % url) # update result column (1)
-
-
-
-			# 	self.printSTD(item1)
-
-
-
-			# for n in range(nRows):
-			# 	Item_QModelIndex = modelScript.index(n, colIndex)
-			# 	# self.printSTD(Item_QModelIndex)
-			# 	# self.printSTD('------------------------')
-			# 	# item = Item_QModelIndex.data # return <built-in method data of QModelIndex object at 0x6102140>
-			# 	# self.printSTD(item)
-			# 	# item = Item_QModelIndex.data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
-			# 	# self.printSTD(item)
-			# 	itemChecked = Item_QModelIndex.data(QtCore.Qt.CheckStateRole) # 
-			# 	if itemChecked == 2: # checked
-			# 		# self.printSTD('------------------------')
-			# 		# self.printSTD(itemChecked)
-			# 		# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
-			# 		# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
-			# 		# self.printSTD(role)  # ne retourne pas d erreur
-			# 		modelScript.setData(
-			# 		modelScript.index(n, colIndex),
-			# 		QtGui.QColor(QtCore.Qt.green),
-			# 		QtCore.Qt.BackgroundColorRole
-			# 		)
-
 		#=======================================================================================
 		#=========================== Middle Area content
 		#=======================================================================================
@@ -652,24 +596,25 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def construct_BottomAreaContent(self):
 		'''   '''
+
+		h1 = 30
+
 		#========= Bottom Area content
-		self.BottomAreaContent = QtGui.QVBoxLayout()
+		self.BottomAreaContent = QtGui.QGridLayout()
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
+
+
+		#========= Container log buttons 
+		# self.BottomLogButtons = QtGui.QGridLayout()
+		# self.BottomLogButtons.setObjectName("BottomLogButtons")
+
 		#========= Bottom Area content User Login search
 		# txtLblUser = now
 		self.editUserBottom = QtGui.QTextEdit()
 		self.editUserBottom.insertPlainText(self.CURRENT_USER)
 		self.editUserBottom.setFixedWidth(200)
-		self.editUserBottom.setFixedHeight(30)
-		# r = self.HOME_COLOR[0]
-		# g = self.HOME_COLOR[1]
-		# b = self.HOME_COLOR[2]
-		# hexColor = self.rvbToHex(r, g, b)
-		# self.editUserBottom.setStyleSheet(
-		# 						"color: "+hexColor+";"
-		# 						"font: italic;"
-		# 					)
-
+		self.editUserBottom.setFixedHeight(h1)
+		self.editUserBottom.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 		#========= Bottom Area content Buttons
 		txtBt = 'See Locked | Never Published A7'
 		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
@@ -677,16 +622,26 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_SEE_LOCKEDFILE_Local.setObjectName(nameBtsee)
 		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtsee))
 		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
+		self.BT_SEE_LOCKEDFILE_Local.setFixedSize(200,h1)
+
+
 		txtBt = 'Clear Locked Text Infos'
 		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
 		nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
 		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(nameBtclear)
 		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
+		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(200,h1)
+
+		#================================================== add Log and button
+		# self.BottomLogButtons.addWidget(self.editUserBottom)
+		# self.BottomLogButtons.addWidget(self.BT_SEE_LOCKEDFILE_Local)
+		# self.BottomLogButtons.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)		
+
 
 		#========= Bottom Area content logOutputBottom
 		self.logOutputBottom = QtGui.QTextEdit()
 		self.logOutputBottom.setObjectName("logOutputBottom")		
-		self.logOutputBottom.setFixedWidth(self.SCREEN.width()-30)
+		self.logOutputBottom.setFixedWidth(self.SCREEN.width()-40)
 		self.logOutputBottom.setFixedHeight(1)		
 		self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
 		self.logOutputBottomSb = self.logOutputBottom.verticalScrollBar()
@@ -695,16 +650,19 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.logOutputBottom.setVisible(False)
 
 		#================================================== add Locked Buttons to Bottom Area content
+		# self.BottomAreaContent.addWidget(self.BottomLogButtons)
 		self.BottomAreaContent.addWidget(self.editUserBottom)
 		#================================================== add Locked Buttons to Bottom Area content
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
-		#========= add Area content to Bottom Area container
-		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
+
 
 		#================================================== add LogOutputBottom to Bottom Area content
 		self.BottomAreaContent.addWidget(self.logOutputBottom)
 
+
+		#========= add Area content to Bottom Area container
+		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
 
 
 
@@ -1035,18 +993,24 @@ class __QT_KBZ__(QtGui.QDialog):
 		'''   '''
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
 			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
+			self.logOutputBottom.setVisible(True)
+			self.logOutputBottom.setText('')
 
 		if str(name)=='BT_SEE_LOCKEDFILE_Local':
 			# self.printSTD(name)
 
-			# todo to mutu
+			cb = QtGui.QApplication.clipboard()
+			cb.clear(mode=cb.Clipboard )
+
+
 			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			# self.printSTD(lines)
+			self.printSTD(lines)
 
 
 
 			self.logOutputBottom.setVisible(True)
-			self.logOutputBottom.setFixedHeight(200)		
+			self.logOutputBottom.setFixedHeight(200)
+
 			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
 
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
@@ -1055,7 +1019,10 @@ class __QT_KBZ__(QtGui.QDialog):
 				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 				self.logOutputBottom.insertPlainText(str(line)+'\n')
 
+				# copy to clipboard
+				cb.setText(line, mode=cb.Clipboard)
 
+			self.logOutputBottom.selectAll()
 
 
 	#======================================================================
@@ -1352,3 +1319,79 @@ def start(parent, data):
 	main.activateWindow()
 	main.raise_()
 	main.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+############################################   
+
+
+		# def checkLocal_locked():
+		# 	'''   '''
+
+
+
+		# 	for i in range(self.modelTab1.count()):
+		# 		yield self.item(i)
+		# 		# item1 = self.item(i).text(0) # text at first (0) column
+		# 		# self.printSTD(item1)
+
+
+
+
+
+
+
+
+
+			# local_TreeView = self.Tab1
+			# colIndex = 0
+
+
+			# root = self.modelTab1.invisibleRootItem()
+			# child_count = root.childCount()
+			# for i in range(child_count):
+			# 	item = root.child(i)
+			# 	item1 = item.text(0) # text at first (0) column
+			# 	# item.setText(1, 'result from %s' % url) # update result column (1)
+
+
+
+			# 	self.printSTD(item1)
+
+
+
+			# for n in range(nRows):
+			# 	Item_QModelIndex = modelScript.index(n, colIndex)
+			# 	# self.printSTD(Item_QModelIndex)
+			# 	# self.printSTD('------------------------')
+			# 	# item = Item_QModelIndex.data # return <built-in method data of QModelIndex object at 0x6102140>
+			# 	# self.printSTD(item)
+			# 	# item = Item_QModelIndex.data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
+			# 	# self.printSTD(item)
+			# 	itemChecked = Item_QModelIndex.data(QtCore.Qt.CheckStateRole) # 
+			# 	if itemChecked == 2: # checked
+			# 		# self.printSTD('------------------------')
+			# 		# self.printSTD(itemChecked)
+			# 		# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
+			# 		# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
+			# 		# self.printSTD(role)  # ne retourne pas d erreur
+			# 		modelScript.setData(
+			# 		modelScript.index(n, colIndex),
+			# 		QtGui.QColor(QtCore.Qt.green),
+			# 		QtCore.Qt.BackgroundColorRole
+			# 		)
