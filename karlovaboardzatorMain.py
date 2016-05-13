@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 12-05-2016                                                                #
+# Date : 13-05-2016                                                                #
 # ##################################################################################
 
 
@@ -318,12 +318,21 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 		getText = self.logOutputBottom.toPlainText()
+		USERtoSEARCH = self.editUserBottom.toPlainText()
+		print >> sys.__stderr__, USERtoSEARCH
+		if str(USERtoSEARCH) != self.CURRENT_USER:
+			filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
+
+		print >> sys.__stderr__, filePath
+
+
+
 
  		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
 		if result > 0 : # todo to mutu
 			self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
-		MY_Thread_get_fileList = Thread_get_fileList(filePath, self.CURRENT_USER, self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
+		MY_Thread_get_fileList = Thread_get_fileList(str(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
 
 
 
@@ -644,21 +653,36 @@ class __QT_KBZ__(QtGui.QDialog):
 	def construct_BottomAreaContent(self):
 		'''   '''
 		#========= Bottom Area content
-		self.BottomAreaContent = QtGui.QHBoxLayout()
+		self.BottomAreaContent = QtGui.QVBoxLayout()
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
-		#========= Bottom Area content Date
-		# now = time.strftime("%Y/%d/%m %H:%M:%S")
-		# txtLbl = now
-		# self.labelBottom = QtGui.QLabel()
-		# self.labelBottom.setText(txtLbl)
+		#========= Bottom Area content User Login search
+		# txtLblUser = now
+		self.editUserBottom = QtGui.QTextEdit()
+		self.editUserBottom.insertPlainText(self.CURRENT_USER)
+		self.editUserBottom.setFixedWidth(200)
+		self.editUserBottom.setFixedHeight(30)
 		# r = self.HOME_COLOR[0]
 		# g = self.HOME_COLOR[1]
 		# b = self.HOME_COLOR[2]
 		# hexColor = self.rvbToHex(r, g, b)
-		# self.labelBottom.setStyleSheet(
+		# self.editUserBottom.setStyleSheet(
 		# 						"color: "+hexColor+";"
 		# 						"font: italic;"
 		# 					)
+
+		#========= Bottom Area content Buttons
+		txtBt = 'See Locked | Never Published A7'
+		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
+		nameBtsee = 'BT_SEE_LOCKEDFILE_Local'
+		self.BT_SEE_LOCKEDFILE_Local.setObjectName(nameBtsee)
+		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtsee))
+		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
+		txtBt = 'Clear Locked Text Infos'
+		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
+		nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
+		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(nameBtclear)
+		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
+
 		#========= Bottom Area content logOutputBottom
 		self.logOutputBottom = QtGui.QTextEdit()
 		self.logOutputBottom.setObjectName("logOutputBottom")		
@@ -670,28 +694,18 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.logOutputBottomCursor = self.logOutputBottom.textCursor()
 		self.logOutputBottom.setVisible(False)
 
-		#========= Bottom Area content Buttons
-		txtBt = 'See Locked A7'
-		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
-		nameBtsee = 'BT_SEE_LOCKEDFILE_Local'
-		self.BT_SEE_LOCKEDFILE_Local.setObjectName(nameBtsee)
-		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtsee))
-		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
-		txtBt = 'Clear Locked Info'
-		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
-		nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
-		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(nameBtclear)
-		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
-
-		#================================================== add LogOutputBottom to Bottom Area content
-		# self.BottomAreaContent.addWidget(self.labelBottom)
-		self.BottomAreaContent.addWidget(self.logOutputBottom)
-
+		#================================================== add Locked Buttons to Bottom Area content
+		self.BottomAreaContent.addWidget(self.editUserBottom)
 		#================================================== add Locked Buttons to Bottom Area content
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
 		#========= add Area content to Bottom Area container
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
+
+		#================================================== add LogOutputBottom to Bottom Area content
+		self.BottomAreaContent.addWidget(self.logOutputBottom)
+
+
 
 
 	def construct_ScriptsListArea(self):
