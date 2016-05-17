@@ -181,6 +181,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		if self.CURRENT_PROJECT 	== 'MAX':
 			self.HOME_COLOR = self.ALL_PROJECTS['max']
 
+		self.EXCLUDE_DIR_USERS_LOCKED = ['COM']
 		self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
 		self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
 
@@ -338,9 +339,10 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-
+		self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
  		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
 		if result > 0 : # todo to mutu
+			self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
 			self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
 		MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
@@ -643,6 +645,16 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
 		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(200,h1)
 
+
+		txtChk = 'Full Search (All Users/Folders)'
+		self.CHK_SEARCH_ALL = QtGui.QCheckBox(txtChk)
+		nameChkAll = 'BT_CLEAR_LOCKEDFILE_Local'
+		self.CHK_SEARCH_ALL.setObjectName(nameChkAll)
+		# self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
+		# self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(200,h1)
+
+
+
 		#================================================== add Log and button
 		# self.BottomLogButtons.addWidget(self.editUserBottom)
 		# self.BottomLogButtons.addWidget(self.BT_SEE_LOCKEDFILE_Local)
@@ -666,7 +678,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		#================================================== add Locked Buttons to Bottom Area content
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
-
+		self.BottomAreaContent.addWidget(self.CHK_SEARCH_ALL)
 
 		#================================================== add LogOutputBottom to Bottom Area content
 		self.BottomAreaContent.addWidget(self.logOutputBottom)
@@ -1032,6 +1044,8 @@ class __QT_KBZ__(QtGui.QDialog):
 				cb.setText(line, mode=cb.Clipboard)
 
 			self.logOutputBottom.selectAll()
+
+			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
 	#======================================================================
 	#========= UI Construct Functions
