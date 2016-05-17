@@ -343,7 +343,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		if result > 0 : # todo to mutu
 			self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
-		MY_Thread_get_fileList = Thread_get_fileList(str(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
+		MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
 
 
 
