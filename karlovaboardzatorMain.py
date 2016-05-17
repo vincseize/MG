@@ -71,9 +71,16 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		result = self.get_fileList(self.filePath)
 		with open(self.TMP_PATH_FILE_LOCKED) as f:
 			content = f.readlines()
+			# print >> sys.__stderr__, '-------------------------------content' 
+			# print >> sys.__stderr__, content 
+			# print >> sys.__stderr__, type(content)
+			# print >> sys.__stderr__, '-------------------------------content' 
 		if len(result) > 0 :
 			for line in result:
-				if str(line) not in content:
+				a7 = str(line)+'\n'
+				if a7 not in content:
+					# print >> sys.__stderr__, line
+					# print >> sys.__stderr__, '-------------------------------contentLine' 					
 					f = open(self.TMP_PATH_FILE_LOCKED,'a')
 					f.write(line+'\n') # python will convert \n to os.linesep
 					f.close()
@@ -991,8 +998,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		return False
 
 
-
-
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
 		'''   '''
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
@@ -1001,38 +1006,32 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.logOutputBottom.setText('')
 
 		if str(name)=='BT_SEE_LOCKEDFILE_Local':
-			# self.printSTD(name)
-
 			cb = QtGui.QApplication.clipboard()
 			cb.clear(mode=cb.Clipboard )
-
-
 			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			self.printSTD(lines)
-
-
+			# self.printSTD(lines)
 			self.logOutputBottom.setVisible(True)
 			self.logOutputBottom.setFixedHeight(200)
-
 			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 			BottomContent = self.logOutputBottom.toPlainText()
-			# self.printSTD('--------------------------str(BottomContent)------------')
-			# self.printSTD(str(BottomContent))
+			# self.printSTD(type(BottomContent))			
 			for line in lines:
-				if str(line) not in str(BottomContent):		
-					# self.printSTD('----------------------str(line)---------------------')
-					# self.printSTD(str(line))	
+
+				if str(line) not in str(BottomContent):	
+
+					# self.printSTD(type(line))
+					# self.printSTD(str(line))
+					# self.printSTD(str(BottomContent))
+
+
 					self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 					self.logOutputBottom.insertPlainText(str(line)+'\n')
-
 				# copy to clipboard
 				cb.setText(line, mode=cb.Clipboard)
 
 			self.logOutputBottom.selectAll()
-
 
 	#======================================================================
 	#========= UI Construct Functions
