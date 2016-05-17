@@ -645,14 +645,19 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
 		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(200,h1)
 
-
 		txtChk = 'Full Search (All Users/Folders)'
 		self.CHK_SEARCH_ALL = QtGui.QCheckBox(txtChk)
-		nameChkAll = 'BT_CLEAR_LOCKEDFILE_Local'
+		nameChkAll = 'CHK_SEARCH_ALL'
 		self.CHK_SEARCH_ALL.setObjectName(nameChkAll)
-		# self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
-		# self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(200,h1)
+		self.CHK_SEARCH_ALL.stateChanged.connect(self.on_CHK_SEARCH_ALL_clicked)
 
+		txtBt = 'Full Search'
+		self.BT_FULL_SEARCH_Local = QtGui.QPushButton(txtBt)
+		nameBtfullSearch = 'BT_FULL_SEARCH_Local'
+		self.BT_FULL_SEARCH_Local.setObjectName(nameBtfullSearch)
+		self.BT_FULL_SEARCH_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtfullSearch))
+		self.BT_FULL_SEARCH_Local.setFixedSize(200,h1)
+		self.BT_FULL_SEARCH_Local.setVisible(False)
 
 
 		#================================================== add Log and button
@@ -679,7 +684,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.CHK_SEARCH_ALL)
-
+		self.BottomAreaContent.addWidget(self.BT_FULL_SEARCH_Local)
+		
 		#================================================== add LogOutputBottom to Bottom Area content
 		self.BottomAreaContent.addWidget(self.logOutputBottom)
 
@@ -1010,8 +1016,22 @@ class __QT_KBZ__(QtGui.QDialog):
 		return False
 
 
+	def on_CHK_SEARCH_ALL_clicked(self):
+		'''   '''
+		# self.printSTD('on_CHK_SEARCH_ALL_clicked')
+		# self.printSTD(self.CHK_SEARCH_ALL.isChecked)
+		if self.CHK_SEARCH_ALL.isChecked() == True:
+			self.BT_FULL_SEARCH_Local.setVisible(True)
+		else:
+			self.BT_FULL_SEARCH_Local.setVisible(False)
+
+
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
 		'''   '''
+
+		if str(name)=='BT_FULL_SEARCH_Local':
+			self.printSTD(name)
+
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
 			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
 			self.logOutputBottom.setVisible(True)
