@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 13-05-2016                                                                #
+# Date : 17-05-2016                                                                #
 # ##################################################################################
 
 
@@ -69,11 +69,14 @@ class WorkerThread_get_fileList(QtCore.QThread):
 
 	def run(self):
 		result = self.get_fileList(self.filePath)
+		with open(self.TMP_PATH_FILE_LOCKED) as f:
+			content = f.readlines()
 		if len(result) > 0 :
 			for line in result:
-				f = open(self.TMP_PATH_FILE_LOCKED,'a')
-				f.write(line+'\n') # python will convert \n to os.linesep
-				f.close()
+				if str(line) not in content:
+					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					f.write(line+'\n') # python will convert \n to os.linesep
+					f.close()
 
 	#====== functions
 
@@ -119,6 +122,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 								print >> sys.__stderr__, msg
 					except:
 						pass
+		matches = list(set(matches))				
 		msg = '--------------------------------- ' + root + ' [ DONE ] '
 		print >> sys.__stderr__, msg
 		msg = datetime.now() - startTime
@@ -1007,7 +1011,6 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.printSTD(lines)
 
 
-
 			self.logOutputBottom.setVisible(True)
 			self.logOutputBottom.setFixedHeight(200)
 
@@ -1015,9 +1018,15 @@ class __QT_KBZ__(QtGui.QDialog):
 
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
+			BottomContent = self.logOutputBottom.toPlainText()
+			# self.printSTD('--------------------------str(BottomContent)------------')
+			# self.printSTD(str(BottomContent))
 			for line in lines:
-				self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-				self.logOutputBottom.insertPlainText(str(line)+'\n')
+				if str(line) not in str(BottomContent):		
+					# self.printSTD('----------------------str(line)---------------------')
+					# self.printSTD(str(line))	
+					self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+					self.logOutputBottom.insertPlainText(str(line)+'\n')
 
 				# copy to clipboard
 				cb.setText(line, mode=cb.Clipboard)
