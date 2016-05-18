@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 17-05-2016                                                                #
+# Date : 18-05-2016                                                                #
 # ##################################################################################
 
 
@@ -35,10 +35,11 @@ class Thread_get_fileList():
 		CURRENT_PROJECT 		= args[2]
 		EXCLUDE_DIR_LOCKED 		= args[3]
 		INCLUDE_EXT_LOCKED 		= args[4]
-		TMP_PATH_FILE_LOCKED 				= args[5]
+		TMP_PATH_FILE_LOCKED 	= args[5]
+		CHK_SEARCH_ALL 			= args[6]
 		self.threads = []
 		# t = WorkerThread_get_fileList(filePath, self)
-		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, self)
+		t = WorkerThread_get_fileList(filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, self)
 		t.start()
 		self.threads.append(t)
 
@@ -53,7 +54,7 @@ class Thread_get_fileList():
 
 class WorkerThread_get_fileList(QtCore.QThread):
 
-	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, receiver):
+	def __init__(self, filePath, CURRENT_USER, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, receiver):
 		QtCore.QThread.__init__(self)
 
 		self.filePath 				= filePath
@@ -61,29 +62,39 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		self.CURRENT_PROJECT 		= CURRENT_PROJECT
 		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
 		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
-		self.TMP_PATH_FILE_LOCKED	= TMP_PATH_FILE_LOCKED		
+		self.TMP_PATH_FILE_LOCKED	= TMP_PATH_FILE_LOCKED	
+		self.CHK_SEARCH_ALL 		= CHK_SEARCH_ALL	
 		self.receiver = receiver
 
 		self.stopped = 0
 
 
 	def run(self):
-		result = self.get_fileList(self.filePath)
-		with open(self.TMP_PATH_FILE_LOCKED) as f:
-			content = f.readlines()
-			# print >> sys.__stderr__, '-------------------------------content' 
-			# print >> sys.__stderr__, content 
-			# print >> sys.__stderr__, type(content)
-			# print >> sys.__stderr__, '-------------------------------content' 
-		if len(result) > 0 :
-			for line in result:
-				a7 = str(line)+'\n'
-				if a7 not in content:
-					# print >> sys.__stderr__, line
-					# print >> sys.__stderr__, '-------------------------------contentLine' 					
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
-					f.write(line+'\n') # python will convert \n to os.linesep
-					f.close()
+
+		if self.CHK_SEARCH_ALL.isChecked() == True:
+			print >> sys.__stderr__, 'ARMAGEDON' 
+			# result = self.get_fileListAll(self.filePath)
+
+
+
+
+		else:
+			result = self.get_fileList(self.filePath)
+			with open(self.TMP_PATH_FILE_LOCKED) as f:
+				content = f.readlines()
+				# print >> sys.__stderr__, '-------------------------------content' 
+				# print >> sys.__stderr__, content 
+				# print >> sys.__stderr__, type(content)
+				# print >> sys.__stderr__, '-------------------------------content' 
+			if len(result) > 0 :
+				for line in result:
+					a7 = str(line)+'\n'
+					if a7 not in content:
+						# print >> sys.__stderr__, line
+						# print >> sys.__stderr__, '-------------------------------contentLine' 					
+						f = open(self.TMP_PATH_FILE_LOCKED,'a')
+						f.write(line+'\n') # python will convert \n to os.linesep
+						f.close()
 
 	#====== functions
 
@@ -158,9 +169,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
 		self.START_DIR_PUBLIC 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
-		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
-		# self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
-		self.START_DIR_LOCKED 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'+self.CURRENT_USER+'/Assets/'		
+		# self.START_DIR_LOCAL_LOCKED_A7 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
+		# self.START_DIR_LOCAL_LOCKED_A7 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
+		self.START_DIR_USERS 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'		
+		self.START_DIR_LOCAL_LOCKED_A7 	= self.START_DIR_USERS+self.CURRENT_USER+'/Assets/'		
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
 		self.TMP_FILE_LOCKED 			= self.CURRENT_USER+'_A7LockedBy.tmp'
@@ -181,7 +193,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		if self.CURRENT_PROJECT 	== 'MAX':
 			self.HOME_COLOR = self.ALL_PROJECTS['max']
 
-		self.EXCLUDE_DIR_USERS_LOCKED = ['COM']
+		self.EXCLUDE_DIR_USERS_LOCKED = ['COM','OFF','dm3_contrats']
 		self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
 		self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
 
@@ -279,7 +291,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	# def checkLocal_locked(self):
 	# 	'''   '''
-	# 	root = self.modelTab1.index(self.START_DIR_LOCKED)		
+	# 	root = self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7)		
 	# 	rows = self.modelTab1.rowCount(root)
 	# 	# self.printSTD(rows)
 	# 	for i in range(rows):
@@ -295,16 +307,16 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-	def _fetchAndExpand(self):
-		index = self.modelTab1.index(self.START_DIR_LOCKED)
-		# self.Tab1.expand(index)  # expand the item
-		for i in range(self.modelTab1.rowCount(index)):
-			item = index.child(i,0).data()
-			# self.printSTD(item)
-			# fetch all the sub-folders
-			child = index.child(i, 0)
-			if self.modelTab1.isDir(child):
-				self.modelTab1.setRootPath(self.modelTab1.filePath(child))
+	# def _fetchAndExpand_DES(self):
+	# 	index = self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7)
+	# 	# self.Tab1.expand(index)  # expand the item
+	# 	for i in range(self.modelTab1.rowCount(index)):
+	# 		item = index.child(i,0).data()
+	# 		# self.printSTD(item)
+	# 		# fetch all the sub-folders
+	# 		child = index.child(i, 0)
+	# 		if self.modelTab1.isDir(child):
+	# 			self.modelTab1.setRootPath(self.modelTab1.filePath(child))
 
 
 
@@ -345,7 +357,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
 			self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 
-		MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED)
+		MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL)
 
 
 
@@ -427,7 +439,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	# def checkLocal_locked_walk(self):
 	# 	'''   '''
-	# 	for root, dirs, files in os.walk(self.START_DIR_LOCKED):
+	# 	for root, dirs, files in os.walk(self.START_DIR_LOCAL_LOCKED_A7):
 	# 		# self.model.setRootPath(root)
 	# 		for name in files:
 	# 			# self.printSTD(os.path.join(root, name))
@@ -514,7 +526,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)			
 		# self.modelTab1.setFilter( QtCore.QDir.AllDirs | QtCore.QDir.AllEntries | QtCore.QDir.CaseSensitive | QtCore.QDir.NoDotAndDotDot )		
 		# self.modelTab1.setRootPath(self.START_DIR_PUBLIC)
-		self.modelTab1.setRootPath(self.START_DIR_LOCKED)
+		self.modelTab1.setRootPath(self.START_DIR_LOCAL_LOCKED_A7)
 		
 
 		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
@@ -537,7 +549,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========================== populate tab1
 		self.Tab1.setModel(self.modelTab1)
-		self.Tab1.setRootIndex(self.modelTab1.index(self.START_DIR_LOCKED))
+		self.Tab1.setRootIndex(self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7))
 		self.Tab1.resizeColumnToContents(0)
 		# self.fileTreeView.header().setResizeMode(QHeaderView.ResizeToContents)		
 		self.Tab1.setColumnWidth(0, 400)
@@ -559,7 +571,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		# # for i in range(self.Tab1):
 		# # 	self.printSTD(i.text())
 
-		# root = self.modelTab1.itemFromIndex(self.START_DIR_LOCKED)
+		# root = self.modelTab1.itemFromIndex(self.START_DIR_LOCAL_LOCKED_A7)
 
 		# parentIndex = self.modelTab1.index(QtCore.QDir.currentPath())		
 		# rows = self.modelTab1.rowCount(parentIndex)
@@ -649,15 +661,15 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.CHK_SEARCH_ALL = QtGui.QCheckBox(txtChk)
 		nameChkAll = 'CHK_SEARCH_ALL'
 		self.CHK_SEARCH_ALL.setObjectName(nameChkAll)
-		self.CHK_SEARCH_ALL.stateChanged.connect(self.on_CHK_SEARCH_ALL_clicked)
+		# self.CHK_SEARCH_ALL.stateChanged.connect(self.on_CHK_SEARCH_ALL_clicked)
 
-		txtBt = 'Full Search'
-		self.BT_FULL_SEARCH_Local = QtGui.QPushButton(txtBt)
-		nameBtfullSearch = 'BT_FULL_SEARCH_Local'
-		self.BT_FULL_SEARCH_Local.setObjectName(nameBtfullSearch)
-		self.BT_FULL_SEARCH_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtfullSearch))
-		self.BT_FULL_SEARCH_Local.setFixedSize(200,h1)
-		self.BT_FULL_SEARCH_Local.setVisible(False)
+		# txtBt = 'Full Search'
+		# self.BT_FULL_SEARCH_Local = QtGui.QPushButton(txtBt)
+		# nameBtfullSearch = 'BT_FULL_SEARCH_Local'
+		# self.BT_FULL_SEARCH_Local.setObjectName(nameBtfullSearch)
+		# self.BT_FULL_SEARCH_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtfullSearch))
+		# self.BT_FULL_SEARCH_Local.setFixedSize(200,h1)
+		# self.BT_FULL_SEARCH_Local.setVisible(False)
 
 
 		#================================================== add Log and button
@@ -684,7 +696,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.CHK_SEARCH_ALL)
-		self.BottomAreaContent.addWidget(self.BT_FULL_SEARCH_Local)
+		# self.BottomAreaContent.addWidget(self.BT_FULL_SEARCH_Local)
 		
 		#================================================== add LogOutputBottom to Bottom Area content
 		self.BottomAreaContent.addWidget(self.logOutputBottom)
@@ -1016,21 +1028,98 @@ class __QT_KBZ__(QtGui.QDialog):
 		return False
 
 
-	def on_CHK_SEARCH_ALL_clicked(self):
-		'''   '''
-		# self.printSTD('on_CHK_SEARCH_ALL_clicked')
-		# self.printSTD(self.CHK_SEARCH_ALL.isChecked)
-		if self.CHK_SEARCH_ALL.isChecked() == True:
-			self.BT_FULL_SEARCH_Local.setVisible(True)
-		else:
-			self.BT_FULL_SEARCH_Local.setVisible(False)
+	# def on_CHK_SEARCH_ALL_clicked(self):
+	# 	'''   '''
+	# 	# self.printSTD('on_CHK_SEARCH_ALL_clicked')
+	# 	# self.printSTD(self.CHK_SEARCH_ALL.isChecked)
+	# 	if self.CHK_SEARCH_ALL.isChecked() == True:
+	# 		self.BT_FULL_SEARCH_Local.setVisible(True)
+	# 	else:
+	# 		self.BT_FULL_SEARCH_Local.setVisible(False)
+
+
 
 
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
 		'''   '''
 
-		if str(name)=='BT_FULL_SEARCH_Local':
-			self.printSTD(name)
+		# if str(name)=='BT_FULL_SEARCH_Local':
+
+		# 	startTime = datetime.now()
+
+		# 	# ARMAGEDON SEARCH
+
+		# 	# self.printSTD(name)
+
+
+		# 	# self.printSTD(self.START_DIR_LOCAL_LOCKED_A7)
+
+
+
+		# 	# model = self.modelTab1
+		# 	# indexItem = model.index(index.row(), 0, index.parent())
+		# 	# fileName = model.fileName(indexItem)
+		# 	# filePath = model.filePath(indexItem)
+
+		# 	# self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+		# 	# getText = self.logOutputBottom.toPlainText()
+		# 	# USERtoSEARCH = self.editUserBottom.toPlainText()
+		# 	# print >> sys.__stderr__, USERtoSEARCH
+		# 	# if str(USERtoSEARCH) != self.CURRENT_USER:
+		# 	# 	filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
+
+		# 	# print >> sys.__stderr__, filePath
+
+
+
+
+
+
+
+
+		# 	# ALL_DIRS = []
+		# 	# for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
+		# 	# 	for dirname in dirnames:
+		# 	# 		filePath 	= os.path.join(root, dirname)	
+		# 	# 		ALL_DIRS.append(filePath)
+		# 	# 	break
+
+
+
+		# 	ALL_USERS = []
+		# 	for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
+		# 		for dirname in dirnames:
+		# 			if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
+		# 				ALL_USERS.append(dirname)
+		# 		break
+
+		# 	ALL_USERS = sorted(ALL_USERS)
+		# 	# self.printSTD(ALL_USERS)
+
+		# 	for user in ALL_USERS:
+		# 		# for filePath in ALL_DIRS:
+		# 		USERtoSEARCH = user
+		# 		filePath 	= self.START_DIR_LOCAL_LOCKED_A7			
+		# 		filePath = filePath.replace(self.CURRENT_USER,user)
+		# 		self.printSTD(filePath)
+		# 		time.sleep(1)
+		# 		try:
+		# 			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL)
+		# 		except:
+		# 			pass
+		# 	self.printSTD('------ ARMAGEDON SEARCH [ DONE ] --------')
+		# 	msg = datetime.now() - startTime
+		# 	self.printSTD(msg)
+
+
+
+
+
+
+
+
+
 
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
 			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
