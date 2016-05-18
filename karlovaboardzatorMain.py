@@ -72,18 +72,6 @@ class WorkerThread_get_fileList(QtCore.QThread):
 
 	def run(self):
 
-		# if self.CHK_SEARCH_ALL.isChecked() == True:
-		# 	result = self.get_fileListALL(self.filePath)
-
-
-
-
-
-
-
-
-
-		# else:
 		result = self.get_fileList(self.filePath)
 		with open(self.TMP_PATH_FILE_LOCKED) as f:
 			content = f.readlines()
@@ -208,6 +196,15 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.EXCLUDE_DIR_USERS_LOCKED = ['COM','OFF','dm3_contrats']
 		self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
 		self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
+
+		self.ALL_USERS = [] # GLOBVAR
+		for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
+			for dirname in dirnames:
+				if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
+					self.ALL_USERS.append(dirname)
+			break
+		self.ALL_USERS = sorted(self.ALL_USERS)
+
 
 	#======================================================================
 	#========= main vlayout
@@ -354,18 +351,19 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 		if self.CHK_SEARCH_ALL.isChecked() == True:
-			ALL_USERS = [] # GLOBVAR
-			for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
-				for dirname in dirnames:
-					if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
-						ALL_USERS.append(dirname)
-				break
+		# 	ALL_USERS = [] # GLOBVAR
+		# 	for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
+		# 		for dirname in dirnames:
+		# 			if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
+		# 				ALL_USERS.append(dirname)
+		# 		break
 
-			ALL_USERS = sorted(ALL_USERS)
+		# 	ALL_USERS = sorted(ALL_USERS)
 
 			startTime = datetime.now()
-			for USERtoSEARCH in ALL_USERS:
-				# time.sleep(0.5)
+			for USERtoSEARCH in self.ALL_USERS:
+				# time.sleep(0.5) # 0.5 sec
+				time.sleep(60)
 				try:
 					filePathUSERtoSEARCH = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
 					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
@@ -382,7 +380,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 			getText = self.logOutputBottom.toPlainText()
 			USERtoSEARCH = self.editUserBottom.toPlainText()
-			print >> sys.__stderr__, USERtoSEARCH
+			self.printSTD(USERtoSEARCH)
 			if str(USERtoSEARCH) != self.CURRENT_USER:
 				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
 
@@ -611,7 +609,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def construct_BottomAreaContent(self):
 		'''   '''
-
+		w1 = 200
 		h1 = 30
 
 		#========= Bottom Area content
@@ -623,11 +621,22 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.BottomLogButtons = QtGui.QGridLayout()
 		# self.BottomLogButtons.setObjectName("BottomLogButtons")
 
+
+
+
+		self.listUsers = QtGui.QComboBox()
+		self.listUsers.setFixedWidth(w1)
+		self.listUsers.setFixedHeight(h1)
+		for user in self.ALL_USERS:
+			self.listUsers.addItem(user)
+
+
+
 		#========= Bottom Area content User Login search
 		# txtLblUser = now
 		self.editUserBottom = QtGui.QTextEdit()
 		self.editUserBottom.insertPlainText(self.CURRENT_USER)
-		self.editUserBottom.setFixedWidth(200)
+		self.editUserBottom.setFixedWidth(w1)
 		self.editUserBottom.setFixedHeight(h1)
 		self.editUserBottom.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 		#========= Bottom Area content Buttons
@@ -637,7 +646,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_SEE_LOCKEDFILE_Local.setObjectName(nameBtsee)
 		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtsee))
 		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
-		self.BT_SEE_LOCKEDFILE_Local.setFixedSize(200,h1)
+		self.BT_SEE_LOCKEDFILE_Local.setFixedSize(w1,h1)
 
 
 		txtBt = 'Clear Locked Text Infos'
@@ -645,7 +654,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
 		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(nameBtclear)
 		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
-		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(200,h1)
+		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(w1,h1)
 
 		txtChk = 'Full Search (All Users/Folders)'
 		self.CHK_SEARCH_ALL = QtGui.QCheckBox(txtChk)
@@ -679,8 +688,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.logOutputBottomCursor = self.logOutputBottom.textCursor()
 		self.logOutputBottom.setVisible(False)
 
-		#================================================== add Locked Buttons to Bottom Area content
-		# self.BottomAreaContent.addWidget(self.BottomLogButtons)
+		#================================================== add Users Bottom Area content
+		self.BottomAreaContent.addWidget(self.listUsers)
 		self.BottomAreaContent.addWidget(self.editUserBottom)
 		#================================================== add Locked Buttons to Bottom Area content
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
