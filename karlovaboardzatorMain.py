@@ -219,24 +219,18 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.TopAreaContainer.setObjectName("TopAreaContainer")
 		#========= Top Area content
 		self.construct_TopAreaContent()
-		# #========= add Area content to Top Area container
-		# self.TopAreaContainer.setLayout(self.TopAreaContent)
 
 		#============================================ Middle Area container
 		self.MiddleAreaContainer = QtGui.QWidget()
 		self.MiddleAreaContainer.setObjectName("MiddleAreaContainer")
 		#========= Tabs Area Widget
 		self.construct_MiddleTabsArea()
-		# #========= add Area content to middle Area container
-		# self.MiddleAreaContainer.setLayout(self.MiddleTabsContent)
 
 		#============================================ Bottom Area container
 		self.BottomAreaContainer = QtGui.QWidget()
 		self.BottomAreaContainer.setObjectName("BottomAreaContainer")
 		#========= Bottom Area content
 		self.construct_BottomAreaContent()
-		# #========= add Area content to Top Area container
-		# self.BottomAreaContainer.setLayout(self.BottomAreaContent)
 
 	#======================================================================
 	#========= add all to the main vLayout
@@ -253,20 +247,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= apply stylsheets
 		self.apply_Stylesheets()
 		self.setPalette(self.palette_darkGrey)
-
-	#======================================================================
-	#========= check if some files exist
-	#======================================================================
-		if not os.path.exists(self.TMP_PATH_FILE_LOCKED):
-			open(self.TMP_PATH_FILE_LOCKED, 'a').close()
-		else:
-			result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
-			if result > 0 : # todo to mutu
-				self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
-
-
-		# self.timer = QtCore.QTimer(self)
-		# self.timer.singleShot(1, self.checkLocal_locked)
 
 
 
@@ -349,27 +329,16 @@ class __QT_KBZ__(QtGui.QDialog):
 		fileName = model.fileName(indexItem)
 		filePath = model.filePath(indexItem)
 
-
 		if self.CHK_SEARCH_ALL.isChecked() == True:
-		# 	ALL_USERS = [] # GLOBVAR
-		# 	for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
-		# 		for dirname in dirnames:
-		# 			if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
-		# 				ALL_USERS.append(dirname)
-		# 		break
-
-		# 	ALL_USERS = sorted(ALL_USERS)
 
 			startTime = datetime.now()
 			for USERtoSEARCH in self.ALL_USERS:
-				# time.sleep(0.5) # 0.5 sec
-				time.sleep(60)
 				try:
 					filePathUSERtoSEARCH = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
 					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
 				except:
 					pass
-
+				time.sleep(60) # to do in thread
 			msg = datetime.now() - startTime
 			self.printSTD(msg)
 
@@ -388,7 +357,8 @@ class __QT_KBZ__(QtGui.QDialog):
 	 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
 			if result > 0 : # todo to mutu
 				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
-				self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
+				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
+				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
 			self.Thread_get_fileList_mutu(filePath,USERtoSEARCH)
 
@@ -484,6 +454,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= add Area content to Top Area container
 		self.TopAreaContainer.setLayout(self.TopAreaContent)
 
+		#========= apply stylsheets
+		self.apply_Stylesheets()
+		# self.setPalette(self.palette_darkGrey)
+
 
 	def construct_MiddleTabsArea(self):
 		'''   '''
@@ -517,16 +491,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.modelTab1.setRootPath(self.START_DIR_LOCAL_LOCKED_A7)
 		
 
-		# # f1   = QFileInfo(self.START_DIR_PUBLIC+'/ANIM/DM3/S0300/S0300_P0002.inkGraph')
-		# f1   = QFileInfo('/u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT/NasK_Casting/GRI_S1250_EDIT-NasK_Casting.csv')
-		# 		        # /u/gri/Users/cpottier/Files/etc/GRI/S1250/EDIT
-		# info = f1.isWritable()
-		# self.printSTD(info)
-
-		# info = f1.owner()
-		# self.printSTD(info)
-
-
 		#=========================== Treeview
 		self.Tab1 = QtGui.QTreeView()
 		# self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
@@ -544,28 +508,11 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========================== check locked file
 
-		# self.timer = QtCore.QTimer(self)
-		# self.timer.singleShot(1, self._fetchAndExpand)
-		
-		# self.checkLocal_locked_walk()
-
-		# checkLocal_locked()
-		# for item in checkLocal_locked():
-		#     self.printSTD(item)
-
-
-		# root = self.Tab1.childCount()
-		# self.printSTD(root) 
-		# # for i in range(self.Tab1):
-		# # 	self.printSTD(i.text())
-
 		# root = self.modelTab1.itemFromIndex(self.START_DIR_LOCAL_LOCKED_A7)
 
 		# parentIndex = self.modelTab1.index(QtCore.QDir.currentPath())		
 		# rows = self.modelTab1.rowCount(parentIndex)
 		# self.printSTD(rows)
-
-
 
 
 		#==================================================
@@ -607,6 +554,11 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
+		#========= apply stylsheets
+		self.apply_Stylesheets()
+
+
+
 	def construct_BottomAreaContent(self):
 		'''   '''
 		w1 = 200
@@ -617,12 +569,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
 
 
-		#========= Container log buttons 
-		# self.BottomLogButtons = QtGui.QGridLayout()
-		# self.BottomLogButtons.setObjectName("BottomLogButtons")
-
-
-
+		#========= Container logins
 
 		self.listUsers = QtGui.QComboBox()
 		self.listUsers.setFixedWidth(w1)
@@ -630,10 +577,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		for user in self.ALL_USERS:
 			self.listUsers.addItem(user)
 
-
-
 		#========= Bottom Area content User Login search
-		# txtLblUser = now
 		self.editUserBottom = QtGui.QTextEdit()
 		self.editUserBottom.insertPlainText(self.CURRENT_USER)
 		self.editUserBottom.setFixedWidth(w1)
@@ -642,18 +586,18 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= Bottom Area content Buttons
 		txtBt = 'See Locked | Never Published A7'
 		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
-		nameBtsee = 'BT_SEE_LOCKEDFILE_Local'
-		self.BT_SEE_LOCKEDFILE_Local.setObjectName(nameBtsee)
-		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtsee))
+		self.nameBtsee = 'BT_SEE_LOCKEDFILE_Local'
+		self.BT_SEE_LOCKEDFILE_Local.setObjectName(self.nameBtsee)
+		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee))
 		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
 		self.BT_SEE_LOCKEDFILE_Local.setFixedSize(w1,h1)
 
 
 		txtBt = 'Clear Locked Text Infos'
 		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
-		nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
-		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(nameBtclear)
-		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtclear))
+		self.nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
+		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(self.nameBtclear)
+		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtclear))
 		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(w1,h1)
 
 		txtChk = 'Full Search (All Users/Folders)'
@@ -703,6 +647,20 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#========= add Area content to Bottom Area container
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
+
+
+		#======================================================================
+		#========= check if some files exist
+		#======================================================================
+		if not os.path.exists(self.TMP_PATH_FILE_LOCKED):
+			open(self.TMP_PATH_FILE_LOCKED, 'a').close()
+		else:
+			result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
+			if result > 0 : # todo to mutu
+				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
+
+		#========= apply stylsheets
+		self.apply_Stylesheets()
 
 
 
@@ -776,6 +734,11 @@ class __QT_KBZ__(QtGui.QDialog):
 											"height: 40px;"						
 											"max-width: 600px;"
 										)
+
+
+
+		#========= apply stylsheets
+		self.apply_Stylesheets()
 
 
 	#======================================================================
@@ -1035,34 +998,42 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.logOutputBottom.setText('')
 
 		if str(name)=='BT_SEE_LOCKEDFILE_Local':
-			cb = QtGui.QApplication.clipboard()
-			cb.clear(mode=cb.Clipboard )
-			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			# self.printSTD(lines)
-			self.logOutputBottom.setVisible(True)
+
 			self.logOutputBottom.setFixedHeight(200)
 			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 			BottomContent = self.logOutputBottom.toPlainText()
-			# self.printSTD(type(BottomContent))			
-			for line in lines:
+			# self.printSTD(type(BottomContent))	
+	
 
-				if str(line) not in str(BottomContent):	
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			# self.printSTD(len(lines[0]))
+			if len(lines[0])>10: # 10 is path lenght, arbitrary
 
-					# self.printSTD(type(line))
-					# self.printSTD(str(line))
-					# self.printSTD(str(BottomContent))
+				cb = QtGui.QApplication.clipboard() # todo copy bt
+				cb.clear(mode=cb.Clipboard )
 
 
-					self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-					self.logOutputBottom.insertPlainText(str(line)+'\n')
-				# copy to clipboard
-				cb.setText(line, mode=cb.Clipboard)
+				self.logOutputBottom.setVisible(True)
 
-			self.logOutputBottom.selectAll()
+				for line in lines:
 
-			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+					if str(line) not in str(BottomContent):	
+
+						# self.printSTD(type(line))
+						# self.printSTD(str(line))
+						# self.printSTD(str(BottomContent))
+
+
+						self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+						self.logOutputBottom.insertPlainText(str(line)+'\n')
+					# copy to clipboard
+					cb.setText(line, mode=cb.Clipboard)
+
+				self.logOutputBottom.selectAll()
+
+				self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
 	#======================================================================
 	#========= UI Construct Functions
@@ -1310,25 +1281,27 @@ class __QT_KBZ__(QtGui.QDialog):
 							)
 
 		# #========= Locked  Buttons
-		self.BT_SEE_LOCKEDFILE_Local.setStyleSheet(
-								"color: white;"
-								"background-color: "+hexColor+";"
-								"selection-color: yellow;"
-								"selection-background-color: blue;"
-								"font: bold 10px;"
-								"border-style: outset;"
-								"height: 15px;"
-							)
-		self.BT_CLEAR_LOCKEDFILE_Local.setStyleSheet(
-								"color: white;"
-								"background-color: "+hexColor+";"
-								"selection-color: yellow;"
-								"selection-background-color: blue;"
-								"font: bold 10px;"
-								"border-style: outset;"
-								"height: 15px;"
-							)
-
+		try:
+			self.BT_SEE_LOCKEDFILE_Local.setStyleSheet(
+									"color: white;"
+									"background-color: "+hexColor+";"
+									"selection-color: yellow;"
+									"selection-background-color: blue;"
+									"font: bold 10px;"
+									"border-style: outset;"
+									"height: 15px;"
+								)
+			self.BT_CLEAR_LOCKEDFILE_Local.setStyleSheet(
+									"color: white;"
+									"background-color: "+hexColor+";"
+									"selection-color: yellow;"
+									"selection-background-color: blue;"
+									"font: bold 10px;"
+									"border-style: outset;"
+									"height: 15px;"
+								)
+		except:
+			pass
 #===================================================================================================================================
 #========= Start QT 
 #===================================================================================================================================
