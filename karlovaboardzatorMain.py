@@ -348,7 +348,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 			getText = self.logOutputBottom.toPlainText()
-			USERtoSEARCH = self.editUserBottom.toPlainText()
+			USERtoSEARCH = self.listUsers.currentText()
 			self.printSTD(USERtoSEARCH)
 			if str(USERtoSEARCH) != self.CURRENT_USER:
 				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
@@ -576,13 +576,18 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.listUsers.setFixedHeight(h1)
 		for user in self.ALL_USERS:
 			self.listUsers.addItem(user)
+		index = self.listUsers.findText(self.CURRENT_USER, QtCore.Qt.MatchFixedString)
+		self.listUsers.setCurrentIndex(index)
+		# self.printSTD(self.listUsers.currentText())
+		# self.printSTD(self.listUsers.currentIndex())
 
 		#========= Bottom Area content User Login search
-		self.editUserBottom = QtGui.QTextEdit()
-		self.editUserBottom.insertPlainText(self.CURRENT_USER)
-		self.editUserBottom.setFixedWidth(w1)
-		self.editUserBottom.setFixedHeight(h1)
-		self.editUserBottom.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+		# self.editUserBottom = QtGui.QTextEdit()
+		# self.editUserBottom.insertPlainText(self.CURRENT_USER)
+		# self.editUserBottom.setFixedWidth(w1)
+		# self.editUserBottom.setFixedHeight(h1)
+		# self.editUserBottom.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
 		#========= Bottom Area content Buttons
 		txtBt = 'See Locked | Never Published A7'
 		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
@@ -600,7 +605,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtclear))
 		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(w1,h1)
 
-		txtChk = 'Full Search (All Users/Folders)'
+		txtChk = 'Full Search (All Users / by Folders)'
 		self.CHK_SEARCH_ALL = QtGui.QCheckBox(txtChk)
 		nameChkAll = 'CHK_SEARCH_ALL'
 		self.CHK_SEARCH_ALL.setObjectName(nameChkAll)
@@ -634,7 +639,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#================================================== add Users Bottom Area content
 		self.BottomAreaContent.addWidget(self.listUsers)
-		self.BottomAreaContent.addWidget(self.editUserBottom)
+		# self.BottomAreaContent.addWidget(self.editUserBottom)
 		#================================================== add Locked Buttons to Bottom Area content
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
