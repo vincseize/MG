@@ -39,7 +39,6 @@ class Thread_get_fileList():
 		CHK_SEARCH_ALL  		= args[6]
 
 		self.threads = []
-		# t = WorkerThread_get_fileList(filePath, self)
 		t = WorkerThread_get_fileList(filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, self)
 		t.start()
 		self.threads.append(t)
@@ -71,7 +70,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 
 
 	def run(self):
-
+		time.sleep(0.1) # to do in thread
 		result = self.get_fileList(self.filePath)
 		with open(self.TMP_PATH_FILE_LOCKED) as f:
 			content = f.readlines()
@@ -338,8 +337,8 @@ class __QT_KBZ__(QtGui.QDialog):
 					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
 				except:
 					pass
-				time.sleep(60) # to do in thread
 			msg = datetime.now() - startTime
+			msg = '############################### ARMAGEDON SEARCH [ DONE ] in ' + msg + ' #######################################'
 			self.printSTD(msg)
 
 
@@ -611,13 +610,11 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.CHK_SEARCH_ALL.setObjectName(nameChkAll)
 		# self.CHK_SEARCH_ALL.stateChanged.connect(self.on_CHK_SEARCH_ALL_clicked)
 
-		# txtBt = 'Full Search'
-		# self.BT_FULL_SEARCH_Local = QtGui.QPushButton(txtBt)
-		# nameBtfullSearch = 'BT_FULL_SEARCH_Local'
-		# self.BT_FULL_SEARCH_Local.setObjectName(nameBtfullSearch)
-		# self.BT_FULL_SEARCH_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(nameBtfullSearch))
-		# self.BT_FULL_SEARCH_Local.setFixedSize(200,h1)
-		# self.BT_FULL_SEARCH_Local.setVisible(False)
+		txtCopyClipboard = 'Copy to clipboard'
+		self.CHK_COPY_CLIPBOARD = QtGui.QCheckBox(txtCopyClipboard)
+		nameCopyClipboard = 'CHK_COPY_CLIPBOARD'
+		self.CHK_COPY_CLIPBOARD.setObjectName(nameCopyClipboard)
+		self.CHK_COPY_CLIPBOARD.stateChanged.connect(self.on_CHK_COPY_CLIPBOARD)
 
 
 		#================================================== add Log and button
@@ -644,7 +641,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
 		self.BottomAreaContent.addWidget(self.CHK_SEARCH_ALL)
-		# self.BottomAreaContent.addWidget(self.BT_FULL_SEARCH_Local)
+		self.BottomAreaContent.addWidget(self.CHK_COPY_CLIPBOARD)
 		
 		#================================================== add LogOutputBottom to Bottom Area content
 		self.BottomAreaContent.addWidget(self.logOutputBottom)
@@ -840,7 +837,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		for ap in self.ALL_PROJECTS:
 			DIR_DISTANT_BACKUP = '/u/'+ap+self.PATH_EXEMPLES+'/'+self.DIR_BACKUP
-			# self.printSTD(DIR_DISTANT_BACKUP) 
 			if not os.path.exists(DIR_DISTANT_BACKUP):
 				os.makedirs(DIR_DISTANT_BACKUP)
 			APU = str(ap).upper()
@@ -995,6 +991,35 @@ class __QT_KBZ__(QtGui.QDialog):
 		return False
 
 
+
+	def on_CHK_COPY_CLIPBOARD(self):
+		'''   '''
+
+		cb = QtGui.QApplication.clipboard() # todo copy bt
+		cb.clear(mode=cb.Clipboard )	
+		txtClipBoard = ''
+		# self.logOutputBottom.clearSelection() # todo
+		BottomContent = self.logOutputBottom.toPlainText()			
+		if self.CHK_COPY_CLIPBOARD.isChecked():
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			if len(lines[0])>10: # 10 is path lenght, arbitrary
+				for line in lines:
+					if str(line) not in str(BottomContent):	
+						# self.printSTD(type(line))
+						# self.printSTD(str(line))
+						# self.printSTD(str(BottomContent))
+						self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+						self.logOutputBottom.insertPlainText(str(line)+'\n')
+					# copy to clipboard
+					# txtClipBoard = cb.text()
+					txtClipBoard = line +'\n'+ txtClipBoard
+
+				# friendly ui and copy to clipboard
+				txtClipBoard = txtClipBoard[-2:]
+				cb.setText(line, mode=cb.Clipboard)
+				self.logOutputBottom.selectAll()
+
+
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
 		'''   '''
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
@@ -1016,8 +1041,8 @@ class __QT_KBZ__(QtGui.QDialog):
 			# self.printSTD(len(lines[0]))
 			if len(lines[0])>10: # 10 is path lenght, arbitrary
 
-				cb = QtGui.QApplication.clipboard() # todo copy bt
-				cb.clear(mode=cb.Clipboard )
+				# cb = QtGui.QApplication.clipboard() # todo copy bt
+				# cb.clear(mode=cb.Clipboard )
 
 
 				self.logOutputBottom.setVisible(True)
@@ -1034,9 +1059,9 @@ class __QT_KBZ__(QtGui.QDialog):
 						self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 						self.logOutputBottom.insertPlainText(str(line)+'\n')
 					# copy to clipboard
-					cb.setText(line, mode=cb.Clipboard)
+				# 	cb.setText(line, mode=cb.Clipboard)
 
-				self.logOutputBottom.selectAll()
+				# self.logOutputBottom.selectAll()
 
 				self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
