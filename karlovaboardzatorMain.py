@@ -338,7 +338,7 @@ class __QT_KBZ__(QtGui.QDialog):
 				except:
 					pass
 			msg = datetime.now() - startTime
-			msg = '############################### ARMAGEDON SEARCH [ DONE ] in ' + msg + ' #######################################'
+			msg = '############################### ARMAGEDON SEARCH [ DONE ] in ' + str(msg) + ' #######################################'
 			self.printSTD(msg)
 
 
@@ -615,6 +615,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		nameCopyClipboard = 'CHK_COPY_CLIPBOARD'
 		self.CHK_COPY_CLIPBOARD.setObjectName(nameCopyClipboard)
 		self.CHK_COPY_CLIPBOARD.stateChanged.connect(self.on_CHK_COPY_CLIPBOARD)
+		self.CHK_COPY_CLIPBOARD.setVisible(False)
 
 
 		#================================================== add Log and button
@@ -1042,6 +1043,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			if len(lines[0])>10: # 10 is path lenght, arbitrary
 
 				self.logOutputBottom.setVisible(True)
+				self.CHK_COPY_CLIPBOARD.setVisible(True)
 
 				for line in lines:
 
