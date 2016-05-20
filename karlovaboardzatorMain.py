@@ -159,9 +159,9 @@ class __QT_KBZ__(QtGui.QDialog):
 	def __init__(self, parent = None):
 		super(__QT_KBZ__, self).__init__(parent) 
 
-	#======================================================================
+	#==========================================================================================================================================================================
 	#========= Globals Variables
-	#======================================================================
+	#==========================================================================================================================================================================
 		self.SCREEN 					= QtGui.QDesktopWidget().screenGeometry()
 		self.CURRENT_USER 				= os.getenv('USER')
 		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0] }		
@@ -205,9 +205,15 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.ALL_USERS = sorted(self.ALL_USERS)
 
 
-	#======================================================================
+	#==========================================================================================================================================================================
+	#========= check if some files exist and some check
+	#==========================================================================================================================================================================
+
+		self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
+
+	#==========================================================================================================================================================================
 	#========= main vlayout
-	#======================================================================
+	#==========================================================================================================================================================================
 
 		self.mainLayout = QtGui.QVBoxLayout()
 		self.mainLayout.setAlignment(QtCore.Qt.AlignTop)
@@ -247,6 +253,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.apply_Stylesheets()
 		self.setPalette(self.palette_darkGrey)
 
+	#==========================================================================================================================================================================
+	#========= AS RUN
+	#==========================================================================================================================================================================
+		self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
 
 
@@ -264,153 +274,9 @@ class __QT_KBZ__(QtGui.QDialog):
 	# 	painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))  
 
 
-
-
-
-
-
-
-
-
-	#===================================================================================================================================
-	#========= Functions
-	#===================================================================================================================================
-
-
-	# def checkLocal_locked(self):
-	# 	'''   '''
-	# 	root = self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7)		
-	# 	rows = self.modelTab1.rowCount(root)
-	# 	# self.printSTD(rows)
-	# 	for i in range(rows):
-	# 		# item = root.child(i,0) # object at first (col,row
-	# 		# item = root.child(i,0).data # return <built-in method data of QModelIndex object at 0x6102140>
-	# 		item = root.child(i,0).data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
-
-
-	# 		self.printSTD(item.child(i,0).data())
-
-	# 		# self.printSTD(root.child.isDir())
-	# 		# self.printSTD(item)
-
-
-
-	# def _fetchAndExpand_DES(self):
-	# 	index = self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7)
-	# 	# self.Tab1.expand(index)  # expand the item
-	# 	for i in range(self.modelTab1.rowCount(index)):
-	# 		item = index.child(i,0).data()
-	# 		# self.printSTD(item)
-	# 		# fetch all the sub-folders
-	# 		child = index.child(i, 0)
-	# 		if self.modelTab1.isDir(child):
-	# 			self.modelTab1.setRootPath(self.modelTab1.filePath(child))
-
-
-
-	def readlines_files(self,_filepath):
-		result = 0
-		try:
-			with open(self.TMP_PATH_FILE_LOCKED) as f:
-				result = sum(1 for _ in f)
-				lines = f.readlines()
-		except:
-			pass
-		return result
-
-
-	
-	def Expand_GetLocked(self, index):
-		'''   '''
-
-		model = self.modelTab1
-		indexItem = model.index(index.row(), 0, index.parent())
-		fileName = model.fileName(indexItem)
-		filePath = model.filePath(indexItem)
-
-		if self.CHK_SEARCH_ALL.isChecked() == True:
-
-			startTime = datetime.now()
-			for USERtoSEARCH in self.ALL_USERS:
-				try:
-					filePathUSERtoSEARCH = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
-					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
-				except:
-					pass
-			msg = datetime.now() - startTime
-			msg = '############################### ARMAGEDON SEARCH [ DONE ] in ' + str(msg) + ' #######################################'
-			self.printSTD(msg)
-
-
-		else:
-
-			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-
-			getText = self.logOutputBottom.toPlainText()
-			USERtoSEARCH = self.listUsers.currentText()
-			self.printSTD(USERtoSEARCH)
-			if str(USERtoSEARCH) != self.CURRENT_USER:
-				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
-
-			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
-	 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
-			if result > 0 : # todo to mutu
-				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
-				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
-				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
-
-			self.Thread_get_fileList_mutu(filePath,USERtoSEARCH)
-
-
-	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH):
-		'''   '''
-		if os.path.exists(filePath):
-			self.printSTD(filePath)
-			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL)
-
-
-	def model_changeColor(self, model):
-		model.setData(model.index(1, 5), 1)
-		model.setData(model.index(2, 5), 2)
-		model.emit(QtCore.SIGNAL('dataChanged(QModelIndex,QModelIndex)'), model.index(1, 5), model.index(2, 5))
-
-
-	def get_fileList(self, source):
-		matches = []
-		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
-			if not dirnames:			
-				for filename in filenames:
-					# self.printSTD(filename)
-					ext = None
-					try:
-						ext = os.path.splitext(filename)[1][1:]
-					except:
-						pass	
-					if ext.upper() in self.INCLUDE_EXT_LOCKED:
-						filePath 	= os.path.join(root, filename)
-						result 		= self.get_fileInfo(filePath)
-						infoWrite 	= result[0]
-						infoOwner 	= result[1]
-						# self.printSTD('####################')
-						# self.printSTD(infoWrite)
-						# self.printSTD(infoOwner)
-						# self.printSTD('####################')
-						if infoWrite == True and infoOwner == self.CURRENT_USER:
-							matches.append(os.path.join(root, filename))
-
-		return matches
-
-
-	def get_fileInfo(self, source):
-		fileInfo   = QtCore.QFileInfo(source)
-		infoWrite = fileInfo.isWritable()
-		infoOwner = fileInfo.owner()
-		return infoWrite, infoOwner
-
-
-	#======================================================================
+	#==========================================================================================================================================================================
 	#========= UI Areas Constructions Functions
-	#======================================================================
+	#==========================================================================================================================================================================
 
 	def construct_TopAreaContent(self):
 		'''   '''
@@ -652,15 +518,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
 
 
-		#======================================================================
-		#========= check if some files exist
-		#======================================================================
-		if not os.path.exists(self.TMP_PATH_FILE_LOCKED):
-			open(self.TMP_PATH_FILE_LOCKED, 'a').close()
-		else:
-			result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)
-			if result > 0 : # todo to mutu
-				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
+
 
 		#========= apply stylsheets
 		self.apply_Stylesheets()
@@ -744,9 +602,178 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.apply_Stylesheets()
 
 
-	#======================================================================
+
+
+
+	#==========================================================================================================================================================================
+	#========= Functions
+	#==========================================================================================================================================================================
+
+
+	# def checkLocal_locked(self):
+	# 	'''   '''
+	# 	root = self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7)		
+	# 	rows = self.modelTab1.rowCount(root)
+	# 	# self.printSTD(rows)
+	# 	for i in range(rows):
+	# 		# item = root.child(i,0) # object at first (col,row
+	# 		# item = root.child(i,0).data # return <built-in method data of QModelIndex object at 0x6102140>
+	# 		item = root.child(i,0).data() # return default Qt.DisplayRole = .data(QtCore.Qt.DisplayRole) = text
+
+
+	# 		self.printSTD(item.child(i,0).data())
+
+	# 		# self.printSTD(root.child.isDir())
+	# 		# self.printSTD(item)
+
+
+
+	# def _fetchAndExpand_DES(self):
+	# 	index = self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7)
+	# 	# self.Tab1.expand(index)  # expand the item
+	# 	for i in range(self.modelTab1.rowCount(index)):
+	# 		item = index.child(i,0).data()
+	# 		# self.printSTD(item)
+	# 		# fetch all the sub-folders
+	# 		child = index.child(i, 0)
+	# 		if self.modelTab1.isDir(child):
+	# 			self.modelTab1.setRootPath(self.modelTab1.filePath(child))
+
+	
+	def Expand_GetLocked(self, index):
+		'''   '''
+
+		model = self.modelTab1
+		indexItem = model.index(index.row(), 0, index.parent())
+		fileName = model.fileName(indexItem)
+		filePath = model.filePath(indexItem)
+
+		if self.CHK_SEARCH_ALL.isChecked() == True:
+
+			startTime = datetime.now()
+			for USERtoSEARCH in self.ALL_USERS:
+				try:
+					filePathUSERtoSEARCH = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
+					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
+				except:
+					pass
+			msg = datetime.now() - startTime
+			msg = '############################### ARMAGEDON SEARCH [ DONE ] in ' + str(msg) + ' #######################################'
+			self.printSTD(msg)
+
+
+		else:
+
+			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+
+			getText = self.logOutputBottom.toPlainText()
+			USERtoSEARCH = self.listUsers.currentText()
+			self.printSTD(USERtoSEARCH)
+			if str(USERtoSEARCH) != self.CURRENT_USER:
+				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
+
+			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+	 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)[0]
+			if result > 0 : # todo to mutu
+				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
+				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
+				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
+
+			self.Thread_get_fileList_mutu(filePath,USERtoSEARCH)
+
+
+	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH):
+		'''   '''
+		if os.path.exists(filePath):
+			self.printSTD(filePath)
+			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL)
+
+
+	def model_changeColor(self, model):
+		model.setData(model.index(1, 5), 1)
+		model.setData(model.index(2, 5), 2)
+		model.emit(QtCore.SIGNAL('dataChanged(QModelIndex,QModelIndex)'), model.index(1, 5), model.index(2, 5))
+
+
+	def get_fileList(self, source):
+		matches = []
+		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
+			if not dirnames:			
+				for filename in filenames:
+					# self.printSTD(filename)
+					ext = None
+					try:
+						ext = os.path.splitext(filename)[1][1:]
+					except:
+						pass	
+					if ext.upper() in self.INCLUDE_EXT_LOCKED:
+						filePath 	= os.path.join(root, filename)
+						result 		= self.get_fileInfo(filePath)
+						infoWrite 	= result[0]
+						infoOwner 	= result[1]
+						# self.printSTD('####################')
+						# self.printSTD(infoWrite)
+						# self.printSTD(infoOwner)
+						# self.printSTD('####################')
+						if infoWrite == True and infoOwner == self.CURRENT_USER:
+							matches.append(os.path.join(root, filename))
+
+		return matches
+
+
+	def get_fileInfo(self, source):
+		fileInfo   = QtCore.QFileInfo(source)
+		infoWrite = fileInfo.isWritable()
+		infoOwner = fileInfo.owner()
+		return infoWrite, infoOwner
+
+
+	def readlines_files(self,_filepath):
+		# self.printSTD('readlines_files')
+		# self.printSTD(_filepath)
+		result = 0
+		lines = []
+		try:
+			with open(_filepath) as f:
+				result = sum(1 for _ in f)
+				# content = f.readlines()
+				# self.printSTD(content)
+			for line in open(_filepath):
+				lines.append(line)
+				# self.printSTD(line)
+		except:
+			pass
+		return result,lines
+
+		# with open(self.TMP_PATH_FILE_LOCKED) as f:
+		# 	content = f.readlines()
+		# 	# print >> sys.__stderr__, '-------------------------------content' 
+		# 	# print >> sys.__stderr__, content 
+		# 	# print >> sys.__stderr__, type(content)
+		# 	# print >> sys.__stderr__, '-------------------------------content'
+
+
+
+	def check_A7_alwaysLocked(self, _filepath):
+		# self.printSTD('check_A7_alwaysLocked')
+		# self.printSTD(_filepath)		
+		if not os.path.exists(_filepath):
+			open(_filepath, 'a').close()
+		else:
+			result = self.readlines_files(_filepath)
+			nA7 = result[0]
+			lines = result[1]
+			# self.printSTD(result)
+			# self.printSTD(nA7)
+			# self.printSTD(lines)
+			if result > 0 :
+				for line in lines:
+					self.printSTD(line[:-1])
+			# self.printSTD(result)
+			# self.printSTD(lines)
+	#==========================================================================================================================================================================
 	#========= UI Buttons Functions
-	#======================================================================
+	#==========================================================================================================================================================================
 
 	def confirmBox(self,title,msg=''):    
 		reply = QtGui.QMessageBox.question(self, title, msg,
@@ -993,6 +1020,62 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
+
+	#======================================================================
+	#========= UI Construct Functions
+	#======================================================================
+
+	def on_TAB_clicked(self):
+		self.printSTD("on_TAB_clicked")
+
+	def closeWindows(self):
+		self.close()
+
+	def clear_LayoutOrWidget(self, LW):
+		try:
+			LW.deleteLater()
+		except:
+			pass
+		try:
+			self.clearLayout(LW)
+		except:
+			pass
+
+	def delete_TopAndMiddle(self):
+		try:
+			self.clear_LayoutOrWidget(self.MiddleAreaContainer)
+		except:
+			pass
+		try:
+			self.clear_LayoutOrWidget(self.BottomAreaContainer)
+		except:
+			pass
+		try:
+			self.clear_LayoutOrWidget(self.ScriptsAreaContainer)
+		except:
+			pass
+
+	def Construct_TopAndMiddle(self):
+		self.MiddleAreaContainer = QtGui.QWidget()
+		self.MiddleAreaContainer.setObjectName("MiddleAreaContainer")
+		self.construct_MiddleTabsArea()
+		self.BottomAreaContainer = QtGui.QWidget()
+		self.BottomAreaContainer.setObjectName("BottomAreaContainer")
+		self.construct_BottomAreaContent()
+		self.mainLayout.addWidget(self.MiddleAreaContainer)
+		self.mainLayout.addWidget(self.BottomAreaContainer)
+
+	def Construct_MiddleScript(self):
+		#========= Scripts Area container
+		self.ScriptsAreaContainer = QtGui.QListView()
+		self.ScriptsAreaContainer.setObjectName("ScriptsAreaContainer")
+		self.construct_ScriptsListArea()
+		self.mainLayout.addWidget(self.ScriptsAreaContainer)
+		self.mainLayout.addWidget(self.BT_SYNC_SCRIPTS, QtCore.Qt.AlignRight)
+
+
+
+
 	def on_CHK_COPY_CLIPBOARD(self):
 		'''   '''
 
@@ -1054,58 +1137,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 				self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
-	#======================================================================
-	#========= UI Construct Functions
-	#======================================================================
-
-	def on_TAB_clicked(self):
-		self.printSTD("on_TAB_clicked")
-
-	def closeWindows(self):
-		self.close()
-
-	def clear_LayoutOrWidget(self, LW):
-		try:
-			LW.deleteLater()
-		except:
-			pass
-		try:
-			self.clearLayout(LW)
-		except:
-			pass
-
-	def delete_TopAndMiddle(self):
-		try:
-			self.clear_LayoutOrWidget(self.MiddleAreaContainer)
-		except:
-			pass
-		try:
-			self.clear_LayoutOrWidget(self.BottomAreaContainer)
-		except:
-			pass
-		try:
-			self.clear_LayoutOrWidget(self.ScriptsAreaContainer)
-		except:
-			pass
-
-	def Construct_TopAndMiddle(self):
-		self.MiddleAreaContainer = QtGui.QWidget()
-		self.MiddleAreaContainer.setObjectName("MiddleAreaContainer")
-		self.construct_MiddleTabsArea()
-		self.BottomAreaContainer = QtGui.QWidget()
-		self.BottomAreaContainer.setObjectName("BottomAreaContainer")
-		self.construct_BottomAreaContent()
-		self.mainLayout.addWidget(self.MiddleAreaContainer)
-		self.mainLayout.addWidget(self.BottomAreaContainer)
-
-	def Construct_MiddleScript(self):
-		#========= Scripts Area container
-		self.ScriptsAreaContainer = QtGui.QListView()
-		self.ScriptsAreaContainer.setObjectName("ScriptsAreaContainer")
-		self.construct_ScriptsListArea()
-		self.mainLayout.addWidget(self.ScriptsAreaContainer)
-		self.mainLayout.addWidget(self.BT_SYNC_SCRIPTS, QtCore.Qt.AlignRight)
-
 
 	#======================================================================
 	#========= Others Functions
@@ -1163,9 +1194,10 @@ class __QT_KBZ__(QtGui.QDialog):
 	def printSTD(self,msg):
 		print >> sys.__stderr__, msg
 
-	#===================================================================================================================================
+
+	#==========================================================================================================================================================================
 	#========= StyleSheets
-	#===================================================================================================================================
+	#==========================================================================================================================================================================
 
 	def rvbToHex(self,r,g,b):
 		# r = array_rgb[1], g=array_rgb[2], b=array_rgb[3]
@@ -1299,7 +1331,9 @@ class __QT_KBZ__(QtGui.QDialog):
 								"height: 40px;"
 							)
 
-		# #========= Locked  Buttons
+		#========= LOCAL TAB
+
+		#========= Locked  Buttons local tab
 		try:
 			self.BT_SEE_LOCKEDFILE_Local.setStyleSheet(
 									"color: white;"
@@ -1319,6 +1353,18 @@ class __QT_KBZ__(QtGui.QDialog):
 									"border-style: outset;"
 									"height: 15px;"
 								)
+
+
+
+
+
+
+		#========= checkBox local tab
+			self.CHK_SEARCH_ALL.setStyleSheet("color: white;")
+			self.CHK_COPY_CLIPBOARD.setStyleSheet("color: white;")
+
+
+
 		except:
 			pass
 #===================================================================================================================================
