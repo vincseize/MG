@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 18-05-2016                                                                #
+# Date : 20-05-2016                                                                #
 # ##################################################################################
 
 
@@ -996,28 +996,31 @@ class __QT_KBZ__(QtGui.QDialog):
 		'''   '''
 
 		cb = QtGui.QApplication.clipboard() # todo copy bt
-		cb.clear(mode=cb.Clipboard )	
+		cb.clear(mode=cb.Clipboard )			
+		txtClipBoard = cb.text()
 		txtClipBoard = ''
-		# self.logOutputBottom.clearSelection() # todo
-		BottomContent = self.logOutputBottom.toPlainText()			
+
+		BottomContent = self.logOutputBottom.toPlainText()	
+
 		if self.CHK_COPY_CLIPBOARD.isChecked():
 			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
 			if len(lines[0])>10: # 10 is path lenght, arbitrary
 				for line in lines:
-					if str(line) not in str(BottomContent):	
-						# self.printSTD(type(line))
-						# self.printSTD(str(line))
-						# self.printSTD(str(BottomContent))
-						self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-						self.logOutputBottom.insertPlainText(str(line)+'\n')
-					# copy to clipboard
-					# txtClipBoard = cb.text()
-					txtClipBoard = line +'\n'+ txtClipBoard
+					self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+					txtClipBoard = str(line) +'\n'+ str(txtClipBoard)
 
-				# friendly ui and copy to clipboard
-				txtClipBoard = txtClipBoard[-2:]
-				cb.setText(line, mode=cb.Clipboard)
+				txtClipBoard = txtClipBoard[:-2]
+				self.printSTD(txtClipBoard)
+
+				cb.setText(txtClipBoard, mode=cb.Clipboard)
 				self.logOutputBottom.selectAll()
+
+		else:
+			cb.setText(txtClipBoard, mode=cb.Clipboard)
+			# unSelectAll
+			my_text_cursor = self.logOutputBottom.textCursor()
+			my_text_cursor.clearSelection()
+			self.logOutputBottom.setTextCursor(my_text_cursor)			
 
 
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
@@ -1034,16 +1037,10 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 			BottomContent = self.logOutputBottom.toPlainText()
-			# self.printSTD(type(BottomContent))	
-	
 
 			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-			# self.printSTD(len(lines[0]))
+
 			if len(lines[0])>10: # 10 is path lenght, arbitrary
-
-				# cb = QtGui.QApplication.clipboard() # todo copy bt
-				# cb.clear(mode=cb.Clipboard )
-
 
 				self.logOutputBottom.setVisible(True)
 
@@ -1051,17 +1048,8 @@ class __QT_KBZ__(QtGui.QDialog):
 
 					if str(line) not in str(BottomContent):	
 
-						# self.printSTD(type(line))
-						# self.printSTD(str(line))
-						# self.printSTD(str(BottomContent))
-
-
 						self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 						self.logOutputBottom.insertPlainText(str(line)+'\n')
-					# copy to clipboard
-				# 	cb.setText(line, mode=cb.Clipboard)
-
-				# self.logOutputBottom.selectAll()
 
 				self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
