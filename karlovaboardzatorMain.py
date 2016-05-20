@@ -1010,7 +1010,6 @@ class __QT_KBZ__(QtGui.QDialog):
 					txtClipBoard = str(line) +'\n'+ str(txtClipBoard)
 
 				txtClipBoard = txtClipBoard[:-2]
-				self.printSTD(txtClipBoard)
 
 				cb.setText(txtClipBoard, mode=cb.Clipboard)
 				self.logOutputBottom.selectAll()
