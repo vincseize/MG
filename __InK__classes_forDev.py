@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 12-05-2016                                                         #
+# Last Update : 24-05-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -86,6 +86,9 @@ class __PIPEIN_GRAPH__():
         mySeq       = myNomen.GetSeq()
         myShot      = myNomen.GetShot()
         mySHOT      = 'None' # for specials cases as previz or usecase # todo
+
+        if verbose == True:
+            print myNomen, myFilm, mySeq, myShot, mySHOT
 
         # retreive shot if specials cases, as previz, usecase 
         try:
@@ -196,16 +199,16 @@ class __PIPEIN_GRAPH__():
             - todo: find more, or all available infos
         '''
 
-        nm_asset        = 'None' # 1
-        nm_path         = 'None' # 2
-        a_libname       = 'None' # 3
-        a_name          = 'None' # 4
-        a_family        = 'None' # 5
-        a_typeFamily    = 'None' # 6 # cf SET
-        a_catFamily     = 'None' # 7
-        a_var           = 'None' # 8 # PROJECT cf GRINCH
-        a_types         = 'None' # 9
-        a_lod           = 'None' # 10
+        nm_asset        = 'None' # 1 # eg : USECASE/MACLEO/Test101/Anim/USECASE_MACLEO_Test101-Anim_Clip.a7
+        nm_path         = 'None' # 2 # eg : USECASE/MACLEO/Test101/Anim/USECASE_MACLEO_Test101-Anim_Clip.a7
+        a_libname       = 'None' # 3 # eg : LIB
+        a_name          = 'None' # 4 # eg : CAMERA
+        a_family        = 'None' # 5 # eg : ['PROPS', 'UVWXYZ']
+        a_typeFamily    = 'None' # 6 # eg : [ SET ]
+        a_catFamily     = 'None' # 7 # eg : MAYA, Shots as Usecase anim have no categories
+        a_var           = 'None' # 8 # eg : PROJECT cf GRINCH
+        a_types         = 'None' # 9 # eg : [ Anim Layout Clip Actor Maps ]
+        a_lod           = 'None' # 10# eg : Prev
         a_version       = 'None' # 11     
 
 
