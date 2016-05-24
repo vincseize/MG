@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 28-04-2016                                                         #
+# Last Update : 24-05-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -202,9 +202,15 @@ class __ORGANIZER__():
 
         A7_infos         = __PIPEIN_GRAPH.getA7_infos(a7)
         a_catFamily      = A7_infos['a_catFamily']
+        a_typeFamily     = A7_infos['a_typeFamily']
+        a_types          = A7_infos['a_types'][0]
+
+        check_actor_ok   = '/'+check_actor_ok
+        # print check_actor_ok.upper()
 
         if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():       
             pathGraphSave        = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+            # print pathGraphSave
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
@@ -217,7 +223,6 @@ class __ORGANIZER__():
             pass
 
 #===========================================================================================================================  end Classes
-
 
 
 
@@ -268,7 +273,7 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
         mySHOT    = result[4]
 
         myCat     = 'None'
-        check_actor_ok = str(mySeq)+'-Actor-Ok'
+        check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
 
         #========= determine cases
         try:
@@ -306,7 +311,7 @@ def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstr
             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
 
     #========= select a7 Upstreams for positioning
-        check_actor_ok = str(mySeq)+'-Actor-Ok'
+        check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
         assetClips = []
         UpStreamProtoList = protoGraph.GetUpstreams( pa )
 
@@ -455,13 +460,15 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
             mySHOT    = result[4]
 
             myCat     = 'None'
-            check_actor_ok = str(mySeq)+'-Actor-Ok'
+            check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
+
+            # print myFilm, mySeq, mySeq, myShot, mySHOT
 
         except:
             __PIPEIN_GRAPH.getA7_infos(pa,True)
             __PIPEIN_GRAPH.getGraph_infos(pa,True)
             raise Exception('Error retrieving myShot mySeq mySHOT myCat infos !!!')
-
+            # /u/dm3/Users/COM/Presets/Graphs/ANIM/USECASE/UVWXYZ/MACLEO/MACLEO_Test101.inkGraph ready to be saved ...
         #========= determine cases
         try:
             result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
@@ -473,7 +480,8 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                 print 'myShot == None !'
         except:
             pass
-
+        
+        # print myFilm, mySeq, mySeq, myShot, mySHOT
         #======================================================================
         #========= Retrieve Downstreams
         #======================================================================
@@ -495,7 +503,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         assetClips = sorted(assetClipsByName, reverse=True)
         #========= set position clip.a7 Downstreams
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
-
+        # print myFilm, mySeq, mySeq, myShot, mySHOT
         #======================================================================
         #========= Retrieve Upstreams
         #======================================================================
@@ -511,7 +519,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
         #========= get infos
-
+        # print myFilm, mySeq, mySeq, myShot, mySHOT
         if str(type_layout) == 'Usecase':
             for a7 in assetList_forGraphtoSave:
                 if type_layout == 'Usecase' and 'ACTOR-OK' in str(a7).upper() and str(mySeq).upper() in str(a7).upper():
@@ -525,11 +533,12 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= Patch special case, no cat , to do better
             if 'NONE' in str(pathGraphSave).upper():
                 pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+                                    # /u/dm3/Users/COM/Presets/Graphs/ANIM/USECASE/UVWXYZ/MACLEO/MACLEO_Test101.inkGraph ready to be saved ...
         #======================================================================
         #========= add EDIT a7s 
         #======================================================================
         assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
-
+        print myFilm, mySeq, mySeq, myShot, mySHOT
         #======================================================================
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
@@ -548,9 +557,9 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         # if type_layout == 'Usecase':
         #     checkString = str(a_name).upper() + '_EDIT-'   
 
-        for pa in selection:             
-            if str(checkString) in str(pa):
-                assetList_forGraphtoSave.append(pa)
+        for pa2 in selection:             
+            if str(checkString) in str(pa2):
+                assetList_forGraphtoSave.append(pa2)
 
         #======================================================================
         #========= Apply 
@@ -610,4 +619,288 @@ if PROJECT == 'GRI':
 
 
 
+#================================================================================================================================ AK04_CHAR_MOD
 
+
+
+
+
+def AK04_CHAR_MOD(Chars ='LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC',Costume = 'Casual', Hairs='Casual', HairsBranch=False, Actor=False, SaveGraph=False):
+    ''' 
+    | /
+    | \ Tool - Last update 13-05-2016
+    ----------------------------------------------------------------------
+    Creer les a7 de modeling de perso
+    Indiquer le nom de la famille et celui du perso ainsi que le costume si besoin
+    Ou selectionner le Model-ok (sans variation) pour une mise a jour du graphe
+
+    Ex : LIB/CHARS/MAIN/Kroumch
+
+    ----------------------------------------------------------------------
+    '''
+
+    #==============================================================================================================
+    __ORGANIZER = __ORGANIZER__() # local class for organize .a7
+    #==============================================================================================================
+
+    if SaveGraph==True:
+        writeGraph = True
+
+    writeGraph = False # secu
+
+
+    def Add_Hairs(protoGraph,_name,costume='Casual'):
+        ''' Add Hairs   '''
+        if costume=='Casual':
+            HairsOk     =  nomen.Nomen.NewLib( lib='LIB', name=_name, family=['CHARS', 'TERTIARY'], types=['Hairs'], stage='Ok' )
+            # LIB/CHARS/TERTIARY/BabyFreedoA/Ok/BabyFreedoA-Hairs-Ok.a7 
+            HairsProto  =  protoGraph.Add(HairsOk)
+            protoGraphTmp.Apply()
+            protoGraphTmp.Show(update=True)
+            # print HairsProto
+
+    #====================================================================== end Functions
+
+
+    protoGraphTmp = ink.proto.Graph('Tmp')
+    selection     = protoGraphTmp.GetSelection( nomen.Filter().SetTypes(['Model']).SetStage('Ok') )
+
+    if selection:
+        nmChars    = selection[0].GetNomen()
+    else:
+        nmChars    = graphs.__GetArgNomen( Chars, types=['Model'], stage='Ok', onlyExist=False )
+
+        
+    if not nmChars:
+        raise Exception( 'Enter valid Chars parameter' )
+
+
+
+
+
+
+    # Chars = 'LIB/CHARS/TERTIARY/BabyFreedoA'
+
+    # if Chars is 'LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC':
+    #     raise Exception( 'Enter valid Chars parameter or select Model-Ok.a7' )
+
+
+
+    libName      = nmChars.GetLib()
+    name         = nmChars.GetName()
+    families     = nmChars.GetFamilies()
+
+    mainFamily   = families[0]
+    subFamily    = families[1]
+    lineUpFamily = subFamily.capitalize()
+
+
+
+
+
+
+    print ''
+    print '################################################'
+    print '### Graphe de modeling de perso'
+    print '################################################'
+    print '### Lib          :',libName
+    print '### Famille    :',  '/'.join(families)
+    print '### Nom        :',name
+    print '### Costume :',Costume
+    print '################################################'
+    print ''
+
+    #==========================================================================
+    # Logs and debug Params
+    #==========================================================================
+
+    publicGraph= True
+    logPath    = None
+    printOnly  = False
+    verbose    = 0
+
+    if False and os.environ.get('USER') in [ 'ick', 'alec' ]:
+        print "--------------TEST DEBUG--------------------"
+        publicGraph = True
+        logPath     = '/tmp/pipe.Model_Char.log'
+        printOnly   = False
+        verbose     = 0
+
+    #==========================================================================
+    #  Graphe de Reference et graphe a ecrire
+    #==========================================================================
+
+    grRef       = 'LIBREF/CHARS_MODELING'
+    grDest      = 'MODELING/CHARS' + '/'+subFamily+ '/' +name
+
+    #=================================================================================
+    #  Filtre et regle de clone pour les a7 de LIBREF avec name XNAMEX et XCOSTUMEX
+    #=================================================================================
+
+    mainFilter    = nomen.Filter().SetLib('LIBREF')
+    mainModifier  = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name ).SetVar(Costume)
+    mainRules     = {
+                      'niModifier' : mainModifier,
+                    }
+
+    #==========================================================================
+    #  Filtre et regle de clone pour l a7 de lineup
+    #==========================================================================
+
+    lineUpFilter    = nomen.Filter().SetLib('LIB').SetFamilies( ['CHARS'] ).SetName( 'SHARED' ).SetTypes(['Model', 'Lineup'])
+    lineUpModifier  = nomen.Filter().SetTypes(['Model', 'Lineup', lineUpFamily])
+    lineUpRules     = {
+                        'niModifier' : lineUpModifier,
+                      }
+
+    #===============================================
+
+    showFilter  = nomen.Filter().SetLib( 'LIBREF' )
+    showMask    = nomen.FILTER_WITHOUT
+    clearBefore = True 
+
+    showRules   = ( showFilter, showMask, clearBefore )
+
+    #=============================================== > VOIR ALEC POUR CETTE PARTIE DU CODE
+
+    def PostApply( graph ):
+
+        def SortAssetPath( a, b ):
+            if a.GetNomen().GetVar() == 'Casual':
+                return cmp( 0, 1 )
+            if b.GetNomen().GetVar() == 'Casual':
+                return cmp( 1, 0 )
+            return cmp( a.GetPath(), b.GetPath() )
+
+        # get all -Var-Model-Ok and -Var-Model_Turn assets created same Var types
+        modelOkList     = graph.Find( nomen.Filter().SetVar('\w.*').SetTypes(['Model']).SetStage('Ok') )
+        modelTurnList   = graph.Find( nomen.Filter().SetVar('\w.*').SetTypes(['Model', 'Turn']).SetStage('') )
+
+        if not modelOkList or not modelTurnList:
+            return
+        modelOk         = modelOkList[0]
+        modelTurn       = modelTurnList[0]
+        
+        modelOkFilter   = modelOk.GetNomen().Copy().SetVar('\w.*')
+        modelTurnFilter = modelTurn.GetNomen().Copy().SetVar('\w.*')
+        modelOkDir      = os.path.dirname( modelOk.GetPath() )
+        modelTurnDir    = os.path.dirname( modelTurn.GetPath() )
+        
+        # recup de tous les assets tries par nom, mais les Casual en 1er
+        modelOkList   = ink.query.Search( dirPath=modelOkDir, niFilter=modelOkFilter, niFilterOpt=ink.proto.FILTER_ONLY, sortCmp=SortAssetPath, rootType=ink.query.SEARCH_BOTH )
+        modelTurnList = ink.query.Search( dirPath=modelTurnDir, niFilter=modelTurnFilter, niFilterOpt=ink.proto.FILTER_ONLY, sortCmp=SortAssetPath, rootType=ink.query.SEARCH_BOTH )
+        
+        # Ajout dans le graph des assets trouves
+        modelOkList   = graph.AddAssets( modelOkList )
+        modelTurnList = graph.AddAssets( modelTurnList )
+        
+        # get initials datas (after apply func)
+        layout        = graph.GetLayout()
+        initPoint     = layout.GetPoint( [ modelOk, modelTurn ] )
+
+        # update layout with new assets
+        for idx, modelGroup in enumerate( zip( modelOkList, modelTurnList ) ):
+            layout.Horizontal( modelGroup, 2 )
+            layout.Move( modelGroup, ( 0, -idx ), magnetPoint=initPoint )
+
+    ######################################################################################################################################
+    #------------------------------------------------------------------------------------------------------------------------------------
+    #------ Selection du LINEUP de famille
+    #------ S'il n existe pas on le cree
+    #------ Dans le cas d'un costume different de casual cette connexion n'est pas necessaire car elle est faite a partir du Model-Ok 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    ######################################################################################################################################
+
+    if Costume == 'Casual':
+
+        #==========================================================================
+        #  Test pour savoir si l'A7 de Lineup existe et si il  est locke ou grabbe  
+        #==========================================================================
+
+        LineUpNomen  = nomen.Nomen.NewLib( lib=libName, name='SHARED', family=['CHARS'], var='', types=[ 'Model', 'Lineup', lineUpFamily ], stage='' )
+
+        if ink.proto.Exist(LineUpNomen):
+            protoGraph   = ink.proto.Graph('ShowLineup')
+
+            if HairsBranch == True:
+            #==========================================================================
+            #  Add Casual Hairs-Ok 
+            #==========================================================================
+                HairsOkProto = Add_Hairs(protoGraph,name,Costume)
+
+            LineUpNomenProto  = protoGraph.Add( LineUpNomen )
+
+            IsLock            = ink.query.Asset(LineUpNomen).GetLockInfos()[0]
+            HaveBeenPublished = ink.query.Asset(LineUpNomen).GetScmInfos()[0]
+
+            if not IsLock and HaveBeenPublished :
+                protoGraph.SetSelection(protoGraph.List() , clearBeforeOp=ink.proto.SEL_CLEAR)
+                protoGraph.Apply()
+                protoGraph.SelectAll()
+
+                print '############################################################################'
+                print '## GRAB OR LOCK A7 Selected (Hairs and LineUp)'
+                print '############################################################################'
+                # raise Exception( 'GRABBER OU LOCKER l A7 Hairs-Ok ( a7 selectionne) et recommencer la creation!!!!!!!!!!!' )
+
+        #==========================================================================================================
+        #  Filtre de selection apres apply general : selectFilter=None, selectMode=None pour ne rien selectionner
+        #  En l'occurance ce filtre ne selectionne que les a7 clones a partir des a7 de ref ayant  XNAMEX 
+        #==========================================================================================================
+
+        selectFilter = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name )
+        selectMask   = nomen.FILTER_ONLY
+        selectMode   = ink.proto.SEL_ADD
+        selectBefore = ink.proto.SEL_CLEAR
+
+    ####################################################################################
+    #-----------------------------------------------------------------------------------
+    #------ Creation des a7  dans le cas d'un costume autre que casual
+    #------ On cree une branche supplementaire  a partir des a7 casual
+    #-----------------------------------------------------------------------------------
+    ####################################################################################
+
+    if Costume != 'Casual':
+
+        #==============================================================================================================
+        #  Filtre de selection apres apply general : selectFilter=None, selectMode=None pour ne rien selectionner
+        #  En l'occurance ce filtre ne selectionne que les a7 clones a partir des a7 de ref ayant  XNAMEX et XOSCTUMEX
+        #==============================================================================================================
+
+        selectFilter = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name ).SetVar( Costume )
+        selectMask   = nomen.FILTER_ONLY
+        selectMode   = ink.proto.SEL_ADD
+        selectBefore = ink.proto.SEL_CLEAR
+
+    #===============================================================
+    #  Fusion de tous les filtres et de toutes les regles de clone 
+    #===============================================================
+
+    cloneRules   = ( 
+                     ( lineUpFilter , lineUpRules ),
+                     ( mainFilter   , mainRules   ),
+                   )
+    
+    #====================================================================================
+    #  Execution de la macro de clone 
+    #====================================================================================
+
+    return graphs._ExtraClone( grRef, grDest, cloneRules, PostApply, showFilter, showMask, clearBefore, selectFilter, selectMask, selectMode, selectBefore, publicGraph, writeGraph, printOnly, logPath, verbose )
+
+
+
+
+#=========================== UI
+
+AK04_CHAR_MOD.__category__         = 'A - PIPE-IN TOOLZ'
+AK04_CHAR_MOD.__author__           = 'cpottier'
+AK04_CHAR_MOD.__textColor__        = '#6699ff'
+AK04_CHAR_MOD.__paramsType__       = {
+# 'Chars'        :  ( 'str', 'LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC'  ),
+'Chars'        :  ( 'str', 'LIB/CHARS/TERTIARY/BabyFreedoA'  ),
+'Costume'      :  ( 'str', 'Casual'  ),
+'Hairs'        :  ( 'str', 'Casual'  ),
+'HairsBranch' :  ( 'bool', 'False' , ['True', 'False']  ),  
+'Actor'        :  ( 'bool', 'False' , ['True', 'False']  ),  
+'SaveGraph'    :  ( 'bool', 'False' , ['True', 'False']  )
+}
