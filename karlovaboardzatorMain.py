@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 20-05-2016                                                                #
+# Date : 25-05-2016                                                                #
 # ##################################################################################
 
 
@@ -206,12 +206,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 	#==========================================================================================================================================================================
-	#========= check if some files exist and some check
-	#==========================================================================================================================================================================
-
-		self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
-
-	#==========================================================================================================================================================================
 	#========= main vlayout
 	#==========================================================================================================================================================================
 
@@ -252,6 +246,13 @@ class __QT_KBZ__(QtGui.QDialog):
 		#========= apply stylsheets
 		self.apply_Stylesheets()
 		self.setPalette(self.palette_darkGrey)
+
+
+	#==========================================================================================================================================================================
+	#========= check if some files exist and some check
+	#==========================================================================================================================================================================
+
+		self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
 
 	#==========================================================================================================================================================================
 	#========= AS RUN
@@ -729,8 +730,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 	def readlines_files(self,_filepath):
-		# self.printSTD('readlines_files')
-		# self.printSTD(_filepath)
 		result = 0
 		lines = []
 		try:
@@ -745,32 +744,33 @@ class __QT_KBZ__(QtGui.QDialog):
 			pass
 		return result,lines
 
-		# with open(self.TMP_PATH_FILE_LOCKED) as f:
-		# 	content = f.readlines()
-		# 	# print >> sys.__stderr__, '-------------------------------content' 
-		# 	# print >> sys.__stderr__, content 
-		# 	# print >> sys.__stderr__, type(content)
-		# 	# print >> sys.__stderr__, '-------------------------------content'
 
-
-
-	def check_A7_alwaysLocked(self, _filepath):
-		# self.printSTD('check_A7_alwaysLocked')
-		# self.printSTD(_filepath)		
-		if not os.path.exists(_filepath):
-			open(_filepath, 'a').close()
+	def check_A7_alwaysLocked(self, _filepathTmpFile):	
+		'''   '''	
+		if not os.path.exists(_filepathTmpFile):
+			open(_filepathTmpFile, 'a').close()
 		else:
-			result = self.readlines_files(_filepath)
+			USERtoSEARCH = self.listUsers.currentText()
+			matches_to_check = []
+			result = self.readlines_files(_filepathTmpFile)
 			nA7 = result[0]
 			lines = result[1]
 			# self.printSTD(result)
 			# self.printSTD(nA7)
 			# self.printSTD(lines)
 			if result > 0 :
+
 				for line in lines:
-					self.printSTD(line[:-1])
-			# self.printSTD(result)
-			# self.printSTD(lines)
+					matches_to_check.append(line[:-1])
+					# self.printSTD(line[:-1])
+					filepath = line[:-1]
+
+					matches = self.Thread_get_fileList_mutu(filepath,USERtoSEARCH)
+
+					# we check chmod
+
+			self.printSTD(matches)
+			self.printSTD(matches_to_check)
 	#==========================================================================================================================================================================
 	#========= UI Buttons Functions
 	#==========================================================================================================================================================================
