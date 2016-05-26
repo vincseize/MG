@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 25-05-2016                                                                #
+# Date : 26-05-2016                                                                #
 # ##################################################################################
 
 
@@ -701,7 +701,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
 			if not dirnames:			
 				for filename in filenames:
+					# self.printSTD('filename')
 					# self.printSTD(filename)
+					# self.printSTD('--------------------------')
 					ext = None
 					try:
 						ext = os.path.splitext(filename)[1][1:]
@@ -712,10 +714,10 @@ class __QT_KBZ__(QtGui.QDialog):
 						result 		= self.get_fileInfo(filePath)
 						infoWrite 	= result[0]
 						infoOwner 	= result[1]
-						# self.printSTD('####################')
-						# self.printSTD(infoWrite)
-						# self.printSTD(infoOwner)
-						# self.printSTD('####################')
+						self.printSTD('####################')
+						self.printSTD(infoWrite)
+						self.printSTD(infoOwner)
+						self.printSTD('####################')
 						if infoWrite == True and infoOwner == self.CURRENT_USER:
 							matches.append(os.path.join(root, filename))
 
@@ -751,26 +753,42 @@ class __QT_KBZ__(QtGui.QDialog):
 			open(_filepathTmpFile, 'a').close()
 		else:
 			USERtoSEARCH = self.listUsers.currentText()
-			matches_to_check = []
+			matches = []
 			result = self.readlines_files(_filepathTmpFile)
 			nA7 = result[0]
 			lines = result[1]
-			# self.printSTD(result)
-			# self.printSTD(nA7)
-			# self.printSTD(lines)
-			if result > 0 :
+			if nA7 > 0 :
 
 				for line in lines:
-					matches_to_check.append(line[:-1])
-					# self.printSTD(line[:-1])
-					filepath = line[:-1]
+					filePath = str(line[:-1])
+					ext = None
+					try:
+						ext = filePath.split('.')[1]
 
-					matches = self.Thread_get_fileList_mutu(filepath,USERtoSEARCH)
+					except:
+						pass	
+					try:					
+						if ext.upper() in self.INCLUDE_EXT_LOCKED:
+							# we check chmod
+							result 		= self.get_fileInfo(filePath)
+							infoWrite 	= result[0]
+							infoOwner 	= result[1]
+							if infoWrite == True :
+								matches.append(filePath)								
+								msg = filePath + ' [ LOCKED ]'
+					except:
+						pass
 
-					# we check chmod
+			if len(matches) > 0:
+				# we re write tmp file
+				self.on_BT_LOCKEDFILE_Local_clicked('BT_CLEAR_LOCKEDFILE_Local')		
+				time.sleep(2)			
+				for line in matches:
+					a7 = str(line)+'\n'
+					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					f.write(line+'\n') # python will convert \n to os.linesep
+					f.close()
 
-			self.printSTD(matches)
-			self.printSTD(matches_to_check)
 	#==========================================================================================================================================================================
 	#========= UI Buttons Functions
 	#==========================================================================================================================================================================
