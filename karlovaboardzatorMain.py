@@ -30,6 +30,7 @@ from datetime import datetime
 
 class Thread_get_fileList():
 	def __init__(self, *args):
+			
 		filePath = args[0]
 		USER_TO_SEARCH 			= args[1]
 		CURRENT_PROJECT 		= args[2]
@@ -37,10 +38,12 @@ class Thread_get_fileList():
 		INCLUDE_EXT_LOCKED 		= args[4]
 		TMP_PATH_FILE_LOCKED 	= args[5]
 		CHK_SEARCH_ALL  		= args[6]
+		n_user 					= args[7]
+		n_users_tot				= args[8]
 
 		self.threads = []
 		# self.threads = [threading.Thread(target=f) for _ in range(8)]
-		t = WorkerThread_get_fileList(filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, self)
+		t = WorkerThread_get_fileList(filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, n_user, n_users_tot, self)
 		t.start()
 		self.threads.append(t)
 
@@ -50,12 +53,16 @@ class Thread_get_fileList():
 			t.stop()
 			if not t.finished():
 				t.wait()
+			# else:
+			# 	print >> sys.__stderr__, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF XXXXXXXXXXXXXXXXXXXXXXXXXXXx'				
+
+
 
 #====== Thread Worker
 
 class WorkerThread_get_fileList(QtCore.QThread):
 
-	def __init__(self, filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, receiver):
+	def __init__(self, filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, n_user, n_users_tot, receiver):
 		QtCore.QThread.__init__(self)
 
 		self.filePath 				= filePath
@@ -64,7 +71,11 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
 		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
 		self.TMP_PATH_FILE_LOCKED	= TMP_PATH_FILE_LOCKED	
-		self.CHK_SEARCH_ALL  		= CHK_SEARCH_ALL			
+		self.CHK_SEARCH_ALL  		= CHK_SEARCH_ALL
+
+		self.n_user 				= n_user
+		self.n_users_tot			= n_users_tot			
+
 		self.receiver = receiver
 
 		self.stopped = 0
@@ -74,7 +85,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		time.sleep(0.1) # to do in thread
 		result = []
 		try:
-			result = self.get_fileList(self.filePath)
+			result = self.get_fileList(self.filePath, self.n_user, self.n_users_tot)
 		except:
 			pass
 		if len(result) > 0 :
@@ -91,20 +102,16 @@ class WorkerThread_get_fileList(QtCore.QThread):
 					f.write(line+'\n') # python will convert \n to os.linesep
 					f.close()
 
+	def stop(self):
+		self.stopped = 1
+
 	#====== functions
 
-	def get_fileInfo(self,source):
-		fileInfo   = QtCore.QFileInfo(source)
-		infoWrite = fileInfo.isWritable()
-		infoOwner = fileInfo.owner()
-		return infoWrite, infoOwner
-
-
-	def get_fileList(self,source):
+	def get_fileList(self,source, n_user, n_users_tot):
 		'''   '''
 		startTime = datetime.now()
 
-		msg = '----- Search[ ' + self.USER_TO_SEARCH + ' ] Locked Files in Progress'
+		msg = '----- Search[ ' + self.USER_TO_SEARCH + ' ] Locked Files in Progress! Please wait ...'
 		print >> sys.__stderr__, msg
 		randwait = ['.','..','...'] # for deco
 
@@ -144,16 +151,26 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		print >> sys.__stderr__, msg
 
 
+		msg = str(n_user) + ' | ' + str(n_users_tot)
+		print >> sys.__stderr__, msg
+
+
 		matches = list(set(matches))
 
 
 		return matches
 
 
+	def get_fileInfo(self,source):
+		fileInfo   = QtCore.QFileInfo(source)
+		infoWrite = fileInfo.isWritable()
+		infoOwner = fileInfo.owner()
+		return infoWrite, infoOwner
+
+
 	#====== end functions
 
-	def stop(self):
-		self.stopped = 1
+
 
 #====================================================================== QT Class 
 
@@ -495,16 +512,16 @@ class __QT_KBZ__(QtGui.QDialog):
 		# self.BottomLogButtons.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)		
 
 
-		#========= Bottom Area content logOutputBottom
-		self.logOutputBottom = QtGui.QTextEdit()
-		self.logOutputBottom.setObjectName("logOutputBottom")		
-		self.logOutputBottom.setFixedWidth(self.SCREEN.width()-40)
-		self.logOutputBottom.setFixedHeight(1)		
-		self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-		self.logOutputBottomSb = self.logOutputBottom.verticalScrollBar()
-		self.logOutputBottomSb.setValue(self.logOutputBottomSb.maximum())
-		self.logOutputBottomCursor = self.logOutputBottom.textCursor()
-		self.logOutputBottom.setVisible(False)
+		#========= Bottom Area content lockedOutputBottom
+		self.lockedOutputBottom = QtGui.QTextEdit()
+		self.lockedOutputBottom.setObjectName("lockedOutputBottom")		
+		self.lockedOutputBottom.setFixedWidth(self.SCREEN.width()-40)
+		self.lockedOutputBottom.setFixedHeight(1)		
+		self.lockedOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+		self.lockedOutputBottomSb = self.lockedOutputBottom.verticalScrollBar()
+		self.lockedOutputBottomSb.setValue(self.lockedOutputBottomSb.maximum())
+		self.lockedOutputBottomCursor = self.lockedOutputBottom.textCursor()
+		self.lockedOutputBottom.setVisible(False)
 
 		#================================================== add Users Bottom Area content
 		self.BottomAreaContent.addWidget(self.listUsers)
@@ -515,8 +532,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent.addWidget(self.CHK_SEARCH_ALL)
 		self.BottomAreaContent.addWidget(self.CHK_COPY_CLIPBOARD)
 		
-		#================================================== add LogOutputBottom to Bottom Area content
-		self.BottomAreaContent.addWidget(self.logOutputBottom)
+		#================================================== add lockedOutputBottom to Bottom Area content
+		self.BottomAreaContent.addWidget(self.lockedOutputBottom)
 
 
 		#========= add Area content to Bottom Area container
@@ -655,15 +672,16 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		if self.CHK_SEARCH_ALL.isChecked() == True:
 			startTime = datetime.now()
-			n_users = 0
+			n_user = 0
+			n_users_tot = self.ALL_USERS_COUNT
 			startTime = datetime.now()
 			for USERtoSEARCH in self.ALL_USERS:
-				n_users = n_users + 1
-				msg = str(n_users) + ' | ' + str(self.ALL_USERS_COUNT)
-				self.printSTD(msg)
+				n_user = n_user + 1
+				# msg = str(n_user) + ' | ' + str(self.ALL_USERS_COUNT)
+				# self.printSTD(msg)
 				try:
 					filePathUSERtoSEARCH = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
-					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
+					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH, USERtoSEARCH, n_user, n_users_tot)
 				except:
 					msg = '################' + filePathUSERtoSEARCH + '[ ERROR ] ######################'
 					self.printSTD(msg)
@@ -681,12 +699,13 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.printSTD(' ')	
 			self.printSTD('##############################################################################################################')
 			self.printSTD(' ')
-			
+
 		else:
+			n_user = 1
+			n_users_tot = n_user
+			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
-			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-
-			getText = self.logOutputBottom.toPlainText()
+			getText = self.lockedOutputBottom.toPlainText()
 			USERtoSEARCH = self.listUsers.currentText()
 			self.printSTD(USERtoSEARCH)
 			if str(USERtoSEARCH) != self.CURRENT_USER:
@@ -699,14 +718,14 @@ class __QT_KBZ__(QtGui.QDialog):
 				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
-			self.Thread_get_fileList_mutu(filePath,USERtoSEARCH)
+			self.Thread_get_fileList_mutu(filePath, USERtoSEARCH, n_user, n_users_tot)
 
 
-	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH):
+	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH, n_user, n_users_tot):
 		'''   '''
 		if os.path.exists(filePath):
 			self.printSTD(filePath)
-			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL)
+			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL, n_user, n_users_tot)
 
 
 	def model_changeColor(self, model):
@@ -801,12 +820,56 @@ class __QT_KBZ__(QtGui.QDialog):
 			if len(matches) > 0:
 				# we re write tmp file
 				self.on_BT_LOCKEDFILE_Local_clicked('BT_CLEAR_LOCKEDFILE_Local')		
-				time.sleep(2)			
+				time.sleep(1)			
 				for line in matches:
+					time.sleep(0.5)	
+					# self.printSTD(line)
 					a7 = str(line)+'\n'
 					f = open(self.TMP_PATH_FILE_LOCKED,'a')
 					f.write(line+'\n') # python will convert \n to os.linesep
 					f.close()
+
+				# update textarea
+
+				self.update_TMP_PATH_FILE_LOCKED()
+
+				# # to do to mutu 
+				# BottomContent = self.lockedOutputBottom.toPlainText()
+				# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+
+				# if len(lines[0])>10: # 10 is path lenght, arbitrary
+
+				# 	self.lockedOutputBottom.setVisible(True)
+				# 	self.CHK_COPY_CLIPBOARD.setVisible(True)
+
+				# 	for line in lines:
+				# 		if str(line) not in str(BottomContent):	
+
+				# 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+				# 			self.lockedOutputBottom.insertPlainText(str(line)+'\n')
+
+				# 	self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+				# 	# REFRESH BOTTOM TO DO
+
+
+
+	def update_TMP_PATH_FILE_LOCKED(self): 
+		BottomContent = self.lockedOutputBottom.toPlainText()
+		lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+
+		if len(lines[0])>10: # 10 is path lenght, arbitrary
+
+			self.lockedOutputBottom.setVisible(True)
+			self.CHK_COPY_CLIPBOARD.setVisible(True)
+
+			for line in lines:
+				if str(line) not in str(BottomContent):	
+
+					self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+					self.lockedOutputBottom.insertPlainText(str(line)+'\n')
+
+			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+			# REFRESH BOTTOM TO DO
 
 	#==========================================================================================================================================================================
 	#========= UI Buttons Functions
@@ -1121,58 +1184,63 @@ class __QT_KBZ__(QtGui.QDialog):
 		txtClipBoard = cb.text()
 		txtClipBoard = ''
 
-		BottomContent = self.logOutputBottom.toPlainText()	
+		# BottomContent = self.lockedOutputBottom.toPlainText()	
 
 		if self.CHK_COPY_CLIPBOARD.isChecked():
 			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
 			if len(lines[0])>10: # 10 is path lenght, arbitrary
 				for line in lines:
-					self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+					self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 					txtClipBoard = str(line) +'\n'+ str(txtClipBoard)
 
 				txtClipBoard = txtClipBoard[:-2]
 
 				cb.setText(txtClipBoard, mode=cb.Clipboard)
-				self.logOutputBottom.selectAll()
+				self.lockedOutputBottom.selectAll()
 
 		else:
 			cb.setText(txtClipBoard, mode=cb.Clipboard)
 			# unSelectAll
-			my_text_cursor = self.logOutputBottom.textCursor()
+			my_text_cursor = self.lockedOutputBottom.textCursor()
 			my_text_cursor.clearSelection()
-			self.logOutputBottom.setTextCursor(my_text_cursor)			
+			self.lockedOutputBottom.setTextCursor(my_text_cursor)			
 
 
 	def on_BT_LOCKEDFILE_Local_clicked(self,name):
 		'''   '''
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
 			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
-			self.logOutputBottom.setVisible(True)
-			self.logOutputBottom.setText('')
+			self.lockedOutputBottom.setVisible(True)
+			self.lockedOutputBottom.setText('')
 
 		if str(name)=='BT_SEE_LOCKEDFILE_Local':
 
-			self.logOutputBottom.setFixedHeight(200)
-			self.logOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			self.lockedOutputBottom.setFixedHeight(200)
+			self.lockedOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
-			BottomContent = self.logOutputBottom.toPlainText()
+			
 
-			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			# to mutu 
+			self.update_TMP_PATH_FILE_LOCKED()
 
-			if len(lines[0])>10: # 10 is path lenght, arbitrary
 
-				self.logOutputBottom.setVisible(True)
-				self.CHK_COPY_CLIPBOARD.setVisible(True)
+			# BottomContent = self.lockedOutputBottom.toPlainText()
+			# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
 
-				for line in lines:
+			# if len(lines[0])>10: # 10 is path lenght, arbitrary
 
-					if str(line) not in str(BottomContent):	
+			# 	self.lockedOutputBottom.setVisible(True)
+			# 	self.CHK_COPY_CLIPBOARD.setVisible(True)
 
-						self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-						self.logOutputBottom.insertPlainText(str(line)+'\n')
+			# 	for line in lines:
+			# 		# to mutu 
+			# 		if str(line) not in str(BottomContent):	
 
-				self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+			# 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			# 			self.lockedOutputBottom.insertPlainText(str(line)+'\n')
+
+			# 	self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
 
 	#======================================================================
