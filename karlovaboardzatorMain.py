@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 08-06-2016                                                                #
+# Date : 09-06-2016                                                                #
 # ##################################################################################
 
 
@@ -37,11 +37,10 @@ class Thread_get_fileList():
 		INCLUDE_EXT_LOCKED 		= args[4]
 		TMP_PATH_FILE_LOCKED 	= args[5]
 		CHK_SEARCH_ALL  		= args[6]
-		N_USERS					= args[7]
-		ALL_USERS_COUNT 		= args[8]
 
 		self.threads = []
-		t = WorkerThread_get_fileList(filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, N_USERS, ALL_USERS_COUNT, self)
+		# self.threads = [threading.Thread(target=f) for _ in range(8)]
+		t = WorkerThread_get_fileList(filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, self)
 		t.start()
 		self.threads.append(t)
 
@@ -56,7 +55,7 @@ class Thread_get_fileList():
 
 class WorkerThread_get_fileList(QtCore.QThread):
 
-	def __init__(self, filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, N_USERS, ALL_USERS_COUNT, receiver):
+	def __init__(self, filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, receiver):
 		QtCore.QThread.__init__(self)
 
 		self.filePath 				= filePath
@@ -65,25 +64,24 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
 		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
 		self.TMP_PATH_FILE_LOCKED	= TMP_PATH_FILE_LOCKED	
-		self.CHK_SEARCH_ALL  		= CHK_SEARCH_ALL
-		self.N_USERS 				= N_USERS
-		self.ALL_USERS_COUNT 		= ALL_USERS_COUNT
-
-		self.receiver 				= receiver
+		self.CHK_SEARCH_ALL  		= CHK_SEARCH_ALL			
+		self.receiver = receiver
 
 		self.stopped = 0
 
 
 	def run(self):
 		time.sleep(0.1) # to do in thread
-		result = self.get_fileList(self.filePath)
-		with open(self.TMP_PATH_FILE_LOCKED) as f:
-			content = f.readlines()
-			# print >> sys.__stderr__, '-------------------------------content' 
-			# print >> sys.__stderr__, content 
-			# print >> sys.__stderr__, type(content)
-			# print >> sys.__stderr__, '-------------------------------content' 
+		result = []
+		try:
+			result = self.get_fileList(self.filePath)
+		except:
+			pass
 		if len(result) > 0 :
+
+			with open(self.TMP_PATH_FILE_LOCKED) as f:
+				content = f.readlines()
+
 			for line in result:
 				a7 = str(line)+'\n'
 				if a7 not in content:
@@ -106,7 +104,7 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		'''   '''
 		startTime = datetime.now()
 
-		msg = '----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked Files in Progress'
+		msg = '----- Search[ ' + self.USER_TO_SEARCH + ' ] Locked Files in Progress'
 		print >> sys.__stderr__, msg
 		randwait = ['.','..','...'] # for deco
 
@@ -143,9 +141,6 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		msg = '--------------------------------- ' + source + ' [ DONE ] '
 		print >> sys.__stderr__, msg
 		msg = datetime.now() - startTime
-		print >> sys.__stderr__, msg
-
-		msg = str(self.N_USERS) + ' | ' + str(self.ALL_USERS_COUNT)
 		print >> sys.__stderr__, msg
 
 
@@ -210,8 +205,9 @@ class __QT_KBZ__(QtGui.QDialog):
 				if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
 					self.ALL_USERS.append(dirname)
 			break
-		self.ALL_USERS 			= sorted(self.ALL_USERS)
+		self.ALL_USERS = sorted(self.ALL_USERS)
 		self.ALL_USERS_COUNT 	= len(self.ALL_USERS)
+
 
 	#==========================================================================================================================================================================
 	#========= main vlayout
@@ -259,10 +255,9 @@ class __QT_KBZ__(QtGui.QDialog):
 	#==========================================================================================================================================================================
 	#========= check if some files exist and some check
 	#==========================================================================================================================================================================
-		try:
-			self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
-		except:
-			pass
+
+		self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
+
 	#==========================================================================================================================================================================
 	#========= AS RUN
 	#==========================================================================================================================================================================
@@ -658,19 +653,17 @@ class __QT_KBZ__(QtGui.QDialog):
 		fileName = model.fileName(indexItem)
 		filePath = model.filePath(indexItem)
 
-
 		if self.CHK_SEARCH_ALL.isChecked() == True:
 			startTime = datetime.now()
 			n_users = 0
+			startTime = datetime.now()
 			for USERtoSEARCH in self.ALL_USERS:
 				n_users = n_users + 1
-				# self.printSTD(n_users)
-				# self.printSTD(self.ALL_USERS_COUNT)
 				msg = str(n_users) + ' | ' + str(self.ALL_USERS_COUNT)
 				self.printSTD(msg)
 				try:
 					filePathUSERtoSEARCH = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
-					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH,n_users)
+					self.Thread_get_fileList_mutu(filePathUSERtoSEARCH,USERtoSEARCH)
 				except:
 					msg = '################' + filePathUSERtoSEARCH + '[ ERROR ] ######################'
 					self.printSTD(msg)
@@ -679,10 +672,16 @@ class __QT_KBZ__(QtGui.QDialog):
 			filePathUSERStoSEARCH = filePath.replace(self.CURRENT_USER,'USER_A->Z')
 
 			msg = datetime.now() - startTime
-			msg = '###### ARMAGEDON SEARCH [ '+filePathUSERStoSEARCH+' ] LOCKED FILES LAUNCHED in ' + str(msg) + ' ... Please Wait ######'
+			msg = ' ARMAGEDON SEARCH [ '+filePathUSERStoSEARCH+' ] LOCKED FILES LAUNCHED in ' + str(msg) + ' ... Please Wait !'
+
+			self.printSTD(' ')
+			self.printSTD('##############################################################################################################')
+			self.printSTD(' ')			
 			self.printSTD(msg)
-
-
+			self.printSTD(' ')	
+			self.printSTD('##############################################################################################################')
+			self.printSTD(' ')
+			
 		else:
 
 			self.logOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
@@ -694,23 +693,20 @@ class __QT_KBZ__(QtGui.QDialog):
 				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
 
 			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
-			try:
-		 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)[0]
-				if result > 0 : # todo to mutu
-					self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
-					# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
-					self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
-			except:
-				pass
+	 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)[0]
+			if result > 0 : # todo to mutu
+				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
+				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
+				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
 			self.Thread_get_fileList_mutu(filePath,USERtoSEARCH)
 
 
-	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH,n_users=1):
+	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH):
 		'''   '''
 		if os.path.exists(filePath):
 			self.printSTD(filePath)
-			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL,n_users, self.ALL_USERS_COUNT)
+			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL)
 
 
 	def model_changeColor(self, model):
@@ -1152,7 +1148,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
 			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
 			self.logOutputBottom.setVisible(True)
-			self.logOutputBottom.setText('\n')
+			self.logOutputBottom.setText('')
 
 		if str(name)=='BT_SEE_LOCKEDFILE_Local':
 
@@ -1428,10 +1424,15 @@ def start(parent, data):
 	# h = sG.height
 
 
-	# main.resize(550, 750)
+	main.resize(800, 800)
 
 	# main.move(300, 300)
-	# main.setGeometry(300, 300, 150, 200)
+
+	# oX 	= 300
+	# oY 	= 300
+	# x 	= 150
+	# y 	= 200
+	# main.setGeometry(oX, oY, x, y)
 
 	main.setModal(True)
 	main.activateWindow()
