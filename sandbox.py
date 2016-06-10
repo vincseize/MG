@@ -2,10 +2,10 @@
 '''     List of Samples Functions to learn  InK UI-API  - Verbose Documentation  '''
 
 # ##################################################################################
-# MG ILLUMINATION                                                                    #
+# MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 19-04-2016                                                         #
+# Last Update : 10-06-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -281,7 +281,7 @@ K02_UI_CONSTRUCT.__author__           = 'cpottier'
 K02_UI_CONSTRUCT.__textColor__        = '#7cfc00'
 K02_UI_CONSTRUCT.__paramsType__       = {
    'Action1'       :  ( 'enum', 'Var_Name',['Item1', 'Item2', 'Item3'] ),
-   'Action2'        :  ( 'int', '0'  ),
+   'Action2'        :  ( 'str', 'Give strawberries tagada for ever to Vador'  ),
    'Action3'        :  ( 'int' , '0' ),
    'Action4'        :  ( 'bool', 'True' , ['True4', 'False4']  ),
    'Action5'        :  ( 'bool', 'False' , ['True5', 'False5']  ),   
@@ -326,8 +326,16 @@ K03_UI_CONSTRUCT_QT.__customTool__       = 'sandboxqt'
 
 
 def AA00_MYTOOLZ():
-    ''' TOOLz 4 Von KARLOVA '''
-    print 'T4'
+    ''' R&D TOOLz von Von KARLOVA 
+
+        - sync scripts between prod
+        - check locked or unpublished A7
+
+        ( locked A7 could be checked, please accept waiting a little bit ... thx)
+
+        - last update : 10-06-2016 
+    '''
+    # print 'T4'
     import sys, ink.proto
     path_modules = '/u/'+ink.io.ConnectUserInfo()[2]+'/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
     sys.path.append(path_modules)
@@ -2312,3 +2320,553 @@ AK04_PATCHZATOR.__paramsType__        = {
   # listTypes = graphs.__GetArgList(List_Types)
   # print listTypes
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################################################################################################
+#############
+############# TOOLS4CHARS
+#############----------------> 
+############# CHARS_Modeling
+############# CHARS_Shading
+#############
+########################################################################################################################################
+
+def AK05_CHARZATOR(Chars ='LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC',Costume = 'Casual'):
+
+    '''
+
+    Creer les a7 de modeling de perso
+    Indiquer le nom de la famille et celui du perso ainsi que le costume si besoin
+    Ou selectionner le Model-ok (sans variation) pour une mise a jour du graphe
+    Ex : LIB/CHARS/MAIN/Margo
+
+    '''
+
+    protoGraphTmp = ink.proto.Graph('Tmp')
+    selection     = protoGraphTmp.GetSelection( nomen.Filter().SetTypes(['Model']).SetStage('Ok') )
+
+    if selection:
+        nmChars    = selection[0].GetNomen()
+    else:
+        nmChars    = graphs.__GetArgNomen( Chars, types=['Model'], stage='Ok', onlyExist=False )
+        
+    if not nmChars:
+        raise Exception( 'Enter valid Chars parameter or select Model-Ok.a7' )
+
+
+    if Chars is 'LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC':
+        raise Exception( 'Enter valid Chars parameter' )
+
+    libName      = nmChars.GetLib()
+    name         = nmChars.GetName()
+    families     = nmChars.GetFamilies()
+
+    mainFamily   = families[0]
+    subFamily    = families[1]
+    lineUpFamily = subFamily.capitalize()
+
+    writeGraph = True
+
+    print ''
+    print '################################################'
+    print '### Graphe de modeling de perso'
+    print '################################################'
+    print '### Lib          :',libName
+    print '### Famille    :',  '/'.join(families)
+    print '### Nom        :',name
+    print '### Costume :',Costume
+    print '################################################'
+    print ''
+
+    #==========================================================================
+    # Logs and debug Params
+    #==========================================================================
+
+    publicGraph= True
+    logPath    = None
+    printOnly  = False
+    verbose    = 0
+
+    if False and os.environ.get('USER') in [ 'ick', 'alec' ]:
+        print "--------------TEST DEBUG--------------------"
+        publicGraph = True
+        logPath     = '/tmp/pipe.Model_Char.log'
+        printOnly   = False
+        verbose     = 0
+
+    #==========================================================================
+    #  Graphe de Reference et graphe a ecrire
+    #==========================================================================
+
+    grRef       = 'LIBREF/CHARS_MODELING'
+    grDest      = 'MODELING/CHARS' + '/'+subFamily+ '/' +name
+
+    #=================================================================================
+    #  Filtre et regle de clone pour les a7 de LIBREF avec name XNAMEX et XCOSTUMEX
+    #=================================================================================
+
+    mainFilter    = nomen.Filter().SetLib('LIBREF')
+    mainModifier  = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name ).SetVar(Costume)
+    mainRules     = {
+                      'niModifier' : mainModifier,
+                    }
+
+    #==========================================================================
+    #  Filtre et regle de clone pour l a7 de lineup
+    #==========================================================================
+
+    lineUpFilter    = nomen.Filter().SetLib('LIB').SetFamilies( ['CHARS'] ).SetName( 'SHARED' ).SetTypes(['Model', 'Lineup'])
+    lineUpModifier  = nomen.Filter().SetTypes(['Model', 'Lineup', lineUpFamily])
+    lineUpRules     = {
+                        'niModifier' : lineUpModifier,
+                      }
+
+    #===============================================
+
+    showFilter  = nomen.Filter().SetLib( 'LIBREF' )
+    showMask    = nomen.FILTER_WITHOUT
+    clearBefore = True 
+
+    showRules   = ( showFilter, showMask, clearBefore )
+
+    #=============================================== > VOIR ALEC POUR CETTE PARTIE DU CODE
+
+    def PostApply( graph ):
+
+        def SortAssetPath( a, b ):
+            if a.GetNomen().GetVar() == 'Casual':
+                return cmp( 0, 1 )
+            if b.GetNomen().GetVar() == 'Casual':
+                return cmp( 1, 0 )
+            return cmp( a.GetPath(), b.GetPath() )
+
+        # get all -Var-Model-Ok and -Var-Model_Turn assets created same Var types
+        modelOkList     = graph.Find( nomen.Filter().SetVar('\w.*').SetTypes(['Model']).SetStage('Ok') )
+        modelTurnList   = graph.Find( nomen.Filter().SetVar('\w.*').SetTypes(['Model', 'Turn']).SetStage('') )
+
+        if not modelOkList or not modelTurnList:
+            return
+        modelOk         = modelOkList[0]
+        modelTurn       = modelTurnList[0]
+        
+        modelOkFilter   = modelOk.GetNomen().Copy().SetVar('\w.*')
+        modelTurnFilter = modelTurn.GetNomen().Copy().SetVar('\w.*')
+        modelOkDir      = os.path.dirname( modelOk.GetPath() )
+        modelTurnDir    = os.path.dirname( modelTurn.GetPath() )
+        
+        # recup de tous les assets tries par nom, mais les Casual en 1er
+        modelOkList   = ink.query.Search( dirPath=modelOkDir, niFilter=modelOkFilter, niFilterOpt=ink.proto.FILTER_ONLY, sortCmp=SortAssetPath, rootType=ink.query.SEARCH_BOTH )
+        modelTurnList = ink.query.Search( dirPath=modelTurnDir, niFilter=modelTurnFilter, niFilterOpt=ink.proto.FILTER_ONLY, sortCmp=SortAssetPath, rootType=ink.query.SEARCH_BOTH )
+        
+        # Ajout dans le graph des assets trouves
+        modelOkList   = graph.AddAssets( modelOkList )
+        modelTurnList = graph.AddAssets( modelTurnList )
+        
+        # get initials datas (after apply func)
+        layout        = graph.GetLayout()
+        initPoint     = layout.GetPoint( [ modelOk, modelTurn ] )
+
+        # update layout with new assets
+        for idx, modelGroup in enumerate( zip( modelOkList, modelTurnList ) ):
+            layout.Horizontal( modelGroup, 2 )
+            layout.Move( modelGroup, ( 0, -idx ), magnetPoint=initPoint )
+
+    ######################################################################################################################################
+    #------------------------------------------------------------------------------------------------------------------------------------
+    #------ Selection du LINEUP de famille
+    #------ S'il n existe pas on le cree
+    #------ Dans le cas d'un costume different de casual cette connexion n'est pas necessaire car elle est faite a partir du Model-Ok 
+    #------------------------------------------------------------------------------------------------------------------------------------
+    ######################################################################################################################################
+
+    if Costume == 'Casual':
+
+        #==========================================================================
+        #  Test pour savoir si l'A7 de Lineup existe et si il  est locke ou grabbe  
+        #==========================================================================
+
+        LineUpNomen  = nomen.Nomen.NewLib( lib=libName, name='SHARED', family=['CHARS'], var='', types=[ 'Model', 'Lineup', lineUpFamily ], stage='' )
+
+        if ink.proto.Exist(LineUpNomen):
+            protoGraph   = ink.proto.Graph('ShowLineup')
+
+            LineUpNomenProto  = protoGraph.Add( LineUpNomen )
+
+            IsLock            = ink.query.Asset(LineUpNomen).GetLockInfos()[0]
+            HaveBeenPublished = ink.query.Asset(LineUpNomen).GetScmInfos()[0]
+
+            if not IsLock and HaveBeenPublished :
+                protoGraph.SetSelection(protoGraph.List() , clearBeforeOp=ink.proto.SEL_CLEAR)
+                protoGraph.Apply()
+                protoGraph.SelectAll()
+
+                print '############################################################################'
+                print '## GRABBER OU LOCKER l A7 Hairs-Ok ( a7 selectionne) et recommencer la creation!!!!!!!!!!!'
+                print '############################################################################'
+                raise Exception( 'GRABBER OU LOCKER l A7 Hairs-Ok ( a7 selectionne) et recommencer la creation!!!!!!!!!!!' )
+
+        #==========================================================================================================
+        #  Filtre de selection apres apply general : selectFilter=None, selectMode=None pour ne rien selectionner
+        #  En l'occurance ce filtre ne selectionne que les a7 clones a partir des a7 de ref ayant  XNAMEX 
+        #==========================================================================================================
+
+        selectFilter = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name )
+        selectMask   = nomen.FILTER_ONLY
+        selectMode   = ink.proto.SEL_ADD
+        selectBefore = ink.proto.SEL_CLEAR
+
+    ####################################################################################
+    #-----------------------------------------------------------------------------------
+    #------ Creation des a7  dans le cas d'un costume autre que casual
+    #------ On cree une branche supplementaire  a partir des a7 casual
+    #-----------------------------------------------------------------------------------
+    ####################################################################################
+
+    if Costume != 'Casual':
+
+        #==============================================================================================================
+        #  Filtre de selection apres apply general : selectFilter=None, selectMode=None pour ne rien selectionner
+        #  En l'occurance ce filtre ne selectionne que les a7 clones a partir des a7 de ref ayant  XNAMEX et XOSCTUMEX
+        #==============================================================================================================
+
+        selectFilter = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name ).SetVar( Costume )
+        selectMask   = nomen.FILTER_ONLY
+        selectMode   = ink.proto.SEL_ADD
+        selectBefore = ink.proto.SEL_CLEAR
+
+    #===============================================================
+    #  Fusion de tous les filtres et de toutes les regles de clone 
+    #===============================================================
+
+    cloneRules   = ( 
+                     ( lineUpFilter , lineUpRules ),
+                     ( mainFilter   , mainRules   ),
+                   )
+    
+    #====================================================================================
+    #  Execution de la macro de clone 
+    #====================================================================================
+
+    return graphs._ExtraClone( grRef, grDest, cloneRules, PostApply, showFilter, showMask, clearBefore, selectFilter, selectMask, selectMode, selectBefore, publicGraph, writeGraph, printOnly, logPath, verbose )
+
+
+# #=========================== UI
+
+AK05_CHARZATOR.__category__          = 'A - PIPE-IN TOOLZ'
+AK05_CHARZATOR.__author__            = 'cpottier'
+AK05_CHARZATOR.__textColor__         = '#6699ff'
+AK05_CHARZATOR.__paramsType__        = {
+'Chars'        :  ( 'str' , 'LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC'),
+'Costume'        :  ( 'str' , 'Casual'),
+'SaveGraph'                :  ( 'bool', 'True' , ['True', 'False']  )
+}
+
+
+
+# def CHARS_Shading(Chars ='LIB/CHARS/MAIN/SECONDARY/TERTIARY/GENERIC', Costume='Casual',HairsDif=0, SaveGraph=1 ):
+
+#     '''
+#     Construit un graphe de Shading de perso
+
+#     Indiquer le nom de la famille et celui du perso
+
+#     Ou selectionner l'a7 de Shading
+
+#     HairsDif = 0 Utilise les hairs du casual pour le costume demande
+#     HairsDif = 1 Creer les hairs particliers pour le costume autre que Casual
+
+#     SaveGraph = 1 ecrit le graphe s'il n'existe pas
+#     SaveGraph = 2 ecrit le graphe MEME s'il existe 
+#     '''
+    
+   
+#     Version='V01'
+
+#     protoGraphTmp = ink.proto.Graph('Tmp')
+#     selection     = protoGraphTmp.GetSelection( nomen.Filter().SetTypes(['Shading']).SetStage('') )
+
+#     if selection:
+#         nmChars    = selection[0].GetNomen()
+#         Costume    = nmChars.GetVar()
+#     else:
+#         nmChars    = graphs.__GetArgNomen( Chars, types=['Model'], stage='Ok', onlyExist=False )
+        
+#     if not nmChars:
+#         raise Exception( 'Enter valid Chars parameter or select Shading.a7' )
+
+#     libName      = nmChars.GetLib()
+#     name         = nmChars.GetName()
+#     families     = nmChars.GetFamilies()
+
+#     mainFamily   = families[0]
+#     subFamily    = families[1]
+#     lineUpFamily = subFamily.capitalize()
+#     listeRnd     = Costume.upper()
+
+#     writeGraph = SaveGraph
+
+#     print ''
+#     print '################################################'
+#     print '### Graphe de shading de perso'
+#     print '################################################'
+#     print '### Lib             :',libName
+#     print '### Famille       :',  '/'.join(families)
+#     print '### Nom          :',name
+#     print '### Costume    :',Costume
+
+
+
+
+#     #==========================================================================
+#     # Logs and debug Params
+#     #==========================================================================
+
+#     PostApply   = None
+#     showFilter  = None
+#     showMask    = None
+#     clearBefore = True
+
+#     publicGraph= True
+#     logPath    = None
+#     printOnly  = False
+#     verbose    = 0
+
+
+#     #==========================================================================
+#     # MatchSet
+#     #==========================================================================
+
+#     matchSetMain   = [
+
+#                     #--- Pour corriger le set d'extraction de l'a7 Hairs_Model_Ok et le set d'export de l'a7 "Costume"-Hairs_Export
+#                       ('xcostumex',Costume.lower()),
+
+#                     #--- Pour corriger la PostCmd du Shading_ok qui renomme les objectlists
+#                       ('COSTUME',Costume.upper()),
+
+#                     #--- Pour corriger la PostCmd du Shading_ok qui renomme les objectlists
+#                     #--- Pour corriger le nom du replacelist dans le Shading-Group
+#                       ("XNAMEUPX",name.upper()),
+
+#                     #--- Pour corriger le nom des objectlists dans le Shading-Group.mgs
+
+#                       ('XOBJECTLISTX',name.upper()),
+
+#                     #--- Pour corriger le nom des searchlist dans le Shading-Group
+#                       ('OBJECTLIST','XOBJECTLISTX'),
+
+#                     #--- Pour corriger la version ( si on passe en V02 par ex ) dans les tag de l'Actor-Ok
+#                       ('_V01_','_'+Version.upper()+'_')
+
+#                      ]
+
+#     #==========================================================================
+#     #  Graphes de References et graphe a ecrire
+#     #==========================================================================
+
+#     if (Costume =='Casual') or ((Costume!='Casual') and (HairsDif ==1)):
+#         print "### Hairs                  = ",Costume
+#         if subFamily == "MAIN" :
+#             grRef       = 'LIBREF/CHARS_SHADING'
+#             print "### graphe de Ref    = 'LIBREF/CHARS_SHADING'"
+#         else :
+#             grRef       = 'LIBREF/CHARS_SHADING_23'
+#             print "### graphe de Ref    = 'LIBREF/CHARS_SHADING_23'"
+#     else :
+#         print "### Hairs                  = Casual"
+#         if subFamily == "MAIN" :
+#             grRef       = 'LIBREF/CHARS_SHADING_HAIRCOMMUN'
+#             print "### graphe de Ref    = 'LIBREF/CHARS_SHADING_HAIRCOMMUN'"
+#         else :
+#             grRef       = 'LIBREF/CHARS_SHADING_23_HAIRCOMMUN'
+#             print "### graphe de Ref    = 'LIBREF/CHARS_SHADING_23_HAIRCOMMUN'"
+
+#     grDest      = 'SHADING/CHARS' + '/'+subFamily+ '/' +name+ '-' +Costume
+
+#     print "################################################"
+#     print ""
+
+#     #======================================================================================
+#     #  Filtre et regle de clone pour les a7 de LIBREF avec name XNAMEX et XCOSTUMEX et VO1
+#     #======================================================================================
+
+#     mainFilter    = nomen.Filter().SetLib('LIBREF')
+#     mainModifier  = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name ).SetVar( Costume ).SetVersion( Version.upper() )
+#     mainRules     = {
+#                       'niModifier' : mainModifier,
+#                       'matchSet'   : matchSetMain,
+#                     }
+
+#     #===========================================================================================================================
+#     #  Test pour savoir a7 A7 Hairs-Ok est locke ou grabbe  car c'est lui qui rassemble tous les hairs des differents costumes
+#     #===========================================================================================================================
+
+#     protoGraphHairsOkSelect = ink.proto.Graph('protoGraphHairsOkSelect')
+
+#     HairsOk        = nmChars.SetVar('').SetTypes(['Hairs']).SetStage('Ok')
+
+#     if ink.proto.Exist(HairsOk):
+
+#         HairsOkProtoS  = protoGraphHairsOkSelect.Add( HairsOk)
+
+#         IsLock            = ink.query.Asset(HairsOk).GetLockInfos()[0]
+#         HaveBeenPublished = ink.query.Asset(HairsOk).GetScmInfos()[0]
+
+#         if not IsLock and HaveBeenPublished :
+#             protoGraphHairsOkSelect.SetSelection(protoGraphHairsOkSelect.List() , clearBeforeOp=ink.proto.SEL_CLEAR)
+
+#             print '############################################################################'
+#             print '## GRABBER OU LOCKER l A7 Hairs-Ok ( a7 selectionne) et recommencer la creation!!!!!!!!!!!'
+#             print '############################################################################'
+#             raise Exception( 'GRABBER OU LOCKER l A7 Hairs-Ok ( a7 selectionne) et recommencer la creation!!!!!!!!!!!' )
+
+#     ######################################################################################################################################
+#     #------------------------------------------------------------------------------------------------------------------------------------
+#     #------ Selection du LINEUP de famille
+#     #------ S'il nexiste pas on le cree
+#     #------ Dans le cas d'un costume different de casual cette connexion n'est pas necessaire car elle est faite a partir du Model-Ok 
+#     #------------------------------------------------------------------------------------------------------------------------------------
+#     ######################################################################################################################################
+
+#     if (Costume =='Casual') or ((Costume!='Casual') and (HairsDif ==1)):
+
+
+#         #===============================================================
+#         #  Fusion de tous les filtres et de toutes les regles de clone 
+#         #===============================================================
+
+#         cloneRules   = ( 
+#                         ( mainFilter         , mainRules   ),
+#                     )
+
+#     else:
+#         #===============================================================================================================
+#         #  Filtre et regle de clone pour "recuperer " l a7 Casual-Hairs_Shading-OK dans le cas de hairs commun au casual
+#         #===============================================================================================================
+
+#         HairsShadingOkFilter    = nomen.Filter().SetLib('LIBREF').SetVar('XCOSTUMEX').SetTypes(['Hairs','Shading']).SetStage('Ok')
+#         HairsShadingOkModifier  = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name ).SetVar( 'Casual' )
+#         HairsShadingOkRules     = {
+#                          'niModifier' : HairsShadingOkModifier, 
+#                        }
+
+#         #===============================================================
+#         #  Fusion de tous les filtres et de toutes les regles de clone 
+#         #===============================================================
+
+#         cloneRules   = ( 
+#                         ( HairsShadingOkFilter , HairsShadingOkRules   ),
+#                         ( mainFilter           , mainRules   ),
+#                     )
+
+#     #==========================================================================================================
+#     #  Filtre de selection apres apply general : selectFilter=None, selectMode=None pour ne rien selectionner
+#     #==========================================================================================================
+
+#     selectFilter    = nomen.Filter().SetLib( libName ).SetFamilies( families ).SetName( name )
+#     selectMask      = nomen.FILTER_ONLY
+#     selectMode      = ink.proto.SEL_ADD
+#     selectBefore    = ink.proto.SEL_CLEAR
+    
+#     #====================================================================================
+#     #  Execution de la macro de clone : a la place de return : res = si on veux continuer
+#     #====================================================================================
+#     result = graphs._ExtraClone( grRef, grDest, cloneRules, PostApply, showFilter, showMask, clearBefore, selectFilter, selectMask, selectMode, selectBefore, publicGraph, writeGraph, printOnly, logPath, verbose )
+
+#     if result is None:
+#         result = ''
+
+#     if not subFamily == 'MAIN' or subFamily == 'SECONDARY':
+#         result += _CHARS_AddColorSwatch( Chars , Costume, NoCS='1',SaveGraph=1, ClearSelection=False )
+#         result += _CHARS_AddColorSwatch( Chars , Costume, NoCS='2',SaveGraph=1, ClearSelection=False )
+#         result += _CHARS_AddColorSwatch( Chars , Costume, NoCS='3',SaveGraph=1, ClearSelection=False )
+    
+#     return result
+    
+
+
+# # #=========================== UI
+
+# AK05_CHARZATOR.__category__          = 'A - PIPE-IN TOOLZ'
+# AK05_CHARZATOR.__author__            = 'cpottier'
+# AK05_CHARZATOR.__textColor__         = '#6699ff'
+# AK05_CHARZATOR.__paramsType__        = {
+# 'SaveGraph'                :  ( 'bool', 'True' , ['True', 'False']  )
+# }
