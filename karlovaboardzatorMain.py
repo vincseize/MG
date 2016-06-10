@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 09-06-2016                                                                #
+# Date : 10-06-2016                                                                #
 # ##################################################################################
 
 
@@ -89,9 +89,12 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		except:
 			pass
 		if len(result) > 0 :
-
-			with open(self.TMP_PATH_FILE_LOCKED) as f:
-				content = f.readlines()
+			try:
+				with open(self.TMP_PATH_FILE_LOCKED) as f:
+					content = f.readlines()
+			except:
+				content=['.']
+				pass
 
 			for line in result:
 				a7 = str(line)+'\n'
@@ -194,7 +197,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.START_DIR_LOCAL_LOCKED_A7 	= self.START_DIR_USERS+self.CURRENT_USER+'/Assets/'		
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
-		self.TMP_FILE_LOCKED 			= self.CURRENT_USER+'_A7LockedBy.tmp'
+		self.TMP_FILE_LOCKED 			= self.CURRENT_PROJECT+'_A7LockedBy.tmp'
 		self.TMP_PATH_FILE_LOCKED 		= self.CURRENT_SCRIPTS_PATH+'/'+self.TMP_FILE_LOCKED
 		self.DIR_BACKUP	 				= '_backup'		
 		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
@@ -712,7 +715,11 @@ class __QT_KBZ__(QtGui.QDialog):
 				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
 
 			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
-	 		result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)[0]
+			result = 0
+			try:
+	 			result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)[0]
+	 		except:
+	 			pass
 			if result > 0 : # todo to mutu
 				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
 				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
@@ -770,8 +777,8 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 	def readlines_files(self,_filepath):
-		result = 0
-		lines = []
+		result 	= 0
+		lines 	= []
 		try:
 			with open(_filepath) as f:
 				result = sum(1 for _ in f)
@@ -781,6 +788,8 @@ class __QT_KBZ__(QtGui.QDialog):
 				lines.append(line)
 				# self.printSTD(line)
 		except:
+			result = 0
+			lines = ['.']
 			pass
 		return result,lines
 
@@ -788,23 +797,33 @@ class __QT_KBZ__(QtGui.QDialog):
 	def check_A7_alwaysLocked(self, _filepathTmpFile):	
 		'''   '''	
 		if not os.path.exists(_filepathTmpFile):
-			open(_filepathTmpFile, 'a').close()
+			# open(_filepathTmpFile, 'a').close()
+			f = open(self.TMP_PATH_FILE_LOCKED,'a')
+			open(_filepathTmpFile, 'a')
+			f.write('.\n') # python will convert \n to os.linesep
+			f.close()
+
 		else:
 			USERtoSEARCH = self.listUsers.currentText()
 			matches = []
-			result = self.readlines_files(_filepathTmpFile)
-			nA7 = result[0]
-			lines = result[1]
-			if nA7 > 0 :
+			try:
+				result 	= self.readlines_files(_filepathTmpFile)
+				nA7 	= result[0]
+				lines 	= result[1]
+			except:
+				nA7 	= 0
+				lines 	= ['.']
 
+			if nA7 > 0 :
 				for line in lines:
 					filePath = str(line[:-1])
 					ext = None
+
 					try:
 						ext = filePath.split('.')[1]
-
 					except:
 						pass	
+
 					try:					
 						if ext.upper() in self.INCLUDE_EXT_LOCKED:
 							# we check chmod
@@ -820,9 +839,9 @@ class __QT_KBZ__(QtGui.QDialog):
 			if len(matches) > 0:
 				# we re write tmp file
 				self.on_BT_LOCKEDFILE_Local_clicked('BT_CLEAR_LOCKEDFILE_Local')		
-				time.sleep(1)			
+				time.sleep(0.8)			
 				for line in matches:
-					time.sleep(0.5)	
+					time.sleep(0.3)	
 					# self.printSTD(line)
 					a7 = str(line)+'\n'
 					f = open(self.TMP_PATH_FILE_LOCKED,'a')
@@ -855,8 +874,10 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def update_TMP_PATH_FILE_LOCKED(self): 
 		BottomContent = self.lockedOutputBottom.toPlainText()
-		lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-
+		try:
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+		except:
+			lines = ['.']
 		if len(lines[0])>10: # 10 is path lenght, arbitrary
 
 			self.lockedOutputBottom.setVisible(True)
@@ -1187,7 +1208,10 @@ class __QT_KBZ__(QtGui.QDialog):
 		# BottomContent = self.lockedOutputBottom.toPlainText()	
 
 		if self.CHK_COPY_CLIPBOARD.isChecked():
-			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			try:
+				lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			except:
+				lines = ['.']
 			if len(lines[0])>10: # 10 is path lenght, arbitrary
 				for line in lines:
 					self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
