@@ -37,7 +37,7 @@ class Thread_Instance():
 		for arg in args:
 			arguments.append(arg)
 
-		t = Thread_Worker(arguments, self)
+		t = Thread_Worker(arguments, self) # self very Important
 		t.start()
 		self.threads.append(t)
 
@@ -56,7 +56,33 @@ class Thread_Worker(QtCore.QThread):
 	def __init__(self, args, receiver):
 		QtCore.QThread.__init__(self)
 
-		self.filePath 					= args[0]
+		self.args 		= args
+		self.receiver 	= receiver # receiver ( self ) very Important
+		self.stopped = 0
+
+
+	def run(self):
+		time.sleep(0.1) # to do in thread
+		try:
+			# result = self.run_myFunction(self.filePath, self.n_user, self.n_users_real, self.n_users_tot)
+			result = self.run_myFunction(self.args)
+		except:
+			pass
+
+
+	def stop(self):
+		self.stopped = 1
+
+	#====== functions
+
+	# def run_myFunction(self,source, n_user, n_users_real, n_users_tot):
+	def run_myFunction(self,args):
+		'''  get fileList '''
+
+
+
+
+		self.source 					= args[0]
 		self.USER_TO_SEARCH 			= args[1]
 		self.CURRENT_PROJECT 			= args[2]
 		self.EXCLUDE_DIR_LOCKED 		= args[3]
@@ -67,26 +93,14 @@ class Thread_Worker(QtCore.QThread):
 		self.n_users_real				= args[8]
 		self.n_users_tot				= args[9]
 
-		self.receiver = receiver
-
-		self.stopped = 0
 
 
-	def run(self):
-		time.sleep(0.1) # to do in thread
-		try:
-			result = self.get_fileList(self.filePath, self.n_user, self.n_users_real, self.n_users_tot)
-		except:
-			pass
 
 
-	def stop(self):
-		self.stopped = 1
 
-	#====== functions
 
-	def get_fileList(self,source, n_user, n_users_real, n_users_tot):
-		'''   '''
+
+
 		startTimeAll = datetime.now()
 
 		msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked-UnPublished Files, Work in Progress! Please wait ...\n'
@@ -95,7 +109,7 @@ class Thread_Worker(QtCore.QThread):
 
 		matches = []
 
-		for root, dirnames, filenames in os.walk(source, topdown=False, onerror=None, followlinks=False):
+		for root, dirnames, filenames in os.walk(self.source, topdown=False, onerror=None, followlinks=False):
 			# if dirnames:
 			# 	msg = random.choice(randwait)
 			# 	print >> sys.__stderr__, msg
@@ -121,13 +135,7 @@ class Thread_Worker(QtCore.QThread):
 					except:
 						pass
 
-
-
 		matches = list(set(matches))
-
-
-		# return matches
-
 
 
 		if len(matches) > 0 :
@@ -140,36 +148,24 @@ class Thread_Worker(QtCore.QThread):
 
 			for line in result:
 				a7 = str(line)+'\n'
-				if a7 not in content:
-					# print >> sys.__stderr__, line
-					# print >> sys.__stderr__, '-------------------------------contentLine' 					
+				if a7 not in content:					
 					f = open(self.TMP_PATH_FILE_LOCKED,'a')
 					f.write(line+'\n') # python will convert \n to os.linesep
 					f.close()
 
 		#====== verbose mode
-
 		msg = ' '		
 		print >> sys.__stderr__, msg		
-		msg = '--------------------------------- ' + source + ' [ DONE ] \n'
+		msg = '--------------------------------- ' + self.source + ' [ DONE ] \n'
 		print >> sys.__stderr__, msg
-		msg = str(n_user) + ' | ' + str(n_users_tot) + '\n'
+		msg = str(self.n_user) + ' | ' + str(self.n_users_tot) + '\n'
 		print >> sys.__stderr__, msg
 		totTime = datetime.now() - startTimeAll
 		print >> sys.__stderr__, totTime
 
-
-		# msg = str(n_user) + ' | ' + str(n_users_real)
-		# print >> sys.__stderr__, msg
-
-		# if len(n_users_real) == 0:
-		if str(n_user) == str(n_users_tot):
+		if str(self.n_user) == str(self.n_users_tot):
 			msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
 			print >> sys.__stderr__, msg
-
-
-
-
 
 
 	def get_fileInfo(self,source):
