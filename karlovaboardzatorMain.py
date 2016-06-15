@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Last Update : 14-06-2016                                                         #
+# Last Update : 15-06-2016                                                         #
 # ##################################################################################
 
 
@@ -24,57 +24,48 @@ import datetime
 from datetime import datetime
 
 
-#====================================================================== Thread classes
+#====================================================================== Thread Classes
 
 #====== Thread Instance ( container )
 
-class Thread_get_fileList():
-	def __init__(self, *args):
-			
-		filePath 				= args[0]
-		USER_TO_SEARCH 			= args[1]
-		CURRENT_PROJECT 		= args[2]
-		EXCLUDE_DIR_LOCKED 		= args[3]
-		INCLUDE_EXT_LOCKED 		= args[4]
-		TMP_PATH_FILE_LOCKED 	= args[5]
-		CHK_SEARCH_ALL  		= args[6]
-		n_user 					= args[7]
-		n_users_real			= args[8]
+class Thread_Instance():
 
-		self.threads = []
-		# self.threads = [threading.Thread(target=f) for _ in range(8)]
-		t = WorkerThread_get_fileList(filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, n_user, n_users_real, self)
+	def __init__(self, *args):	
+
+		self.threads 	= []
+		arguments 		= []
+		for arg in args:
+			arguments.append(arg)
+
+		t = Thread_Worker(arguments, self)
 		t.start()
 		self.threads.append(t)
 
 	def __del__(self):
+
 		for t in self.threads:
 			running = t.running()
 			t.stop()
 			if not t.finished():
 				t.wait()
-			# else:
-			# 	print >> sys.__stderr__, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF XXXXXXXXXXXXXXXXXXXXXXXXXXXx'				
-
-
 
 #====== Thread Worker
 
-class WorkerThread_get_fileList(QtCore.QThread):
+class Thread_Worker(QtCore.QThread):
 
-	def __init__(self, filePath, USER_TO_SEARCH, CURRENT_PROJECT, EXCLUDE_DIR_LOCKED, INCLUDE_EXT_LOCKED, TMP_PATH_FILE_LOCKED, CHK_SEARCH_ALL, n_user, n_users_real, receiver):
+	def __init__(self, args, receiver):
 		QtCore.QThread.__init__(self)
 
-		self.filePath 				= filePath
-		self.USER_TO_SEARCH 		= USER_TO_SEARCH
-		self.CURRENT_PROJECT 		= CURRENT_PROJECT
-		self.EXCLUDE_DIR_LOCKED 	= EXCLUDE_DIR_LOCKED
-		self.INCLUDE_EXT_LOCKED 	= INCLUDE_EXT_LOCKED
-		self.TMP_PATH_FILE_LOCKED	= TMP_PATH_FILE_LOCKED	
-		self.CHK_SEARCH_ALL  		= CHK_SEARCH_ALL
-
-		self.n_user 				= n_user
-		self.n_users_real			= n_users_real			
+		self.filePath 					= args[0]
+		self.USER_TO_SEARCH 			= args[1]
+		self.CURRENT_PROJECT 			= args[2]
+		self.EXCLUDE_DIR_LOCKED 		= args[3]
+		self.INCLUDE_EXT_LOCKED 		= args[4]
+		self.TMP_PATH_FILE_LOCKED 		= args[5]
+		self.CHK_SEARCH_ALL  			= args[6]
+		self.n_user 					= args[7]
+		self.n_users_real				= args[8]
+		self.n_users_tot				= args[9]
 
 		self.receiver = receiver
 
@@ -83,38 +74,22 @@ class WorkerThread_get_fileList(QtCore.QThread):
 
 	def run(self):
 		time.sleep(0.1) # to do in thread
-		result = []
 		try:
-			result = self.get_fileList(self.filePath, self.n_user, self.n_users_real)
+			result = self.get_fileList(self.filePath, self.n_user, self.n_users_real, self.n_users_tot)
 		except:
 			pass
-		if len(result) > 0 :
-			try:
-				with open(self.TMP_PATH_FILE_LOCKED) as f:
-					content = f.readlines()
-			except:
-				content=['.']
-				pass
 
-			for line in result:
-				a7 = str(line)+'\n'
-				if a7 not in content:
-					# print >> sys.__stderr__, line
-					# print >> sys.__stderr__, '-------------------------------contentLine' 					
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
-					f.write(line+'\n') # python will convert \n to os.linesep
-					f.close()
 
 	def stop(self):
 		self.stopped = 1
 
 	#====== functions
 
-	def get_fileList(self,source, n_user, n_users_real):
+	def get_fileList(self,source, n_user, n_users_real, n_users_tot):
 		'''   '''
-		startTime = datetime.now()
+		startTimeAll = datetime.now()
 
-		msg = '\n----- Search[ ' + self.USER_TO_SEARCH + ' ] Locked Files in Progress! Please wait ...\n'
+		msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked-UnPublished Files, Work in Progress! Please wait ...\n'
 		print >> sys.__stderr__, msg
 		randwait = ['.','..','...'] # for deco
 
@@ -146,11 +121,41 @@ class WorkerThread_get_fileList(QtCore.QThread):
 					except:
 						pass
 
+
+
+		matches = list(set(matches))
+
+
+		# return matches
+
+
+
+		if len(matches) > 0 :
+			try:
+				with open(self.TMP_PATH_FILE_LOCKED) as f:
+					content = f.readlines()
+			except:
+				content=['.']
+				pass
+
+			for line in result:
+				a7 = str(line)+'\n'
+				if a7 not in content:
+					# print >> sys.__stderr__, line
+					# print >> sys.__stderr__, '-------------------------------contentLine' 					
+					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					f.write(line+'\n') # python will convert \n to os.linesep
+					f.close()
+
+		#====== verbose mode
+
 		msg = ' '		
 		print >> sys.__stderr__, msg		
-		msg = '\n--------------------------------- ' + source + ' [ DONE ] \n'
+		msg = '--------------------------------- ' + source + ' [ DONE ] \n'
 		print >> sys.__stderr__, msg
-		totTime = datetime.now() - startTime
+		msg = str(n_user) + ' | ' + str(n_users_tot) + '\n'
+		print >> sys.__stderr__, msg
+		totTime = datetime.now() - startTimeAll
 		print >> sys.__stderr__, totTime
 
 
@@ -158,13 +163,13 @@ class WorkerThread_get_fileList(QtCore.QThread):
 		# print >> sys.__stderr__, msg
 
 		# if len(n_users_real) == 0:
-		# 	msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
-		# 	print >> sys.__stderr__, msg
+		if str(n_user) == str(n_users_tot):
+			msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
+			print >> sys.__stderr__, msg
 
-		matches = list(set(matches))
 
 
-		return matches
+
 
 
 	def get_fileInfo(self,source):
@@ -691,12 +696,10 @@ class __QT_KBZ__(QtGui.QDialog):
 				except:
 					pass
 
-			n_users_tot = n_user
+			n_users_tot = len(n_users_real)
 
 
 			# get locked list through thread
-
-
 			n_user = 0
 			for USERtoSEARCH in self.ALL_USERS:
 				try:
@@ -704,7 +707,7 @@ class __QT_KBZ__(QtGui.QDialog):
 					# self.printSTD(filePathFromList)					
 					if os.path.exists(filePathFromList):
 						n_user = n_user + 1
-						self.Thread_get_fileList_mutu(filePathFromList, USERtoSEARCH, n_user, n_users_real)
+						self.Thread_Instance_mutu(filePathFromList, USERtoSEARCH, n_user, n_users_real, n_users_tot)
 						n_users_real.remove(str(n_user))
 						msg = str(n_user) + ' | ' + str(n_users_tot) + ' - ' + str(USERtoSEARCH) + '\n'
 						self.printSTD(str(msg))
@@ -731,7 +734,8 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		else:
 			n_user = 1
-			n_users_real = n_user
+			n_users_real.append(str(n_user))
+			n_users_tot = len(n_users_real)
 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
 			getText = self.lockedOutputBottom.toPlainText()
@@ -751,14 +755,14 @@ class __QT_KBZ__(QtGui.QDialog):
 				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
-			self.Thread_get_fileList_mutu(filePath, USERtoSEARCH, n_user, n_users_real)
+			self.Thread_Instance_mutu(filePath, USERtoSEARCH, n_user, n_users_real, n_users_tot)
 
 
-	def Thread_get_fileList_mutu(self, filePath, USERtoSEARCH, n_user, n_users_real):
+	def Thread_Instance_mutu(self, filePath, USERtoSEARCH, n_user, n_users_real, n_users_tot):
 		'''   '''
 		if os.path.exists(filePath):
 			self.printSTD(filePath)
-			MY_Thread_get_fileList = Thread_get_fileList(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL, n_user, n_users_real)
+			MY_Thread_Instance = Thread_Instance(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL, n_user, n_users_real, n_users_tot)
 
 
 	def model_changeColor(self, model):
