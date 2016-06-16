@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 24-05-2016                                                         #
+# Last Update : 16-06-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -230,158 +230,158 @@ class __ORGANIZER__():
 #================================================================================================================================ AK01_GRAPH_Organizer
 
 
-def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',protoGraphM=None): 
-    ''' 
-    | /
-    | \ Tool - Last update 12-04-2016
-      ----------------------------------------------------------------------
-      - Organize Context Layout for layout, anim, previz, usecase 
-      -> get streams      
-      -> Add Nask/timing,casting,stereo | Stereo/stereo_session
-      ----------------------------------------------------------------------
+# def AK01_GRAPH_Organizer(SaveGraph='False',show_neighbours='True',organize_Upstreams='True',organize_Downstreams='True',x_ecart='2',protoGraphM=None): 
+#     ''' 
+#     | /
+#     | \ Tool - Last update 12-04-2016
+#       ----------------------------------------------------------------------
+#       - Organize Context Layout for layout, anim, previz, usecase 
+#       -> get streams      
+#       -> Add Nask/timing,casting,stereo | Stereo/stereo_session
+#       ----------------------------------------------------------------------
 
-      Select Anim/Layout.a7
-    '''
+#       Select Anim/Layout.a7
+#     '''
 
-    #==============================================================================================================
-    __ORGANIZER = __ORGANIZER__() # local class for organize .a7
-    #==============================================================================================================
+#     #==============================================================================================================
+#     __ORGANIZER = __ORGANIZER__() # local class for organize .a7
+#     #==============================================================================================================
 
-    #=========  
-    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
-    layout      = protoGraph.GetLayout()
-    selection   = protoGraph.GetSelection()
-    type_layout = None 
+#     #=========  
+#     protoGraph  = ink.proto.Graph( graphs.DEFAULT )
+#     layout      = protoGraph.GetLayout()
+#     selection   = protoGraph.GetSelection()
+#     type_layout = None 
 
-    if not selection:
-        raise Exception('Please select All a7 !')
+#     if not selection:
+#         raise Exception('Please select All a7 !')
 
-    #========= Retrieve Type Graph
-    for pa in selection: 
-        A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
-        nm_asset      = A7_infos['nm_asset']
-        a_types       = A7_infos['a_types']
-        GraphName     = str(nm_asset)
+#     #========= Retrieve Type Graph
+#     for pa in selection: 
+#         A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
+#         nm_asset      = A7_infos['nm_asset']
+#         a_types       = A7_infos['a_types']
+#         GraphName     = str(nm_asset)
 
-        #========= retrieve graphname
-        result = __PIPEIN_GRAPH.getGraph_infos(pa) 
-        # return  myNomen, myFilm, mySeq, myShot
-        # eg: GRI/S0025/M0010/Layout/GRI_S0025_M0010-Layout.a7 GRI S0025 M0010
-        myFilm    = result[1] # 
-        mySeq     = result[2]
-        myShot    = result[3]
-        mySHOT    = result[4]
+#         #========= retrieve graphname
+#         result = __PIPEIN_GRAPH.getGraph_infos(pa) 
+#         # return  myNomen, myFilm, mySeq, myShot
+#         # eg: GRI/S0025/M0010/Layout/GRI_S0025_M0010-Layout.a7 GRI S0025 M0010
+#         myFilm    = result[1] # 
+#         mySeq     = result[2]
+#         myShot    = result[3]
+#         mySHOT    = result[4]
 
-        myCat     = 'None'
-        check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
+#         myCat     = 'None'
+#         check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
 
-        #========= determine cases
-        try:
-            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
-            type_layout      = result[0]
-            check_clips      = result[1]
-            pathGraphSave    = result[2]
-            mySHOT           = result[3]
+#         #========= determine cases
+#         try:
+#             result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
+#             type_layout      = result[0]
+#             check_clips      = result[1]
+#             pathGraphSave    = result[2]
+#             mySHOT           = result[3]
 
-            # if mySHOT == 'None':
-            #     print 'mySHOT == None !'
-        except:
-            pass
+#             # if mySHOT == 'None':
+#             #     print 'mySHOT == None !'
+#         except:
+#             pass
 
-    #========= Retrieve a7 Downstreams and Upstreams
-        if str(show_neighbours)=='True':
+#     #========= Retrieve a7 Downstreams and Upstreams
+#         if str(show_neighbours)=='True':
 
-            layout.SetPos(pa, (0,0) )
+#             layout.SetPos(pa, (0,0) )
 
-            protoGraph.Show()
-            protoGraph.Apply()
-            protoGraph.SelectAll()
+#             protoGraph.Show()
+#             protoGraph.Apply()
+#             protoGraph.SelectAll()
 
-            layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
-            layA7Pos_X  = layA7Pos[0]
-            layA7Pos_Y  = layA7Pos[1]
+#             layA7Pos    = __PIPEIN_GRAPH.getPosition(pa,layout)
+#             layA7Pos_X  = layA7Pos[0]
+#             layA7Pos_Y  = layA7Pos[1]
 
-            # FiltersDownstreams = {'family': ['.*'] , 'type': ['.*']}  
-            if str(type_layout) == 'Usecase' or str(type_layout) == 'Anim':
-                FiltersDownstreams = {'family': ['.*'] , 'type': ['Anim','Clip']} 
-            if str(type_layout) == 'Previz' or str(type_layout) == 'Layout':
-                FiltersDownstreams = {'family': ['.*'] , 'type': ['Layout','Clip']} 
-            StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,pa,FiltersDownstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
-            FiltersUpstreams = {'family': ['.*'] , 'type': ['.*']}             
-            StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
+#             # FiltersDownstreams = {'family': ['.*'] , 'type': ['.*']}  
+#             if str(type_layout) == 'Usecase' or str(type_layout) == 'Anim':
+#                 FiltersDownstreams = {'family': ['.*'] , 'type': ['Anim','Clip']} 
+#             if str(type_layout) == 'Previz' or str(type_layout) == 'Layout':
+#                 FiltersDownstreams = {'family': ['.*'] , 'type': ['Layout','Clip']} 
+#             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetDownstreams',protoGraph,layout,pa,FiltersDownstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
+#             FiltersUpstreams = {'family': ['.*'] , 'type': ['.*']}             
+#             StreamProtoList = __PIPEIN_GRAPH.GetStreams('GetUpstreams',protoGraph,layout,pa,FiltersUpstreams) # typeStreams,protoGraph,layout,assetProto,Filters=None,A7pos=None,verbose=False
 
-    #========= select a7 Upstreams for positioning
-        check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
-        assetClips = []
-        UpStreamProtoList = protoGraph.GetUpstreams( pa )
+#     #========= select a7 Upstreams for positioning
+#         check_actor_ok = str(mySeq)+'-Actor-Ok.a7'
+#         assetClips = []
+#         UpStreamProtoList = protoGraph.GetUpstreams( pa )
 
-    #========= get infos
-        for us in UpStreamProtoList:
-            assetClips.append(us)
-            if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(mySeq).upper() in str(us).upper():
-                A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
-                a_catFamily      = A7_infos_us['a_catFamily']
-                a_name           = A7_infos_us['a_name']              
-    #========= retrieve information for path if USECASE or specials cases 
-            result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
-            if result != None:
-                pathGraphSave = result   
-    #========= Patch special case, no cat , to do better
-        if 'NONE' in str(pathGraphSave).upper() and str(type_layout) == 'Usecase':
-            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
-
-
-    #========= set position layout.a7 Upstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
-
-    #========= select a7 Downstreams  for positioning
-    if organize_Downstreams == 'True':
-        assetClips = []
-        assetClipsByName = []
-        niFilters = __PIPEIN_GRAPH._Filters(FiltersDownstreams)
-        DownStreamProtoList = protoGraph.GetDownstreams( pa, niFilter=niFilters )
-        for ds in DownStreamProtoList:
-            if str(check_clips) in str(ds):
-                assetClipsByName.append(ds)
-        # re order list , by path Name and not InK object logical
-        assetClips = sorted(assetClipsByName, reverse=True)
-    #========= set position clip.a7 Downstreams
-        __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
-
-    #======================================================================
-    #========= add, set position .a7 timing,casting,stereo, stereo_session
-    #======================================================================
-    __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
-
-    #======================================================================
-    # SAVE LAYOUT GRAPH
-    #======================================================================
-    if str(SaveGraph) == 'False' :
-        if 'NONE' in str(pathGraphSave).upper():
-            print '\n\nERROR, bad path : ' + pathGraphSave
-        else:
-            print '\nAK01_GRAPH_Organizer is Happy :)\n'
-            print 'You can Save ' , GraphName, 'in ', pathGraphSave
-    if str(SaveGraph) == 'True' :
-        if 'NONE' in str(pathGraphSave).upper():
-            print '\n\nERROR, bad path : ' + pathGraphSave
-        else:
-            protoGraph.Write(pathGraphSave, comment='', private=False)
-            if os.path.isfile(pathGraphSave):
-                print '\nAK01_GRAPH_Organizer is Happy :)\n'
-                print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
-            else :
-                print pathGraphSave , ' saving FAILED  !!!'
+#     #========= get infos
+#         for us in UpStreamProtoList:
+#             assetClips.append(us)
+#             if type_layout == 'Usecase' and 'ACTOR-OK' in str(us).upper() and str(mySeq).upper() in str(us).upper():
+#                 A7_infos_us      = __PIPEIN_GRAPH.getA7_infos(us)
+#                 a_catFamily      = A7_infos_us['a_catFamily']
+#                 a_name           = A7_infos_us['a_name']              
+#     #========= retrieve information for path if USECASE or specials cases 
+#             result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
+#             if result != None:
+#                 pathGraphSave = result   
+#     #========= Patch special case, no cat , to do better
+#         if 'NONE' in str(pathGraphSave).upper() and str(type_layout) == 'Usecase':
+#             pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
 
-#=========================== UI
+#     #========= set position layout.a7 Upstreams
+#         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
 
-AK01_GRAPH_Organizer.__category__         = 'A - PIPE-IN TOOLZ'
-AK01_GRAPH_Organizer.__author__           = 'cpottier'
-AK01_GRAPH_Organizer.__textColor__        = '#6699ff'
-AK01_GRAPH_Organizer.__paramsType__       = {
-'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
-}
+#     #========= select a7 Downstreams  for positioning
+#     if organize_Downstreams == 'True':
+#         assetClips = []
+#         assetClipsByName = []
+#         niFilters = __PIPEIN_GRAPH._Filters(FiltersDownstreams)
+#         DownStreamProtoList = protoGraph.GetDownstreams( pa, niFilter=niFilters )
+#         for ds in DownStreamProtoList:
+#             if str(check_clips) in str(ds):
+#                 assetClipsByName.append(ds)
+#         # re order list , by path Name and not InK object logical
+#         assetClips = sorted(assetClipsByName, reverse=True)
+#     #========= set position clip.a7 Downstreams
+#         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Clips',assetClips,layout,layA7Pos_Y)
+
+#     #======================================================================
+#     #========= add, set position .a7 timing,casting,stereo, stereo_session
+#     #======================================================================
+#     __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
+
+#     #======================================================================
+#     # SAVE LAYOUT GRAPH
+#     #======================================================================
+#     if str(SaveGraph) == 'False' :
+#         if 'NONE' in str(pathGraphSave).upper():
+#             print '\n\nERROR, bad path : ' + pathGraphSave
+#         else:
+#             print '\nAK01_GRAPH_Organizer is Happy :)\n'
+#             print 'You can Save ' , GraphName, 'in ', pathGraphSave
+#     if str(SaveGraph) == 'True' :
+#         if 'NONE' in str(pathGraphSave).upper():
+#             print '\n\nERROR, bad path : ' + pathGraphSave
+#         else:
+#             protoGraph.Write(pathGraphSave, comment='', private=False)
+#             if os.path.isfile(pathGraphSave):
+#                 print '\nAK01_GRAPH_Organizer is Happy :)\n'
+#                 print GraphName , '\nHave been saved ', 'in ', pathGraphSave, ' !!!'
+#             else :
+#                 print pathGraphSave , ' saving FAILED  !!!'
+
+
+# #=========================== UI
+
+# AK01_GRAPH_Organizer.__category__         = 'A - PIPE-IN TOOLZ'
+# AK01_GRAPH_Organizer.__author__           = 'cpottier'
+# AK01_GRAPH_Organizer.__textColor__        = '#6699ff'
+# AK01_GRAPH_Organizer.__paramsType__       = {
+# 'SaveGraph'                :  ( 'bool', 'False' , ['True', 'False']  )
+# }
 
 
 #============================================================================================================================ end AK01_GRAPH_Organizer
@@ -538,7 +538,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
         #========= add EDIT a7s 
         #======================================================================
         assetListEdit =  __ORGANIZER.LAYOUT_addA7s(__PIPEIN_GRAPH,myFilm,mySeq,mySHOT,myCat,protoGraph,layA7Pos_X,layA7Pos_Y,type_layout)
-        print myFilm, mySeq, mySeq, myShot, mySHOT
+
         #======================================================================
         #========= positionning EDIT a7s  for friendly user layout
         #======================================================================
