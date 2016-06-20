@@ -1270,39 +1270,41 @@ K82_DATABASE_sqlLite_update.__paramsType__        = {
 #===================================================================================================================== K84_MULTI_THREAD
 
 
-def K84_MULTI_THREAD(nthreads):
+def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='True'):
     ''' 
     Threading allow to Execute Simultaneous Functions :
-      - will print n JohnDoe Sentences
+      - Sample 1 will print n threads johnDoe SENTENCES
+      - Sample 2 will print n threads johnDoe SENTENCES, but with condition !
     '''
 
+    mot_min = 'minuscule'
+    mot_maj = 'MAJUSCULE'
 
-    # Création des threads
-    thread_01 = __AFFICHEUR1__("canard")
-    thread_02 = __AFFICHEUR1__("TORTUE")
+    #============================================== Sample 1
 
-    # Lancement des threads
+    # Thread Instantation
+    thread_01 = __AFFICHEUR1__(mot_min, nthreads)
+    thread_02 = __AFFICHEUR1__(mot_maj, nthreads)
+
+    # running threads
     thread_01.start()
     thread_02.start()
 
-    # Attend que les threads se terminent
+    # Waiting for threads finishing
     thread_01.join()
     thread_02.join()
 
+    #============================================== Sample 2
 
+    # Thread Instantation
+    thread_1 = __AFFICHEUR__(mot_min, nthreads)
+    thread_2 = __AFFICHEUR__(mot_maj, nthreads)
 
-
-
-
-    # Création des threads
-    thread_1 = __AFFICHEUR__("canard")
-    thread_2 = __AFFICHEUR__("TORTUE")
-
-    # Lancement des threads
+    # running threads
     thread_1.start()
     thread_2.start()
 
-    # Attend que les threads se terminent
+    # Waiting for threads finishing
     thread_1.join()
     thread_2.join()
 
@@ -1313,7 +1315,9 @@ def K84_MULTI_THREAD(nthreads):
 K84_MULTI_THREAD.__category__         = 'Z - GOODIES'
 K84_MULTI_THREAD.__author__           = 'cpottier'
 K84_MULTI_THREAD.__paramsType__       = {  
-    'nthreads'        :  ( 'enum', 'Var_Name',['3', '6', '9'] )
+    'Sample1'       :  ( 'bool', 'True' , ['True', 'False']  ),
+    'Sample2'       :  ( 'bool', 'False' , ['True', 'False']  ),  
+    'nthreads'      :  ( 'enum', '1',['1', '2', '5'] )
 }
 
 # Class apres function ?????????
@@ -1325,42 +1329,43 @@ from threading import Thread
 
 class __AFFICHEUR1__(Thread):
 
-    """Thread chargé simplement d'afficher une lettre dans la console."""
+    """Thread printing letters from a word"""
 
-    def __init__(self, mot):
+    def __init__(self, mot, nthreads):
         Thread.__init__(self)
         self.mot = mot
+        self.nthreads = int(nthreads)
 
     def run(self):
         """Code à exécuter pendant l'exécution du thread."""
         i = 0
-        while i < 5:
+        while i < self.nthreads:
             for lettre in self.mot:
                 sys.stdout.write(lettre)
                 sys.stdout.flush()
                 attente = 0.2
-                attente += random.randint(1, 60) / 100
+                # attente += random.randint(1, 60) / 100
                 time.sleep(attente)
             i += 1
 
 
-
 class __AFFICHEUR__(Thread):
 
-    """Thread chargé simplement d'afficher une lettre dans la console."""
+    """Thread printing letters from a word with condition"""
 
-    def __init__(self, lettre):
+    def __init__(self, mot, nthreads):
         Thread.__init__(self)
-        self.lettre = lettre
+        self.mot = mot
+        self.nthreads = int(nthreads)
 
     def run(self):
         """Code à exécuter pendant l'exécution du thread."""
         i = 0
-        while i < 20:
-            sys.stdout.write(self.lettre)
+        while i < self.nthreads:
+            sys.stdout.write(self.mot)
             sys.stdout.flush()
             attente = 0.2
-            attente += random.randint(1, 60) / 100
+            # attente += random.randint(1, 60) / 100
             time.sleep(attente)
             i += 1
 
