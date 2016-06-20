@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 17-06-2016                                                         #
+# Last Update : 20-06-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -1276,9 +1276,27 @@ def K84_MULTI_THREAD(nthreads):
       - will print n JohnDoe Sentences
     '''
 
+
     # Création des threads
-    thread_1 = __AFFICHEUR__("1")
-    thread_2 = __AFFICHEUR__("2")
+    thread_01 = __AFFICHEUR1__("canard")
+    thread_02 = __AFFICHEUR1__("TORTUE")
+
+    # Lancement des threads
+    thread_01.start()
+    thread_02.start()
+
+    # Attend que les threads se terminent
+    thread_01.join()
+    thread_02.join()
+
+
+
+
+
+
+    # Création des threads
+    thread_1 = __AFFICHEUR__("canard")
+    thread_2 = __AFFICHEUR__("TORTUE")
 
     # Lancement des threads
     thread_1.start()
@@ -1303,6 +1321,30 @@ K84_MULTI_THREAD.__paramsType__       = {
 # Threading modules
 import random
 from threading import Thread
+
+
+class __AFFICHEUR1__(Thread):
+
+    """Thread chargé simplement d'afficher une lettre dans la console."""
+
+    def __init__(self, mot):
+        Thread.__init__(self)
+        self.mot = mot
+
+    def run(self):
+        """Code à exécuter pendant l'exécution du thread."""
+        i = 0
+        while i < 5:
+            for lettre in self.mot:
+                sys.stdout.write(lettre)
+                sys.stdout.flush()
+                attente = 0.2
+                attente += random.randint(1, 60) / 100
+                time.sleep(attente)
+            i += 1
+
+
+
 class __AFFICHEUR__(Thread):
 
     """Thread chargé simplement d'afficher une lettre dans la console."""
@@ -1321,6 +1363,10 @@ class __AFFICHEUR__(Thread):
             attente += random.randint(1, 60) / 100
             time.sleep(attente)
             i += 1
+
+
+
+
 
 
 #==================================================================================================================== end  K84_MULTI_THREAD
