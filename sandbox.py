@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 20-06-2016                                                         #
+# Last Update : 21-06-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -1270,7 +1270,7 @@ K82_DATABASE_sqlLite_update.__paramsType__        = {
 #===================================================================================================================== K84_MULTI_THREAD
 
 
-def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='True'):
+def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='False'):
     ''' 
     Threading allow to Execute Simultaneous Functions :
       - Sample 1 will print n threads johnDoe SENTENCES
@@ -1280,11 +1280,12 @@ def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='True'):
     mot_min = 'minuscule'
     mot_maj = 'MAJUSCULE'
 
-    #============================================== Sample 1
+    samples_checked = [Sample1,Sample2]
 
+    #============================================== Sample 1
     # Thread Instantation
-    thread_01 = __AFFICHEUR1__(mot_min, nthreads)
-    thread_02 = __AFFICHEUR1__(mot_maj, nthreads)
+    thread_01 = __AFFICHEUR__(mot_min, nthreads, samples_checked)
+    thread_02 = __AFFICHEUR__(mot_maj, nthreads, samples_checked)
 
     # running threads
     thread_01.start()
@@ -1295,20 +1296,22 @@ def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='True'):
     thread_02.join()
 
     #============================================== Sample 2
-
     # Thread Instantation
-    thread_1 = __AFFICHEUR__(mot_min, nthreads)
-    thread_2 = __AFFICHEUR__(mot_maj, nthreads)
+    thread_1 = __AFFICHEUR__(mot_min, nthreads, samples_checked)
+    thread_2 = __AFFICHEUR__(mot_maj, nthreads, samples_checked)
+    thread_3 = __AFFICHEUR__(mot_maj, nthreads, samples_checked)
 
     # running threads
     thread_1.start()
     thread_2.start()
+    thread_3.start()
+    # thread_XXXXX.start()
 
     # Waiting for threads finishing
     thread_1.join()
     thread_2.join()
-
-
+    thread_3.join()
+    # thread_XXXXX.join()
 
 #=========================== UI
 # K84_MULTI_THREAD.__position__       = 4
@@ -1326,18 +1329,27 @@ K84_MULTI_THREAD.__paramsType__       = {
 import random
 from threading import Thread
 
-
-class __AFFICHEUR1__(Thread):
+class __AFFICHEUR__(Thread):
 
     """Thread printing letters from a word"""
 
-    def __init__(self, mot, nthreads):
+    def __init__(self, mot, nthreads, samples_checked):
         Thread.__init__(self)
         self.mot = mot
         self.nthreads = int(nthreads)
+        self.check1 = samples_checked[0]
+        self.check2 = samples_checked[1]
 
     def run(self):
-        """Code à exécuter pendant l'exécution du thread."""
+        """Running Code during thread execution"""
+
+        if self.check1 is 'True': 
+            self.Sample1()
+
+        if self.check2 is 'True': 
+            self.Sample2()
+
+    def Sample1(self):
         i = 0
         while i < self.nthreads:
             for lettre in self.mot:
@@ -1348,18 +1360,7 @@ class __AFFICHEUR1__(Thread):
                 time.sleep(attente)
             i += 1
 
-
-class __AFFICHEUR__(Thread):
-
-    """Thread printing letters from a word with condition"""
-
-    def __init__(self, mot, nthreads):
-        Thread.__init__(self)
-        self.mot = mot
-        self.nthreads = int(nthreads)
-
-    def run(self):
-        """Code à exécuter pendant l'exécution du thread."""
+    def Sample2(self):
         i = 0
         while i < self.nthreads:
             sys.stdout.write(self.mot)
@@ -1368,10 +1369,6 @@ class __AFFICHEUR__(Thread):
             # attente += random.randint(1, 60) / 100
             time.sleep(attente)
             i += 1
-
-
-
-
 
 
 #==================================================================================================================== end  K84_MULTI_THREAD
