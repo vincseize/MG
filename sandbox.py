@@ -1270,11 +1270,12 @@ K82_DATABASE_sqlLite_update.__paramsType__        = {
 #===================================================================================================================== K84_MULTI_THREAD
 
 
-def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='False'):
+def K84_MULTI_THREAD(n_Boucle_Functions,Sample1='True',Sample2='False'):
     ''' 
     Threading allow to Execute Simultaneous Functions :
-      - Sample 1 will print n threads johnDoe SENTENCES
-      - Sample 2 will print n threads johnDoe SENTENCES, but with condition !
+      - Sample 1 will print n time each letter from Words 'minuscule|MAJUSCULE' in parallele
+      - Sample 2 will print n time each letter from Words 'minuscule|MAJUSCULE' in parallele, 
+        but with condition to finish writing the complete Word !
     '''
 
     mot_min = 'minuscule'
@@ -1284,8 +1285,8 @@ def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='False'):
 
     #============================================== Sample 1
     # Thread Instantation
-    thread_01 = __AFFICHEUR__(mot_min, nthreads, samples_checked)
-    thread_02 = __AFFICHEUR__(mot_maj, nthreads, samples_checked)
+    thread_01 = __AFFICHEUR__(mot_min, n_Boucle_Functions, samples_checked)
+    thread_02 = __AFFICHEUR__(mot_maj, n_Boucle_Functions, samples_checked)
 
     # running threads
     thread_01.start()
@@ -1297,9 +1298,9 @@ def K84_MULTI_THREAD(nthreads,Sample1='True',Sample2='False'):
 
     #============================================== Sample 2
     # Thread Instantation
-    thread_1 = __AFFICHEUR__(mot_min, nthreads, samples_checked)
-    thread_2 = __AFFICHEUR__(mot_maj, nthreads, samples_checked)
-    thread_3 = __AFFICHEUR__(mot_maj, nthreads, samples_checked)
+    thread_1 = __AFFICHEUR__(mot_min, n_Boucle_Functions, samples_checked)
+    thread_2 = __AFFICHEUR__(mot_maj, n_Boucle_Functions, samples_checked)
+    thread_3 = __AFFICHEUR__(mot_maj, n_Boucle_Functions, samples_checked)
 
     # running threads
     thread_1.start()
@@ -1320,7 +1321,7 @@ K84_MULTI_THREAD.__author__           = 'cpottier'
 K84_MULTI_THREAD.__paramsType__       = {  
     'Sample1'       :  ( 'bool', 'True' , ['True', 'False']  ),
     'Sample2'       :  ( 'bool', 'False' , ['True', 'False']  ),  
-    'nthreads'      :  ( 'enum', '1',['1', '2', '5'] )
+    'n_Boucle_Functions'      :  ( 'enum', '1',['1', '2', '5'] )
 }
 
 # Class apres function ?????????
@@ -1333,10 +1334,10 @@ class __AFFICHEUR__(Thread):
 
     """Thread printing letters from a word"""
 
-    def __init__(self, mot, nthreads, samples_checked):
+    def __init__(self, mot, nBoucleFunctions, samples_checked):
         Thread.__init__(self)
         self.mot = mot
-        self.nthreads = int(nthreads)
+        self.nBoucleFunctions = int(nBoucleFunctions)
         self.check1 = samples_checked[0]
         self.check2 = samples_checked[1]
 
@@ -1351,7 +1352,7 @@ class __AFFICHEUR__(Thread):
 
     def Sample1(self):
         i = 0
-        while i < self.nthreads:
+        while i < self.nBoucleFunctions:
             for lettre in self.mot:
                 sys.stdout.write(lettre)
                 sys.stdout.flush()
@@ -1362,7 +1363,7 @@ class __AFFICHEUR__(Thread):
 
     def Sample2(self):
         i = 0
-        while i < self.nthreads:
+        while i < self.nBoucleFunctions:
             sys.stdout.write(self.mot)
             sys.stdout.flush()
             attente = 0.2
