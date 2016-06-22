@@ -3,11 +3,8 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Last Update : 15-06-2016                                                         #
+# Last Update : 22-06-2016                                                         #
 # ##################################################################################
-
-
-#=======================================================================================================================  CLASS __QT_KBZ__
 
 import os
 import sys
@@ -25,150 +22,16 @@ import datetime
 from datetime import datetime
 
 
-
-#====================================================================== Thread Classes
-
-#================================ Thread Instance ( container )
-
-class Thread_Instance():
-
-	def __init__(self, *args):  
-		self.threads  = []
-		arguments     = []
-		for arg in args:
-			arguments.append(arg)
-
-		t = Thread_Worker(arguments, self) # self very Important
-		t.start()
-		self.threads.append(t)
-
-	def __del__(self):
-		for t in self.threads:
-			running = t.running()
-			t.stop()
-			if not t.finished():
-				t.wait()
-
-#================================ Thread Worker
-
-class Thread_Worker(QtCore.QThread):
-
-	def __init__(self, args, receiver):
-		QtCore.QThread.__init__(self)
-
-		self.args     = args
-		self.receiver   = receiver # receiver ( self ) very Important
-		self.stopped = 0
-
-	def run(self):
-		time.sleep(0.1) # to do in thread
-		try:
-			result = self.run_myFunction(self.args)
-		except:
-			pass
-
-	def stop(self):
-		self.stopped = 1
-
-#================================ functions
-
-	def run_myFunction(self,args):
-		'''  get fileList '''
-
-		self.source           = args[0]
-		self.USER_TO_SEARCH       = args[1]
-		self.CURRENT_PROJECT      = args[2]
-		self.EXCLUDE_DIR_LOCKED     = args[3]
-		self.INCLUDE_EXT_LOCKED     = args[4]
-		self.TMP_PATH_FILE_LOCKED     = args[5]
-		self.CHK_SEARCH_ALL       = args[6]
-		self.n_user           = args[7]
-		self.n_users_real       = args[8]
-		self.n_users_tot        = args[9]
-
-		startTimeAll = datetime.now()
-
-		msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked-UnPublished Files, Work in Progress! Please wait ...\n'
-		print >> sys.__stderr__, msg
-		randwait = ['.','..','...'] # for deco
-
-		matches = []
-
-		for root, dirnames, filenames in os.walk(self.source, topdown=False, onerror=None, followlinks=False):
-			if not dirnames:      
-				for filename in filenames:
-					ext = None
-					try:
-						ext = os.path.splitext(filename)[1][1:]
-					except:
-						pass  
-					try:
-						if ext.upper() in self.INCLUDE_EXT_LOCKED:
-							filePath  = os.path.join(root, filename)
-							result    = self.get_fileInfo(filePath)
-							infoWrite   = result[0]
-							infoOwner   = result[1]
-							# matches.append(os.path.join(root, filename))
-							if infoWrite == True and infoOwner == self.USER_TO_SEARCH:
-								matches.append(os.path.join(root, filename))                
-								msg = '\n' + filePath + ' [ LOCKED ]\n'
-								print >> sys.__stderr__, msg
-					except:
-						pass
-
-		matches = list(set(matches))
-
-		if len(matches) > 0 :
-			try:
-				with open(self.TMP_PATH_FILE_LOCKED) as f:
-					content = f.readlines()
-			except:
-				content=['.']
-				pass
-
-			for line in result:
-				a7 = str(line)+'\n'
-				if a7 not in content:         
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
-					f.write('\n' +line+'\n') # python will convert \n to os.linesep
-					f.close()
-
-		#====== verbose mode
-		msg = ' '   
-		print >> sys.__stderr__, msg    
-		msg = '\n--------------------------------- ' + self.source + ' [ DONE ] \n'
-		print >> sys.__stderr__, msg
-		msg = str(self.n_user) + ' | ' + str(self.n_users_tot) + '\n'
-		print >> sys.__stderr__, msg
-		totTime = datetime.now() - startTimeAll
-		print >> sys.__stderr__, totTime
-
-		if str(self.n_user) == str(self.n_users_tot):
-			msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
-			print >> sys.__stderr__, msg
-
-
-	def get_fileInfo(self,source):
-		fileInfo   = QtCore.QFileInfo(source)
-		infoWrite = fileInfo.isWritable()
-		infoOwner = fileInfo.owner()
-		return infoWrite, infoOwner
-
-
-#================================ end functions
-
-
-
-#====================================================================== QT Class 
+#==================================================================================================================== CLASS __QT_KBZ__ 
 
 class __QT_KBZ__(QtGui.QDialog):
 	
 	def __init__(self, parent = None):
 		super(__QT_KBZ__, self).__init__(parent) 
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= Globals Variables
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 		self.SCREEN 					= QtGui.QDesktopWidget().screenGeometry()
 		self.CURRENT_USER 				= os.getenv('USER')
 		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0] }		
@@ -212,14 +75,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.ALL_USERS = sorted(self.ALL_USERS)
 		self.ALL_USERS_COUNT 	= len(self.ALL_USERS)
 
-
-		# #==================================================================================================================== Ink external useful CLASSES
-		# self.__THREAD_INSTANCE         = __InK__connect.__THREAD_INSTANCE__() # Thread Classes
-		# #================================================================================================================================================
-
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= main vlayout
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 
 		self.mainLayout = QtGui.QVBoxLayout()
 		self.mainLayout.setAlignment(QtCore.Qt.AlignTop)
@@ -260,15 +118,15 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.setPalette(self.palette_darkGrey)
 
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= check if some files exist and some check
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 
 		self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= AS RUN
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 		self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
 
@@ -287,9 +145,9 @@ class __QT_KBZ__(QtGui.QDialog):
 	# 	painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))  
 
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= UI Areas Constructions Functions
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 
 	def construct_TopAreaContent(self):
 		'''   '''
@@ -476,7 +334,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_SEE_LOCKEDFILE_Local.setFixedSize(w1,h1)
 
 
-		txtBt = 'Clear Locked Text Infos'
+		txtBt = 'Clear Locked A7 Infos'
 		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
 		self.nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
 		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(self.nameBtclear)
@@ -513,6 +371,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.lockedOutputBottomSb.setValue(self.lockedOutputBottomSb.maximum())
 		self.lockedOutputBottomCursor = self.lockedOutputBottom.textCursor()
 		self.lockedOutputBottom.setVisible(False)
+		# self.update_TMP_PATH_FILE_LOCKED()
+
 
 		#================================================== add Users Bottom Area content
 		self.BottomAreaContent.addWidget(self.listUsers)
@@ -616,9 +476,9 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= Functions
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	
 	def Expand_GetLocked(self, index):
 		'''   '''
@@ -649,8 +509,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			n_user = 0
 			for USERtoSEARCH in self.ALL_USERS:
 				try:
-					filePathFromList = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
-					# self.printSTD(filePathFromList)					
+					filePathFromList = filePath.replace(self.CURRENT_USER,USERtoSEARCH)					
 					if os.path.exists(filePathFromList):
 						n_user += 1
 						self.Thread_Instance_mutu(filePathFromList, USERtoSEARCH, n_user, n_users_real, n_users_tot)
@@ -696,7 +555,6 @@ class __QT_KBZ__(QtGui.QDialog):
 	 			pass
 			if result > 0 : # todo to mutu
 				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
-				# self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
 				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
 
 			self.Thread_Instance_mutu(filePath, USERtoSEARCH, n_user, n_users_real, n_users_tot)
@@ -752,11 +610,8 @@ class __QT_KBZ__(QtGui.QDialog):
 		try:
 			with open(_filepath) as f:
 				result = sum(1 for _ in f)
-				# content = f.readlines()
-				# self.printSTD(content)
 			for line in open(_filepath):
 				lines.append(line)
-				# self.printSTD(line)
 		except:
 			result = 0
 			lines = ['.']
@@ -812,34 +667,12 @@ class __QT_KBZ__(QtGui.QDialog):
 				# time.sleep(0.8)			
 				for line in matches:
 					time.sleep(0.1)	
-					# self.printSTD(line)
 					a7 = str(line)+'\n'
 					f = open(self.TMP_PATH_FILE_LOCKED,'a')
 					f.write(line+'\n') # python will convert \n to os.linesep
 					f.close()
-
 				# update textarea
-
 				self.update_TMP_PATH_FILE_LOCKED()
-
-				# # to do to mutu 
-				# BottomContent = self.lockedOutputBottom.toPlainText()
-				# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-
-				# if len(lines[0])>10: # 10 is path lenght, arbitrary
-
-				# 	self.lockedOutputBottom.setVisible(True)
-				# 	self.CHK_COPY_CLIPBOARD.setVisible(True)
-
-				# 	for line in lines:
-				# 		if str(line) not in str(BottomContent):	
-
-				# 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-				# 			self.lockedOutputBottom.insertPlainText(str(line)+'\n')
-
-				# 	self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
-				# 	# REFRESH BOTTOM TO DO
-
 
 
 	def update_TMP_PATH_FILE_LOCKED(self): 
@@ -860,11 +693,12 @@ class __QT_KBZ__(QtGui.QDialog):
 					self.lockedOutputBottom.insertPlainText(str(line)+'\n')
 
 			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+
 			# REFRESH BOTTOM TO DO
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= UI Buttons Functions
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 
 	def confirmBox(self,title,msg=''):    
 		reply = QtGui.QMessageBox.question(self, title, msg,
@@ -877,9 +711,10 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def back_to_HOME(self):
 		self.show_BT_HOME()
-		# cunstruct to do
 		self.delete_TopAndMiddle()
 		self.Construct_TopAndMiddle()
+		self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
+
 
 	def show_BT_HOME(self):
 		self.BT_BACK_HOME.setVisible(False)
@@ -1156,6 +991,7 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.mainLayout.addWidget(self.MiddleAreaContainer)
 		self.mainLayout.addWidget(self.BottomAreaContainer)
 
+
 	def Construct_MiddleScript(self):
 		#========= Scripts Area container
 		self.ScriptsAreaContainer = QtGui.QListView()
@@ -1299,9 +1135,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		print >> sys.__stderr__, msg
 
 
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 	#========= StyleSheets
-	#==========================================================================================================================================================================
+	#================================================================================================================================
 
 	def rvbToHex(self,r,g,b):
 		# r = array_rgb[1], g=array_rgb[2], b=array_rgb[3]
@@ -1471,6 +1307,149 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		except:
 			pass
+
+
+#================================================================================================================ end Class QT__QT_KBZ__ 
+
+
+
+#======================================================================================================================== Thread Classes
+
+#================================ Thread Instance ( container )
+
+class Thread_Instance():
+
+	def __init__(self, *args):  
+		self.threads  	= []
+		arguments     	= []
+		for arg in args:
+			arguments.append(arg)
+
+		t = Thread_Worker(arguments, self) # self very Important
+		t.start()
+		self.threads.append(t)
+
+	def __del__(self):
+		for t in self.threads:
+			running 	= t.running()
+			t.stop()
+			if not t.finished():
+				t.wait()
+
+#================================ Thread Worker
+
+class Thread_Worker(QtCore.QThread):
+
+	def __init__(self, args, receiver):
+		QtCore.QThread.__init__(self)
+
+		self.args     	= args
+		self.receiver   = receiver # receiver ( self ) very Important
+		self.Terminated 	= 0
+
+	def run(self):
+		time.sleep(0.1) # to do in thread
+		try:
+			result 		= self.run_myFunction(self.args)
+		except:
+			pass
+
+	def stop(self):
+		self.Terminated 	= 1
+
+#================================ functions
+
+	def run_myFunction(self,args):
+		'''  get fileList '''
+
+		self.source           		= args[0]
+		self.USER_TO_SEARCH       	= args[1]
+		self.CURRENT_PROJECT      	= args[2]
+		self.EXCLUDE_DIR_LOCKED     = args[3]
+		self.INCLUDE_EXT_LOCKED     = args[4]
+		self.TMP_PATH_FILE_LOCKED   = args[5]
+		self.CHK_SEARCH_ALL       	= args[6]
+		self.n_user           		= args[7]
+		self.n_users_real       	= args[8]
+		self.n_users_tot        	= args[9]
+
+		startTimeAll = datetime.now()
+
+		msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked-UnPublished Files, Work in Progress! Please wait ...\n'
+		print >> sys.__stderr__, msg
+		randwait = ['.','..','...'] # for deco
+
+		matches = []
+
+		for root, dirnames, filenames in os.walk(self.source, topdown=False, onerror=None, followlinks=False):
+			if not dirnames:      
+				for filename in filenames:
+					ext = None
+					try:
+						ext = os.path.splitext(filename)[1][1:]
+					except:
+						pass  
+					try:
+						if ext.upper() in self.INCLUDE_EXT_LOCKED:
+							filePath  = os.path.join(root, filename)
+							result    = self.get_fileInfo(filePath)
+							infoWrite   = result[0]
+							infoOwner   = result[1]
+							# matches.append(os.path.join(root, filename))
+							if infoWrite == True and infoOwner == self.USER_TO_SEARCH:
+								matches.append(os.path.join(root, filename))                
+								msg = '\n' + filePath + ' [ LOCKED ]\n'
+								print >> sys.__stderr__, msg
+					except:
+						pass
+
+		matches = list(set(matches))
+
+		if len(matches) > 0 :
+			try:
+				with open(self.TMP_PATH_FILE_LOCKED) as f:
+					content = f.readlines()
+			except:
+				content=['.']
+				pass
+
+			for line in result:
+				a7 = str(line)+'\n'
+				if a7 not in content:         
+					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					f.write('\n' +line+'\n') # python will convert \n to os.linesep
+					f.close()
+
+		#====== verbose mode
+		msg = ' '   
+		print >> sys.__stderr__, msg    
+		msg = '\n--------------------------------- ' + self.source + ' [ DONE ] \n'
+		print >> sys.__stderr__, msg
+		msg = str(self.n_user) + ' | ' + str(self.n_users_tot) + '\n'
+		print >> sys.__stderr__, msg
+		totTime = datetime.now() - startTimeAll
+		print >> sys.__stderr__, totTime
+
+		if str(self.n_user) == str(self.n_users_tot):
+			msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
+			print >> sys.__stderr__, msg
+
+
+	def get_fileInfo(self,source):
+		fileInfo   = QtCore.QFileInfo(source)
+		infoWrite = fileInfo.isWritable()
+		infoOwner = fileInfo.owner()
+		return infoWrite, infoOwner
+
+
+#================================ end functions Thread classes
+
+#================================================================================================================ End Thread Classes
+
+
+
+
+
 #===================================================================================================================================
 #========= Start QT 
 #===================================================================================================================================
