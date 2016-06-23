@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Last Update : 22-06-2016                                                         #
+# Last Update : 23-06-2016                                                         #
 # ##################################################################################
 
 import os
@@ -22,62 +22,79 @@ import datetime
 from datetime import datetime
 
 
-#==================================================================================================================== CLASS __QT_KBZ__ 
+#========================================================================================= CLASS __QT_KBZ__ 
 
 class __QT_KBZ__(QtGui.QDialog):
 	
 	def __init__(self, parent = None):
 		super(__QT_KBZ__, self).__init__(parent) 
 
-	#================================================================================================================================
+	#======================================================================================================
 	#========= Globals Variables
-	#================================================================================================================================
+	#======================================================================================================
 		self.SCREEN 					= QtGui.QDesktopWidget().screenGeometry()
-		self.CURRENT_USER 				= os.getenv('USER')
-		self.ALL_PROJECTS	 			= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0] }		
-		self.CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
-		self.CURRENT_PROJECT 			= self.CURRENT_PROJECT_lower.upper()
-		self.START_DIR_PUBLIC 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
-		# self.START_DIR_LOCAL_LOCKED_A7 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
-		# self.START_DIR_LOCAL_LOCKED_A7 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/COM/Assets/'
-		self.START_DIR_USERS 			= '/u/'+self.CURRENT_PROJECT_lower+'/Users/'		
-		self.START_DIR_LOCAL_LOCKED_A7 	= self.START_DIR_USERS+self.CURRENT_USER+'/Assets/'		
+		self.CUR_USER 					= os.getenv('USER')
+		self.ALL_PROJECTS	 			= 	{ \
+												"gri": [71, 209, 71], 	\
+												"lun": [0, 153, 255], 	\
+												"dm3": [204, 51, 255], 	\
+												"max": [139, 0, 0] 		\
+											}
+		self.CUR_PROJ_lower 			= ink.io.ConnectUserInfo()[2]
+		self.CUR_PROJECT 				= self.CUR_PROJ_lower.upper()
+		self.START_DIR_PUBLIC 			= '/u/'+self.CUR_PROJ_lower+'/Users/COM/Presets/Graphs/'
+		# self.START_DIR_lcl_LCKD_A7 			= '/u/'+self.CUR_PROJ_lower+'/Users/cpottier/Files/etc'
+		# self.START_DIR_lcl_LCKD_A7 			= '/u/'+self.CUR_PROJ_lower+'/Users/COM/Assets/'
+		self.START_DIR_USERS 			= '/u/'+self.CUR_PROJ_lower+'/Users/'
+		self.START_DIR_lcl_LCKD_A7 	= self.START_DIR_USERS+self.CUR_USER+'/Assets/'
 		self.PATH_EXEMPLES				= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
-		self.CURRENT_SCRIPTS_PATH		= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES
-		self.TMP_FILE_LOCKED 			= self.CURRENT_PROJECT+'_A7LockedBy.tmp'
-		self.TMP_PATH_FILE_LOCKED 		= self.CURRENT_SCRIPTS_PATH+'/'+self.TMP_FILE_LOCKED
-		self.DIR_BACKUP	 				= '_backup'		
-		self.MYPREFSFILE				= self.CURRENT_SCRIPTS_PATH+'/kbz_prefs_'+self.CURRENT_USER+'.json'
+		self.CUR_SCRIPTS_PATH			= '/u/'+self.CUR_PROJ_lower+self.PATH_EXEMPLES
+		self.TMP_FILE_LCKD 				= self.CUR_PROJECT+'_A7LockedBy.tmp'
+		self.TMP_PATH_FILE_LCKD 		= self.CUR_SCRIPTS_PATH+'/'+self.TMP_FILE_LCKD
+		self.DIR_BACKUP	 				= '_backup'
+		self.MYPREFSFILE				= self.CUR_SCRIPTS_PATH+'/kbz_prefs_'+self.CUR_USER+'.json'
 		self.MYPREFSJSON				= {}
 		self.MYPREFSJSON["scripts"]		= []
 		if os.path.isfile(self.MYPREFSFILE) == False :
 			self.write_Prefs(self.MYPREFSJSON,False)
 
-		if self.CURRENT_PROJECT 	== 'GRI':
-			self.HOME_COLOR = self.ALL_PROJECTS['gri']
-		if self.CURRENT_PROJECT 	== 'LUN':
-			self.HOME_COLOR = self.ALL_PROJECTS['lun']
-		if self.CURRENT_PROJECT 	== 'DM3':
-			self.HOME_COLOR = self.ALL_PROJECTS['dm3']
-		if self.CURRENT_PROJECT 	== 'MAX':
-			self.HOME_COLOR = self.ALL_PROJECTS['max']
+		# if self.CUR_PROJECT 	== 'GRI':
+		# 	self.HOME_COLOR = self.ALL_PROJECTS['gri']
+		# if self.CUR_PROJECT 	== 'LUN':
+		# 	self.HOME_COLOR = self.ALL_PROJECTS['lun']
+		# if self.CUR_PROJECT 	== 'DM3':
+		# 	self.HOME_COLOR = self.ALL_PROJECTS['dm3']
+		# if self.CUR_PROJECT 	== 'MAX':
+		# 	self.HOME_COLOR = self.ALL_PROJECTS['max']
+		self.HOME_COLOR 				= self.ALL_PROJECTS[self.CUR_PROJ_lower]
 
-		self.EXCLUDE_DIR_USERS_LOCKED = ['COM','OFF','dm3_contrats']
-		self.EXCLUDE_DIR_LOCKED = [self.CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV']
-		self.INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
+		self.EXCLUDE_DIR_USERS_LCKD 	= [ \
+												'COM', 			\
+												'OFF', 			\
+												'dm3_contrats' 	\
+											]
+		self.EXCL_DIR_LCKD 				= [
+												self.CUR_PROJECT,
+												'LIB','LIBREF',
+												'MODELING',
+												'PREVIZ',
+												'USECASE',
+												'USECASEDEV'
+											]
+		self.INCL_EXT_LCKD 				= 	['CSV','XML','INKGRAPH','A7']
 
-		self.ALL_USERS = [] # GLOBVAR
+		self.ALL_USERS 					= [] # GLOBVAR
 		for root, dirnames, filenames in os.walk(self.START_DIR_USERS):
 			for dirname in dirnames:
-				if dirname not in self.EXCLUDE_DIR_USERS_LOCKED :
+				if dirname not in self.EXCLUDE_DIR_USERS_LCKD :
 					self.ALL_USERS.append(dirname)
 			break
-		self.ALL_USERS = sorted(self.ALL_USERS)
-		self.ALL_USERS_COUNT 	= len(self.ALL_USERS)
+		self.ALL_USERS 					= sorted(self.ALL_USERS)
+		self.ALL_USERS_COUNT 			= len(self.ALL_USERS)
 
-	#================================================================================================================================
+	#======================================================================================================
 	#========= main vlayout
-	#================================================================================================================================
+	#======================================================================================================
 
 		self.mainLayout = QtGui.QVBoxLayout()
 		self.mainLayout.setAlignment(QtCore.Qt.AlignTop)
@@ -113,21 +130,24 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 		self.centralWidget = QtGui.QWidget()
 		self.setLayout(self.mainLayout)
-		#========= apply stylsheets
+
+	#======================================================================
+	#========= apply stylsheets
+	#======================================================================
+		#========= 
 		self.apply_Stylesheets()
-		self.setPalette(self.palette_darkGrey)
+		# self.setPalette(self.palette_darkGrey)
 
 
-	#================================================================================================================================
-	#========= check if some files exist and some check
-	#================================================================================================================================
+	#======================================================================================================
+	#========= check if some files exist and some other check
+	#======================================================================================================
+		self.check_A7_alwaysLCKD(self.TMP_PATH_FILE_LCKD)
 
-		self.check_A7_alwaysLocked(self.TMP_PATH_FILE_LOCKED)
-
-	#================================================================================================================================
-	#========= AS RUN
-	#================================================================================================================================
-		self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
+	#======================================================================================================
+	#========= get LCKD List
+	#======================================================================================================
+		self.on_BT_LCKDFILE_lcl_clicked(self.nameBtsee)
 
 
 
@@ -145,9 +165,9 @@ class __QT_KBZ__(QtGui.QDialog):
 	# 	painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))  
 
 
-	#================================================================================================================================
+	#======================================================================================================
 	#========= UI Areas Constructions Functions
-	#================================================================================================================================
+	#======================================================================================================
 
 	def construct_TopAreaContent(self):
 		'''   '''
@@ -160,21 +180,20 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BT_BACK_HOME = QtGui.QPushButton(txtBt)
 		self.BT_BACK_HOME.setVisible(False)
 
-		txtBt = 'SCRIPTS ' + self.CURRENT_PROJECT
+		txtBt = 'SCRIPTS ' + self.CUR_PROJECT
 		self.BT_HOME_SCRIPTS = QtGui.QPushButton(txtBt)
 		name1 = 'BT_HOME_SCRIPTS'
 		self.BT_HOME_SCRIPTS.setObjectName(name1)
-		# self.BT_HOME_SCRIPTS.clicked.connect(lambda : self.on_BT_MAIN_clicked(name1))
 		self.BT_HOME_SCRIPTS.installEventFilter(self)
 
-		txtBt = 'BT2 ' + self.CURRENT_PROJECT
+		txtBt = 'BT2 ' + self.CUR_PROJECT
 		self.BT_MAIN_2 = QtGui.QPushButton(txtBt)
 		name2 = 'BT_MAIN_2'
 		self.BT_MAIN_2.setObjectName(name2)
 		self.BT_MAIN_2.clicked.connect(lambda : self.on_BT_MAIN_clicked(name2))
 		self.BT_MAIN_2.installEventFilter(self)
 
-		txtBt = 'BT3 ' + self.CURRENT_PROJECT
+		txtBt = 'BT3 ' + self.CUR_PROJECT
 		self.BT_MAIN_3 = QtGui.QPushButton(txtBt)
 		name3 = 'BT_MAIN_3'
 		self.BT_MAIN_3.setObjectName(name3)
@@ -197,18 +216,15 @@ class __QT_KBZ__(QtGui.QDialog):
 
 	def construct_MiddleTabsArea(self):
 		'''   '''
-
 		#=======================================================================================
 		#=========================== Middle Area content
 		#=======================================================================================
-
 		self.MiddleTabsContent = QtGui.QHBoxLayout()
 		self.MiddleTabsContent.setObjectName("MiddleTabsContent")
 
 		#==========================================================================
 		#=========================== Tabs Areas Widget
 		#==========================================================================
-
 		self.MiddleTabsArea = QtGui.QTabWidget()
 		self.MiddleTabsArea.setTabPosition(QtGui.QTabWidget.North)
 		self.MiddleTabsArea.setObjectName("MiddleTabsArea")
@@ -220,35 +236,26 @@ class __QT_KBZ__(QtGui.QDialog):
 		#=========================== FileSystem
 
 		self.modelTab1 = QtGui.QFileSystemModel()
-		# self.modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllEntries)
+		# self.modelTab1.setFilter(QtCore.QDir.AllEntries | QtCore.QDir.AllEntries)
 		self.modelTab1.setFilter(QtCore.QDir.AllDirs | QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)			
-		# self.modelTab1.setFilter( QtCore.QDir.AllDirs | QtCore.QDir.AllEntries | QtCore.QDir.CaseSensitive | QtCore.QDir.NoDotAndDotDot )		
+
 		# self.modelTab1.setRootPath(self.START_DIR_PUBLIC)
-		self.modelTab1.setRootPath(self.START_DIR_LOCAL_LOCKED_A7)
+		self.modelTab1.setRootPath(self.START_DIR_lcl_LCKD_A7)
 		
 
 		#=========================== Treeview
 		self.Tab1 = QtGui.QTreeView()
 		# self.connect(self.Tab1, QtCore.SIGNAL("itemClicked (QTreeWidgetItem *,int)"), self.on_TAB_clicked)
-		# self.Tab1.clicked.connect(self.Expand_GetLocked)
-		self.Tab1.connect(self.Tab1, QtCore.SIGNAL('clicked(QModelIndex)'), self.Expand_GetLocked)
+		self.Tab1.connect(self.Tab1, QtCore.SIGNAL('clicked(QModelIndex)'), self.Expand_GetLCKD)
 		self.Tab1.objectName = "Tab1"
 		self.Tab1.setAlternatingRowColors(True)
 
 		#=========================== populate tab1
 		self.Tab1.setModel(self.modelTab1)
-		self.Tab1.setRootIndex(self.modelTab1.index(self.START_DIR_LOCAL_LOCKED_A7))
+		self.Tab1.setRootIndex(self.modelTab1.index(self.START_DIR_lcl_LCKD_A7))
 		self.Tab1.resizeColumnToContents(0)
 		# self.fileTreeView.header().setResizeMode(QHeaderView.ResizeToContents)		
 		self.Tab1.setColumnWidth(0, 400)
-
-		#=========================== check locked file
-
-		# root = self.modelTab1.itemFromIndex(self.START_DIR_LOCAL_LOCKED_A7)
-
-		# parentIndex = self.modelTab1.index(QtCore.QDir.currentPath())		
-		# rows = self.modelTab1.rowCount(parentIndex)
-		# self.printSTD(rows)
 
 
 		#==================================================
@@ -277,7 +284,6 @@ class __QT_KBZ__(QtGui.QDialog):
 		#==================================================
 
 
-
 		#========================================================================= add Tabs to MiddleTabsArea
 		self.MiddleTabsArea.addTab(self.Tab1, ' Local a7 ')
 		self.MiddleTabsArea.addTab(self.Tab2, ' Public a7 ')
@@ -287,8 +293,6 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#========================================================== add Area content to middle Area container
 		self.MiddleAreaContainer.setLayout(self.MiddleTabsContent)
-
-
 
 		#========= apply stylsheets
 		self.apply_Stylesheets()
@@ -304,97 +308,77 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.BottomAreaContent = QtGui.QGridLayout()
 		self.BottomAreaContent.setObjectName("BottomAreaContent")
 
-
 		#========= Container logins
-
 		self.listUsers = QtGui.QComboBox()
 		self.listUsers.setFixedWidth(w1)
 		self.listUsers.setFixedHeight(h1)
 		for user in self.ALL_USERS:
 			self.listUsers.addItem(user)
-		index = self.listUsers.findText(self.CURRENT_USER, QtCore.Qt.MatchFixedString)
+		index = self.listUsers.findText(self.CUR_USER, QtCore.Qt.MatchFixedString)
 		self.listUsers.setCurrentIndex(index)
-		# self.printSTD(self.listUsers.currentText())
-		# self.printSTD(self.listUsers.currentIndex())
-
-		#========= Bottom Area content User Login search
-		# self.editUserBottom = QtGui.QTextEdit()
-		# self.editUserBottom.insertPlainText(self.CURRENT_USER)
-		# self.editUserBottom.setFixedWidth(w1)
-		# self.editUserBottom.setFixedHeight(h1)
-		# self.editUserBottom.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
 		#========= Bottom Area content Buttons
-		txtBt = 'See Locked | Never Published A7'
-		self.BT_SEE_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
-		self.nameBtsee = 'BT_SEE_LOCKEDFILE_Local'
-		self.BT_SEE_LOCKEDFILE_Local.setObjectName(self.nameBtsee)
-		self.BT_SEE_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee))
-		# self.BT_SEE_LOCKEDFILE_Local.installEventFilter(self)		
-		self.BT_SEE_LOCKEDFILE_Local.setFixedSize(w1,h1)
-
+		txtBt = 'See LCKD | Never Published A7'
+		self.BT_SEE_LCKDFILE_lcl = QtGui.QPushButton(txtBt)
+		self.nameBtsee = 'BT_SEE_LCKDFILE_lcl'
+		self.BT_SEE_LCKDFILE_lcl.setObjectName(self.nameBtsee)
+		self.BT_SEE_LCKDFILE_lcl.clicked.connect(lambda : self.on_BT_LCKDFILE_lcl_clicked(self.nameBtsee))
+		# self.BT_SEE_LCKDFILE_lcl.installEventFilter(self)		
+		self.BT_SEE_LCKDFILE_lcl.setFixedSize(w1,h1)
 
 		txtBt = 'Clear Locked A7 Infos'
-		self.BT_CLEAR_LOCKEDFILE_Local = QtGui.QPushButton(txtBt)
-		self.nameBtclear = 'BT_CLEAR_LOCKEDFILE_Local'
-		self.BT_CLEAR_LOCKEDFILE_Local.setObjectName(self.nameBtclear)
-		self.BT_CLEAR_LOCKEDFILE_Local.clicked.connect(lambda : self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtclear))
-		self.BT_CLEAR_LOCKEDFILE_Local.setFixedSize(w1,h1)
+		self.BT_CLEAR_LCKDFILE_lcl = QtGui.QPushButton(txtBt)
+		self.nameBtclear = 'BT_CLEAR_LCKDFILE_lcl'
+		self.BT_CLEAR_LCKDFILE_lcl.setObjectName(self.nameBtclear)
+		self.BT_CLEAR_LCKDFILE_lcl.clicked.connect(lambda : self.on_BT_LCKDFILE_lcl_clicked(self.nameBtclear))
+		self.BT_CLEAR_LCKDFILE_lcl.setFixedSize(w1,h1)
 
 		txtChk = 'Full Search (All Users / by Folders)'
 		self.CHK_SEARCH_ALL = QtGui.QCheckBox(txtChk)
 		nameChkAll = 'CHK_SEARCH_ALL'
 		self.CHK_SEARCH_ALL.setObjectName(nameChkAll)
-		# self.CHK_SEARCH_ALL.stateChanged.connect(self.on_CHK_SEARCH_ALL_clicked)
 
-		txtCopyClipboard = 'Copy to clipboard'
-		self.CHK_COPY_CLIPBOARD = QtGui.QCheckBox(txtCopyClipboard)
-		nameCopyClipboard = 'CHK_COPY_CLIPBOARD'
-		self.CHK_COPY_CLIPBOARD.setObjectName(nameCopyClipboard)
-		self.CHK_COPY_CLIPBOARD.stateChanged.connect(self.on_CHK_COPY_CLIPBOARD)
-		self.CHK_COPY_CLIPBOARD.setVisible(False)
+		txtCpClipbrd = 'Copy to clipboard'
+		self.CHKCP_CLIPBRD = QtGui.QCheckBox(txtCpClipbrd)
+		nameCopyClipboard = 'CHKCP_CLIPBRD'
+		self.CHKCP_CLIPBRD.setObjectName(nameCopyClipboard)
+		self.CHKCP_CLIPBRD.stateChanged.connect(self.on_CHKCP_CLIPBRD)
+		self.CHKCP_CLIPBRD.setVisible(False)
+
+		#========= checkbox stylesheet , to do better , in fct stylsheet
+		self.CHK_SEARCH_ALL.setStyleSheet("color: white")
+		self.CHK_SEARCH_ALL.show()
+		self.CHKCP_CLIPBRD.setStyleSheet("color: white")
+		self.CHKCP_CLIPBRD.show()
 
 
-		#================================================== add Log and button
-		# self.BottomLogButtons.addWidget(self.editUserBottom)
-		# self.BottomLogButtons.addWidget(self.BT_SEE_LOCKEDFILE_Local)
-		# self.BottomLogButtons.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)		
+		#================================================== add LockedFilesListing and bt		
 
-
-		#========= Bottom Area content lockedOutputBottom
-		self.lockedOutputBottom = QtGui.QTextEdit()
-		self.lockedOutputBottom.setObjectName("lockedOutputBottom")		
-		self.lockedOutputBottom.setFixedWidth(self.SCREEN.width()-40)
-		self.lockedOutputBottom.setFixedHeight(1)		
-		self.lockedOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-		self.lockedOutputBottomSb = self.lockedOutputBottom.verticalScrollBar()
-		self.lockedOutputBottomSb.setValue(self.lockedOutputBottomSb.maximum())
-		self.lockedOutputBottomCursor = self.lockedOutputBottom.textCursor()
-		self.lockedOutputBottom.setVisible(False)
-		# self.update_TMP_PATH_FILE_LOCKED()
-
+		#========= Bottom Area content LckdFiles
+		self.LckdFiles = QtGui.QTextEdit()
+		self.LckdFiles.setObjectName("LckdFiles")		
+		self.LckdFiles.setFixedWidth(self.SCREEN.width()-40)
+		self.LckdFiles.setFixedHeight(1)		
+		self.LckdFiles.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+		self.LckdFilesSb = self.LckdFiles.verticalScrollBar()
+		self.LckdFilesSb.setValue(self.LckdFilesSb.maximum())
+		self.LckdFilesCursor = self.LckdFiles.textCursor()
+		self.LckdFiles.setVisible(False)
 
 		#================================================== add Users Bottom Area content
 		self.BottomAreaContent.addWidget(self.listUsers)
 		# self.BottomAreaContent.addWidget(self.editUserBottom)
-		#================================================== add Locked Buttons to Bottom Area content
-		self.BottomAreaContent.addWidget(self.BT_SEE_LOCKEDFILE_Local)
-		self.BottomAreaContent.addWidget(self.BT_CLEAR_LOCKEDFILE_Local)
+		#================================================== add LCKD Buttons to Bottom Area content
+		self.BottomAreaContent.addWidget(self.BT_SEE_LCKDFILE_lcl)
+		self.BottomAreaContent.addWidget(self.BT_CLEAR_LCKDFILE_lcl)
 		self.BottomAreaContent.addWidget(self.CHK_SEARCH_ALL)
-		self.BottomAreaContent.addWidget(self.CHK_COPY_CLIPBOARD)
+		self.BottomAreaContent.addWidget(self.CHKCP_CLIPBRD)
 		
-		#================================================== add lockedOutputBottom to Bottom Area content
-		self.BottomAreaContent.addWidget(self.lockedOutputBottom)
-
+		#================================================== add LckdFiles to Bottom Area content
+		self.BottomAreaContent.addWidget(self.LckdFiles)
 
 		#========= add Area content to Bottom Area container
 		self.BottomAreaContainer.setLayout(self.BottomAreaContent)
-
-
-
-
-		#========= apply stylsheets
-		self.apply_Stylesheets()
 
 
 
@@ -420,16 +404,15 @@ class __QT_KBZ__(QtGui.QDialog):
 					item.setCheckable(True)
 					status_checked = QtCore.Qt.Unchecked
 					if n%2 == 0 :
-						item.setBackground(QtGui.QColor(255, 255, 255))
+						item.setBackground(QtGui.QColor(self.QStandardItem_Color1))
+						# item.setColor(allBlueAndShiny color)
+						# item.setForeground(QtGui.QColor('red')) # text color
 					else:
-						item.setBackground(QtGui.QColor(217, 230, 240))
+						item.setBackground(QtGui.QColor(self.QStandardItem_Color2))
 					if str(script) in myChecked:
 						status_checked = QtCore.Qt.Checked
-						item.setBackground(QtGui.QColor(179, 255, 102))
+						item.setBackground(QtGui.QColor(self.QStandardItem_Color3))
 					item.setCheckState(status_checked)
-
-					# item.setColor(allBlueAndShiny color)
-					# item.setForeground(QtGui.QColor('red')) # text color
 
 					#========= item Signal
 					# # item.emit(QtCore.SIGNAL("self.populate_prefs('scripts')"))
@@ -444,9 +427,9 @@ class __QT_KBZ__(QtGui.QDialog):
 		#=========  bt sync
 		msg_others_projects = ''
 		for p in self.ALL_PROJECTS:
-			if str(p).upper != self.CURRENT_PROJECT.upper():
+			if str(p).upper != self.CUR_PROJECT.upper():
 				msg_others_projects = msg_others_projects + ' | ' + str(p)
-		txtBt = 'Click Here to SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> to ' + msg_others_projects + ' | Projects'
+		txtBt = 'Click Here to SYNC SCRIPTS ' + self.CUR_PROJECT + ' -> to ' + msg_others_projects + ' | Projects'
 		self.BT_SYNC_SCRIPTS = QtGui.QPushButton(txtBt)
 		self.BT_SYNC_SCRIPTS.setObjectName("BT_SYNC_SCRIPTS")
 		self.BT_SYNC_SCRIPTS.setVisible(True)
@@ -454,35 +437,20 @@ class __QT_KBZ__(QtGui.QDialog):
 
 		#=========  connect fct
 		self.ScriptsAreaContent.itemChanged.connect(self.populate_prefs_scripts)
-		hexColor = self.rvbToHex(25, 44, 50)
-		hexColorBg = self.rvbToHex(self.rvb_darkGrey[0], self.rvb_darkGrey[1], self.rvb_darkGrey[2])
-		hexColorBorder = self.rvbToHex(self.HOME_COLOR[0], self.HOME_COLOR[1], self.HOME_COLOR[2])
-		self.BT_SYNC_SCRIPTS.setStyleSheet(
-											"color: white;"
-											"background-color: "+hexColor+";"
-											"selection-color: yellow;"
-											"selection-background-color: blue;"
-											"font: bold 14px;"
-											"border-style: outset;"
-											"border-radius: 16px;"
-											"height: 40px;"						
-											"max-width: 600px;"
-										)
 
-
-
-		#========= apply stylsheets
+	#======================================================================================================
+	#========= Apply stylsheets
+	#======================================================================================================
 		self.apply_Stylesheets()
 
 
 
-	#================================================================================================================================
+	#======================================================================================================
 	#========= Functions
-	#================================================================================================================================
+	#======================================================================================================
 	
-	def Expand_GetLocked(self, index):
+	def Expand_GetLCKD(self, index):
 		'''   '''
-
 		model = self.modelTab1
 		indexItem = model.index(index.row(), 0, index.parent())
 		fileName = model.fileName(indexItem)
@@ -496,7 +464,7 @@ class __QT_KBZ__(QtGui.QDialog):
 			n_user = 0
 			for USERtoSEARCH in self.ALL_USERS:
 				try:
-					filePathFromList = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
+					filePathFromList = filePath.replace(self.CUR_USER,USERtoSEARCH)
 					if os.path.exists(filePathFromList):
 						n_user += 1
 						n_users_real.append(str(n_user))
@@ -505,11 +473,11 @@ class __QT_KBZ__(QtGui.QDialog):
 
 			n_users_tot = len(n_users_real)
 
-			# get locked list through thread
+			# get LCKD list through thread
 			n_user = 0
 			for USERtoSEARCH in self.ALL_USERS:
 				try:
-					filePathFromList = filePath.replace(self.CURRENT_USER,USERtoSEARCH)					
+					filePathFromList = filePath.replace(self.CUR_USER,USERtoSEARCH)					
 					if os.path.exists(filePathFromList):
 						n_user += 1
 						self.Thread_Instance_mutu(filePathFromList, USERtoSEARCH, n_user, n_users_real, n_users_tot)
@@ -522,40 +490,40 @@ class __QT_KBZ__(QtGui.QDialog):
 					pass
 
 
-			FPusersToSearch_msg = filePath.replace(self.CURRENT_USER,'USER_A->Z')
+			FPusersToSearch_msg = filePath.replace(self.CUR_USER,'USER_A->Z')
 
 			msg = datetime.now() - startTime
-			msg = ' ARMAGEDON SEARCH [ '+FPusersToSearch_msg+' ] LOCKED FILES LAUNCHED in ' + str(msg) + ' ... Please Wait !\n'
+			msg = ' ARMAGEDON SEARCH [ '+FPusersToSearch_msg+' ] LCKD FILES LAUNCHED in ' + str(msg) + ' ... Please Wait !\n'
 
 			self.printSTD(' ')
-			self.printSTD('\n##############################################################################################################')
+			self.printSTD('\n###########################################################################################')
 			self.printSTD(' ')			
 			self.printSTD(msg)
 			self.printSTD(' ')	
-			self.printSTD('##############################################################################################################\n')
+			self.printSTD('#############################################################################################\n')
 			self.printSTD(' ')
 
 		else:
 			n_user = 1
 			n_users_real.append(str(n_user))
 			n_users_tot = len(n_users_real)
-			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			self.LckdFilesCursor.movePosition(QtGui.QTextCursor.End)
 
-			getText = self.lockedOutputBottom.toPlainText()
+			getText = self.LckdFiles.toPlainText()
 			USERtoSEARCH = self.listUsers.currentText()
 			self.printSTD(USERtoSEARCH)
-			if str(USERtoSEARCH) != self.CURRENT_USER:
-				filePath = filePath.replace(self.CURRENT_USER,USERtoSEARCH)
+			if str(USERtoSEARCH) != self.CUR_USER:
+				filePath = filePath.replace(self.CUR_USER,USERtoSEARCH)
 
-			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+			self.BT_SEE_LCKDFILE_lcl.setVisible(False)
 			result = 0
 			try:
-	 			result = self.readlines_files(self.TMP_PATH_FILE_LOCKED)[0]
+	 			result = self.readlines_files(self.TMP_PATH_FILE_LCKD)[0]
 	 		except:
 	 			pass
 			if result > 0 : # todo to mutu
-				self.BT_SEE_LOCKEDFILE_Local.setVisible(True)
-				self.on_BT_LOCKEDFILE_Local_clicked(self.nameBtsee)
+				self.BT_SEE_LCKDFILE_lcl.setVisible(True)
+				self.on_BT_LCKDFILE_lcl_clicked(self.nameBtsee)
 
 			self.Thread_Instance_mutu(filePath, USERtoSEARCH, n_user, n_users_real, n_users_tot)
 
@@ -564,7 +532,17 @@ class __QT_KBZ__(QtGui.QDialog):
 		'''   '''
 		if os.path.exists(filePath):
 			self.printSTD(filePath)
-			MY_Thread_Instance = Thread_Instance(unicode(filePath), str(USERtoSEARCH), self.CURRENT_PROJECT, self.EXCLUDE_DIR_LOCKED, self.INCLUDE_EXT_LOCKED, self.TMP_PATH_FILE_LOCKED, self.CHK_SEARCH_ALL, n_user, n_users_real, n_users_tot)
+			MY_Thread_Instance = Thread_Instance( \
+				unicode(filePath), \
+				str(USERtoSEARCH), \
+				self.CUR_PROJECT, \
+				self.EXCL_DIR_LCKD, \
+				self.INCL_EXT_LCKD, \
+				self.TMP_PATH_FILE_LCKD, \
+				self.CHK_SEARCH_ALL, \
+				n_user, n_users_real, \
+				n_users_tot \
+				)
 
 
 	def model_changeColor(self, model):
@@ -582,7 +560,7 @@ class __QT_KBZ__(QtGui.QDialog):
 						ext = os.path.splitext(filename)[1][1:]
 					except:
 						pass  
-					if ext.upper() in self.INCLUDE_EXT_LOCKED:
+					if ext.upper() in self.INCL_EXT_LCKD:
 						filePath  = os.path.join(root, filename)
 						result    = self.get_fileInfo(filePath)
 						infoWrite   = result[0]
@@ -591,7 +569,7 @@ class __QT_KBZ__(QtGui.QDialog):
 						self.printSTD(infoWrite)
 						self.printSTD(infoOwner)
 						self.printSTD('####################')
-						if infoWrite == True and infoOwner == self.CURRENT_USER:
+						if infoWrite == True and infoOwner == self.CUR_USER:
 							matches.append(os.path.join(root, filename))
 
 		return matches
@@ -619,11 +597,11 @@ class __QT_KBZ__(QtGui.QDialog):
 		return result,lines
 
 
-	def check_A7_alwaysLocked(self, _filepathTmpFile):	
+	def check_A7_alwaysLCKD(self, _filepathTmpFile):	
 		'''   '''	
 		if not os.path.exists(_filepathTmpFile):
 			# open(_filepathTmpFile, 'a').close()
-			f = open(self.TMP_PATH_FILE_LOCKED,'a')
+			f = open(self.TMP_PATH_FILE_LCKD,'a')
 			open(_filepathTmpFile, 'a')
 			f.write('.\n') # python will convert \n to os.linesep
 			f.close()
@@ -650,70 +628,70 @@ class __QT_KBZ__(QtGui.QDialog):
 						pass	
 
 					try:					
-						if ext.upper() in self.INCLUDE_EXT_LOCKED:
+						if ext.upper() in self.INCL_EXT_LCKD:
 							# we check chmod
 							result 		= self.get_fileInfo(filePath)
 							infoWrite 	= result[0]
 							infoOwner 	= result[1]
 							if infoWrite == True :
 								matches.append(filePath)								
-								msg = filePath + ' [ LOCKED ]'
+								msg = filePath + ' [ LCKD ]'
 					except:
 						pass
 
 			if len(matches) > 0:
 				# we re write tmp file
-				self.on_BT_LOCKEDFILE_Local_clicked('BT_CLEAR_LOCKEDFILE_Local')		
+				self.on_BT_LCKDFILE_lcl_clicked('BT_CLEAR_LCKDFILE_lcl')		
 				# time.sleep(0.8)			
 				for line in matches:
 					time.sleep(0.1)	
 					a7 = str(line)+'\n'
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					f = open(self.TMP_PATH_FILE_LCKD,'a')
 					f.write(line+'\n') # python will convert \n to os.linesep
 					f.close()
 				# update textarea
-				self.update_TMP_PATH_FILE_LOCKED()
+				self.update_TMP_PATH_FILE_LCKD()
 
 
-	def update_TMP_PATH_FILE_LOCKED(self): 
-		BottomContent = self.lockedOutputBottom.toPlainText()
+	def update_TMP_PATH_FILE_LCKD(self): 
+		BottomContent = self.LckdFiles.toPlainText()
 		try:
-			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LCKD)]
 		except:
 			lines = ['.']
 		if len(lines[0])>0: # 1 is point trick to do better
 
-			self.lockedOutputBottom.setVisible(True)
-			self.CHK_COPY_CLIPBOARD.setVisible(True)
+			self.LckdFiles.setVisible(True)
+			self.CHKCP_CLIPBRD.setVisible(True)
 
 			for line in lines:
 				if str(line) not in str(BottomContent) and len(line)>10: # 10 is path lenght, arbitrary
 
-					self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-					self.lockedOutputBottom.insertPlainText(str(line)+'\n')
+					self.LckdFilesCursor.movePosition(QtGui.QTextCursor.End)
+					self.LckdFiles.insertPlainText(str(line)+'\n')
 
-			self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+			self.BT_SEE_LCKDFILE_lcl.setVisible(False)
 
 			# REFRESH BOTTOM TO DO
 
-	#================================================================================================================================
+	#======================================================================================================
 	#========= UI Buttons Functions
-	#================================================================================================================================
+	#======================================================================================================
 
 	def confirmBox(self,title,msg=''):    
 		reply = QtGui.QMessageBox.question(self, title, msg,
 		QtGui.QMessageBox.Ok  | QtGui.QMessageBox.Cancel)
 		if reply == QtGui.QMessageBox.Ok:
-			self.printSTD('\n[ SYNC '+self.CURRENT_PROJECT+' Script(s) Confirmed ]\n')
+			self.printSTD('\n[ SYNC '+self.CUR_PROJECT+' Script(s) Confirmed ]\n')
 			self.on_BT_SYNC_SCRIPTS_clicked()
 		else:
-			self.printSTD('\n[ SYNC '+self.CURRENT_PROJECT+' Script(s) Canceled ]\n')
+			self.printSTD('\n[ SYNC '+self.CUR_PROJECT+' Script(s) Canceled ]\n')
 
 	def back_to_HOME(self):
 		self.show_BT_HOME()
 		self.delete_TopAndMiddle()
 		self.Construct_TopAndMiddle()
-		self.on_BT_LOCKEDFILE_Local_clicked('BT_SEE_LOCKEDFILE_Local')
+		self.on_BT_LCKDFILE_lcl_clicked('BT_SEE_LCKDFILE_lcl')
 
 
 	def show_BT_HOME(self):
@@ -767,7 +745,8 @@ class __QT_KBZ__(QtGui.QDialog):
 				if itemChecked == 2: # checked
 					# self.printSTD('------------------------')
 					# self.printSTD(itemChecked)
-					# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
+					# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) 
+					# ne retourne pas d erreur
 					# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
 					# self.printSTD(role)  # ne retourne pas d erreur
 					modelScript.setData(
@@ -796,8 +775,8 @@ class __QT_KBZ__(QtGui.QDialog):
 			APU = str(ap).upper()
 			ap 	= str(ap).lower()		
 
-			if str(self.CURRENT_PROJECT_lower) != str(ap):
-				msg = '---------------------------------- SYNC SCRIPTS ' + self.CURRENT_PROJECT + ' -> ' + APU
+			if str(self.CUR_PROJ_lower) != str(ap):
+				msg = '---------------------------------- SYNC SCRIPTS ' + self.CUR_PROJECT + ' -> ' + APU
 				self.printSTD(' ')
 				self.printSTD('-----------------------------------------------------------------------')
 				self.printSTD(str(msg))
@@ -807,14 +786,14 @@ class __QT_KBZ__(QtGui.QDialog):
 					filename 	= s.split('.')[0]
 					ext 	 	= s.split('.')[1]
 					sbackup 	= filename+'_'+date+'.'+ext
-					path_local 			= '/u/'+self.CURRENT_PROJECT_lower+self.PATH_EXEMPLES+'/'+s
+					path_lcl 			= '/u/'+self.CUR_PROJ_lower+self.PATH_EXEMPLES+'/'+s
 					path_distant 		= '/u/'+ap+self.PATH_EXEMPLES+'/'+s
 					path_distant_backup = DIR_DISTANT_BACKUP+'/'+sbackup
-					self.printSTD(path_local)					
+					self.printSTD(path_lcl)					
 					self.printSTD('->')
 					self.printSTD(path_distant)
 					try:
-						if os.path.isfile(path_local):
+						if os.path.isfile(path_lcl):
 		#========= 1 - FIRST , IMPORTANT backup distant file before copy
 							if os.path.isfile(path_distant):
 								shutil.copyfile(path_distant, path_distant_backup)
@@ -823,11 +802,11 @@ class __QT_KBZ__(QtGui.QDialog):
 								checkCopy = True
 
 		#========= 2 -copy sync
-							shutil.copyfile(path_local, path_distant)
-							if os.path.isfile(path_local) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
+							shutil.copyfile(path_lcl, path_distant)
+							if os.path.isfile(path_lcl) and os.path.isfile(path_distant) and os.path.isfile(path_distant_backup) and checkCopy == False:	
 								applyUI_OK()									
 								self.printSTD('[ SYNC OK ]')
-							if os.path.isfile(path_local) and os.path.isfile(path_distant) and checkCopy == True:	
+							if os.path.isfile(path_lcl) and os.path.isfile(path_distant) and checkCopy == True:	
 								applyUI_OK()	
 								self.printSTD('[ COPY OK ]')
 							if not os.path.isfile(path_distant) and not os.path.isfile(path_distant_backup) and checkCopy == False:
@@ -1003,7 +982,7 @@ class __QT_KBZ__(QtGui.QDialog):
 
 
 
-	def on_CHK_COPY_CLIPBOARD(self):
+	def on_CHKCP_CLIPBRD(self):
 		'''   '''
 
 		cb = QtGui.QApplication.clipboard() # todo copy bt
@@ -1011,71 +990,71 @@ class __QT_KBZ__(QtGui.QDialog):
 		txtClipBoard = cb.text()
 		txtClipBoard = ''
 
-		# BottomContent = self.lockedOutputBottom.toPlainText()	
+		# BottomContent = self.LckdFiles.toPlainText()	
 
-		if self.CHK_COPY_CLIPBOARD.isChecked():
+		if self.CHKCP_CLIPBRD.isChecked():
 			try:
-				lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+				lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LCKD)]
 			except:
 				lines = ['.']
 			if len(lines[0])>0: # 0 is point trick, to do better
 				for line in lines:
 					if len(line)>10: # 10 is path lenght, arbitrary
-						self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+						self.LckdFilesCursor.movePosition(QtGui.QTextCursor.End)
 						txtClipBoard = str(line) +'\n'+ str(txtClipBoard)
 
 				txtClipBoard = txtClipBoard[:-2]
 
 				cb.setText(txtClipBoard, mode=cb.Clipboard)
-				self.lockedOutputBottom.selectAll()
+				self.LckdFiles.selectAll()
 
 		else:
 			cb.setText(txtClipBoard, mode=cb.Clipboard)
 			# unSelectAll
-			my_text_cursor = self.lockedOutputBottom.textCursor()
+			my_text_cursor = self.LckdFiles.textCursor()
 			my_text_cursor.clearSelection()
-			self.lockedOutputBottom.setTextCursor(my_text_cursor)			
+			self.LckdFiles.setTextCursor(my_text_cursor)			
 
 
-	def on_BT_LOCKEDFILE_Local_clicked(self,name):
+	def on_BT_LCKDFILE_lcl_clicked(self,name):
 		'''   '''
-		if str(name)=='BT_CLEAR_LOCKEDFILE_Local':
-			open(self.TMP_PATH_FILE_LOCKED, 'w').close()
+		if str(name)=='BT_CLEAR_LCKDFILE_lcl':
+			open(self.TMP_PATH_FILE_LCKD, 'w').close()
 			time.sleep(1)
-			f = open(self.TMP_PATH_FILE_LOCKED,'a')
+			f = open(self.TMP_PATH_FILE_LCKD,'a')
 			f.write('.\n') # python will convert \n to os.linesep
 			f.close()
-			self.lockedOutputBottom.setVisible(True)
-			self.lockedOutputBottom.setText('')
+			self.LckdFiles.setVisible(True)
+			self.LckdFiles.setText('')
 
-		if str(name)=='BT_SEE_LOCKEDFILE_Local':
+		if str(name)=='BT_SEE_LCKDFILE_lcl':
 
-			self.lockedOutputBottom.setFixedHeight(200)
-			self.lockedOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
+			self.LckdFiles.setFixedHeight(200)
+			self.LckdFiles.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
+			self.LckdFilesCursor.movePosition(QtGui.QTextCursor.End)
 
 			
 
 			# to mutu 
-			self.update_TMP_PATH_FILE_LOCKED()
+			self.update_TMP_PATH_FILE_LCKD()
 
 
-			# BottomContent = self.lockedOutputBottom.toPlainText()
-			# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
+			# BottomContent = self.LckdFiles.toPlainText()
+			# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LCKD)]
 
 			# if len(lines[0])>10: # 10 is path lenght, arbitrary
 
-			# 	self.lockedOutputBottom.setVisible(True)
-			# 	self.CHK_COPY_CLIPBOARD.setVisible(True)
+			# 	self.LckdFiles.setVisible(True)
+			# 	self.CHKCP_CLIPBRD.setVisible(True)
 
 			# 	for line in lines:
 			# 		# to mutu 
 			# 		if str(line) not in str(BottomContent):	
 
-			# 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-			# 			self.lockedOutputBottom.insertPlainText(str(line)+'\n')
+			# 			self.LckdFilesCursor.movePosition(QtGui.QTextCursor.End)
+			# 			self.LckdFiles.insertPlainText(str(line)+'\n')
 
-			# 	self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
+			# 	self.BT_SEE_LCKDFILE_lcl.setVisible(False)
 
 
 	#======================================================================
@@ -1083,7 +1062,7 @@ class __QT_KBZ__(QtGui.QDialog):
 	#======================================================================
 
 	def list_Scripts(self):
-		scripts = os.listdir(self.CURRENT_SCRIPTS_PATH)
+		scripts = os.listdir(self.CUR_SCRIPTS_PATH)
 		return scripts
 
 	def populate_prefs_scripts(self,item):
@@ -1135,14 +1114,15 @@ class __QT_KBZ__(QtGui.QDialog):
 		print >> sys.__stderr__, msg
 
 
-	#================================================================================================================================
+	#======================================================================================================
 	#========= StyleSheets
-	#================================================================================================================================
+	#======================================================================================================
 
 	def rvbToHex(self,r,g,b):
 		# r = array_rgb[1], g=array_rgb[2], b=array_rgb[3]
 		hexColor = '#%02x%02x%02x' % (r, g, b)
 		return hexColor
+
 
 	def apply_Stylesheets(self):
 
@@ -1214,16 +1194,26 @@ class __QT_KBZ__(QtGui.QDialog):
 		self.palette_Orange5 = QtGui.QPalette()
 		self.palette_Orange5.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(160, 107, 0))
 
-		# other samples
+
+	#========= Tab QStandardItem  Colors
+		self.QStandardItem_Color1 = QtGui.QColor(255, 255, 255)
+		self.QStandardItem_Color2 = QtGui.QColor(217, 230, 240)
+		self.QStandardItem_Color3 = QtGui.QColor(179, 255, 102)
+
+	#========= other samples
 		# pal.setColor(QtGui.QPalette.ColorRole(9),QtGui.QColor("#4B4B4B"))
 		# pal.setColor(QtGui.QPalette.ColorRole(6),QtGui.QColor("#CCCCCC"))
+		# self.BT_HOME_SCRIPTS.setStyleSheet('QPushButton {background-color: '+hexColor+'; color: white; height: 40px;}')
 
-#========= Style Buttons
+	#========= Style Main
+		self.setPalette(self.palette_darkGrey)
 
-		#========= Main Home  Buttons
+	#========= Style Buttons
+
+		#====================================== Main Home  Buttons
 		hexColor = self.rvbToHex(25, 44, 50)
 		
-		# self.BT_HOME_SCRIPTS.setStyleSheet('QPushButton {background-color: '+hexColor+'; color: white; height: 40px;}')
+
 		self.BT_HOME_SCRIPTS.setStyleSheet(
 								"color: white;"
 								"background-color: "+hexColor+";"
@@ -1255,7 +1245,7 @@ class __QT_KBZ__(QtGui.QDialog):
 								"border-radius: 16px;"
 							)
 
-		# #========= Back to Home  Button
+		# #========= Top Back to Home  Button
 		r = self.HOME_COLOR[0]
 		g = self.HOME_COLOR[1]
 		b = self.HOME_COLOR[2]
@@ -1271,49 +1261,62 @@ class __QT_KBZ__(QtGui.QDialog):
 								"height: 40px;"
 							)
 
-		#========= LOCAL TAB
+		#======================================= lcl TAB
 
-		#========= Locked  Buttons local tab
+		#========= LCKD  Buttons lcl tab
 		try:
-			self.BT_SEE_LOCKEDFILE_Local.setStyleSheet(
-									"color: white;"
-									"background-color: "+hexColor+";"
-									"selection-color: yellow;"
-									"selection-background-color: blue;"
-									"font: bold 10px;"
-									"border-style: outset;"
-									"height: 15px;"
+
+			#========= sync script lcl tab
+			hexColor = self.rvbToHex(25, 44, 50)
+			hexColorBg = self.rvbToHex(self.rvb_darkGrey[0], self.rvb_darkGrey[1], self.rvb_darkGrey[2])
+			hexColorBorder = self.rvbToHex(self.HOME_COLOR[0], self.HOME_COLOR[1], self.HOME_COLOR[2])
+			self.BT_SYNC_SCRIPTS.setStyleSheet(
+												"color: white;"
+												"background-color: "+hexColor+";"
+												"selection-color: yellow;"
+												"selection-background-color: blue;"
+												"font: bold 14px;"
+												"border-style: outset;"
+												"border-radius: 16px;"
+												"height: 40px;"						
+												"max-width: 600px;"
+											)
+			#========= loked file lcl tab
+			self.BT_SEE_LCKDFILE_lcl.setStyleSheet(
+												"color: white;"
+												"background-color: "+hexColor+";"
+												"selection-color: yellow;"
+												"selection-background-color: blue;"
+												"font: bold 10px;"
+												"border-style: outset;"
+												"height: 15px;"
 								)
-			self.BT_CLEAR_LOCKEDFILE_Local.setStyleSheet(
-									"color: white;"
-									"background-color: "+hexColor+";"
-									"selection-color: yellow;"
-									"selection-background-color: blue;"
-									"font: bold 10px;"
-									"border-style: outset;"
-									"height: 15px;"
+			#========= clear lcl tab
+			self.BT_CLEAR_LCKDFILE_lcl.setStyleSheet(
+												"color: white;"
+												"background-color: "+hexColor+";"
+												"selection-color: yellow;"
+												"selection-background-color: blue;"
+												"font: bold 10px;"
+												"border-style: outset;"
+												"height: 15px;"
 								)
 
-
-
-
-
-
-		#========= checkBox local tab
-			self.CHK_SEARCH_ALL.setStyleSheet("color: white;")
-			self.CHK_COPY_CLIPBOARD.setStyleSheet("color: white;")
-
-
+			# #========= checkBox lcl tab
+			# self.CHK_SEARCH_ALL.setStyleSheet("color: white")
+			# self.CHK_SEARCH_ALL.show()
+			# self.CHKCP_CLIPBRD.setStyleSheet("color: white")
+			# self.CHKCP_CLIPBRD.show()
 
 		except:
 			pass
 
 
-#================================================================================================================ end Class QT__QT_KBZ__ 
+#============================================================================================== end Class QT__QT_KBZ__ 
 
 
 
-#======================================================================================================================== Thread Classes
+#====================================================================================================== Thread Classes
 
 #================================ Thread Instance ( container )
 
@@ -1364,10 +1367,10 @@ class Thread_Worker(QtCore.QThread):
 
 		self.source           		= args[0]
 		self.USER_TO_SEARCH       	= args[1]
-		self.CURRENT_PROJECT      	= args[2]
-		self.EXCLUDE_DIR_LOCKED     = args[3]
-		self.INCLUDE_EXT_LOCKED     = args[4]
-		self.TMP_PATH_FILE_LOCKED   = args[5]
+		self.CUR_PROJECT      	= args[2]
+		self.EXCL_DIR_LCKD     = args[3]
+		self.INCL_EXT_LCKD     = args[4]
+		self.TMP_PATH_FILE_LCKD   = args[5]
 		self.CHK_SEARCH_ALL       	= args[6]
 		self.n_user           		= args[7]
 		self.n_users_real       	= args[8]
@@ -1375,7 +1378,7 @@ class Thread_Worker(QtCore.QThread):
 
 		startTimeAll = datetime.now()
 
-		msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked-UnPublished Files, Work in Progress! Please wait ...\n'
+		msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] LCKD-UnPublished Files, Work in Progress! Please wait ...\n'
 		print >> sys.__stderr__, msg
 		randwait = ['.','..','...'] # for deco
 
@@ -1390,7 +1393,7 @@ class Thread_Worker(QtCore.QThread):
 					except:
 						pass  
 					try:
-						if ext.upper() in self.INCLUDE_EXT_LOCKED:
+						if ext.upper() in self.INCL_EXT_LCKD:
 							filePath  = os.path.join(root, filename)
 							result    = self.get_fileInfo(filePath)
 							infoWrite   = result[0]
@@ -1398,7 +1401,7 @@ class Thread_Worker(QtCore.QThread):
 							# matches.append(os.path.join(root, filename))
 							if infoWrite == True and infoOwner == self.USER_TO_SEARCH:
 								matches.append(os.path.join(root, filename))                
-								msg = '\n' + filePath + ' [ LOCKED ]\n'
+								msg = '\n' + filePath + ' [ LCKD ]\n'
 								print >> sys.__stderr__, msg
 					except:
 						pass
@@ -1407,7 +1410,7 @@ class Thread_Worker(QtCore.QThread):
 
 		if len(matches) > 0 :
 			try:
-				with open(self.TMP_PATH_FILE_LOCKED) as f:
+				with open(self.TMP_PATH_FILE_LCKD) as f:
 					content = f.readlines()
 			except:
 				content=['.']
@@ -1416,7 +1419,7 @@ class Thread_Worker(QtCore.QThread):
 			for line in result:
 				a7 = str(line)+'\n'
 				if a7 not in content:         
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					f = open(self.TMP_PATH_FILE_LCKD,'a')
 					f.write('\n' +line+'\n') # python will convert \n to os.linesep
 					f.close()
 
@@ -1431,7 +1434,7 @@ class Thread_Worker(QtCore.QThread):
 		print >> sys.__stderr__, totTime
 
 		if str(self.n_user) == str(self.n_users_tot):
-			msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
+			msg = '\n--------------------------------- [ CHECK PUBLISHED AND LCKD FILE DONE in : ' + totTime + ' ] \n'
 			print >> sys.__stderr__, msg
 
 
@@ -1444,15 +1447,15 @@ class Thread_Worker(QtCore.QThread):
 
 #================================ end functions Thread classes
 
-#================================================================================================================ End Thread Classes
+#====================================================================================================== End Thread Classes
 
 
 
 
 
-#===================================================================================================================================
+#=========================================================================================================================
 #========= Start QT 
-#===================================================================================================================================
+#=========================================================================================================================
 
 
 def start(parent, data):
@@ -1492,38 +1495,16 @@ def start(parent, data):
 
 
 
-
-
-
-
-
-
-
-
-
-
 ############################################   
 
-
-		# def checkLocal_locked():
+		# def checklcl_LCKD():
 		# 	'''   '''
-
-
-
 		# 	for i in range(self.modelTab1.count()):
 		# 		yield self.item(i)
 		# 		# item1 = self.item(i).text(0) # text at first (0) column
 		# 		# self.printSTD(item1)
 
-
-
-
-
-
-
-
-
-			# local_TreeView = self.Tab1
+			# lcl_TreeView = self.Tab1
 			# colIndex = 0
 
 
@@ -1534,11 +1515,7 @@ def start(parent, data):
 			# 	item1 = item.text(0) # text at first (0) column
 			# 	# item.setText(1, 'result from %s' % url) # update result column (1)
 
-
-
 			# 	self.printSTD(item1)
-
-
 
 			# for n in range(nRows):
 			# 	Item_QModelIndex = modelScript.index(n, colIndex)
@@ -1552,7 +1529,8 @@ def start(parent, data):
 			# 	if itemChecked == 2: # checked
 			# 		# self.printSTD('------------------------')
 			# 		# self.printSTD(itemChecked)
-			# 		# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) # ne retourne pas d erreur
+			# 		# Item_QModelIndex.setColor(QtGui.QPalette.Background, QtGui.QColor.fromHsv(0, 0, 0)) 
+					# ne retourne pas d erreur
 			# 		# role = Item_QModelIndex.data(QtCore.Qt.BackgroundRole)  # ne retourne pas d erreur
 			# 		# self.printSTD(role)  # ne retourne pas d erreur
 			# 		modelScript.setData(
