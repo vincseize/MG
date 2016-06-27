@@ -34,6 +34,7 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
     | \ Tool - Last update 27-06-2016
       ----------------------------------------------------------------------
       - Organize MODEL Context Layout 
+
       - autosave graphs in :
             MODELING/CHARS/MODTECH/
                     -> M_MAIN.inkGraph
@@ -42,10 +43,9 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
 
       - Auto Execution or Select CAMERA-Actor_ModChars-Ok.a7
       ----------------------------------------------------------------------
-            - todo :
+        todo :
             - release gestion filters = None
             - r&d : check len name for ecart auto optimal
-
     '''
 
     # PARAMS MODIFIABLES ############################################################################################
@@ -109,26 +109,6 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
 
     #=========
 
-
-
-
-
-
-    # catFamily = []
-    # if _cat != None :
-    #   cat = _cat[0]
-    #   for a in _catFamily:
-    #     catFamily.append(a)
-    # if _cat == None :
-    #     catFamily.append(cat)
-    #     cat = cat
-
-    # A7R                     = 'CAMERA-Actor_ModChars-Ok.a7'
-    # A7RefPath               = 'LIB/CAMERAS/CAMERA/Ok/'+A7R
-    # myG                     = 'M_'+cat+'.inkGraph'
-    # myGraph                 = 'MODELING/CHARS/MODTECH/'+myG
-    # myGraphLocal            = LOCALPATH+'M_'+cat+'.inkGraph' # for debug   
-
     autoLoadA7ref           = False
     if autoload == 'True':
         autoLoadA7ref       = True # in 2 variables because this script can be call external  
@@ -149,8 +129,6 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
     
     # End Functions ################################################################################################  
 
-
-
     #=========
 
     cat_array = [] 
@@ -164,19 +142,7 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
         catFamily.append(cat)
         cat = cat
 
-
     cat_array.append(cat)
-
-    # A7R                     = 'CAMERA-Actor_ModChars-Ok.a7'
-    # A7RefPath               = 'LIB/CAMERAS/CAMERA/Ok/'+A7R
-    # myG                     = 'M_'+cat+'.inkGraph'
-    # myGraph                 = 'MODELING/CHARS/MODTECH/'+myG
-    # myGraphLocal            = LOCALPATH+'M_'+cat+'.inkGraph' # for debug   
-
-    # autoLoadA7ref           = False
-    # if autoload == 'True':
-    #     autoLoadA7ref       = True # in 2 variables because this script can be call external 
-
 
     if all_cats == 'True':
         cat_array = ['MAIN', 'SECONDARY', 'TERTIARY']
@@ -188,7 +154,6 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
         myG                     = 'M_'+cat_in_Array+'.inkGraph'
         myGraph                 = 'MODELING/CHARS/MODTECH/'+myG
         myGraphLocal            = LOCALPATH+'M_'+cat_in_Array+'.inkGraph' # for debug   
-        # print myGraph
         catFamily = []
         catFamily.append(cat_in_Array)
 
@@ -197,7 +162,6 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
         #======================================================================
         protoGraph  = ink.proto.Graph( graphs.DEFAULT )
         layout      = protoGraph.GetLayout()
-
 
         #======================================================================
         #========= Add Get Ref A7
@@ -257,7 +221,6 @@ def AK02_LAYOUT_BuildCameraModel(autoload='True',autosave='True',save_private='F
         #========= apply and refresh graph
         protoGraph.Show()
         #========= save Graph
-        # myGraph = myGraphLocal
         if str(save_private) == 'True':
             myGraph = myGraphLocal        
         if str(autosave) == 'True' and str(save_private) == 'True':
@@ -287,25 +250,24 @@ AK02_LAYOUT_BuildCameraModel.__paramsType__         = {
 
 
 
-def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='False',cat='MAIN',_cat=None):
+def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='False',cat='MAIN',all_cats='True',_cat=None):
     ''' 
     | /
-    | \ Tool - Last update 15-03-2016
+    | \ Tool - Last update 27-06-2016
       ----------------------------------------------------------------------
-      - Organize FACIAL Context Layout 
+      - Organize FACIAL Context Layout
+
       - autosave graphs in :
                 MODELING/CHARS/MODTECH/
                     -> F_MAIN.inkGraph
                     -> F_SECONDARY.inkGraph
                     -> F_TERTIARY.inkGraph
 
-      - todo :
+      - Auto Execution or Select Human-Shape_BcsTpl.a7
+      ----------------------------------------------------------------------
+        todo :
             - release gestion Filters = None
             - r&d : check len name for ecart auto optimal
-      ----------------------------------------------------------------------
-
-      Auto Execution or Select Human-Shape_BcsTpl.a7
-
     '''
 
     # PARAMS MODIFIABLES ############################################################################################
@@ -367,25 +329,27 @@ def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='Fa
     if n_groups_grouded != None :
         params['n_groups_grouded']          = n_groups_grouded
 
-    #=========
 
-    catFamily = []
-    if _cat != None :
-      cat = _cat[0]
-      for a in _catFamily:
-        catFamily.append(a)
-    if _cat == None :
-        catFamily.append(cat)
-        cat = cat
 
-    A7R                     = 'Human-Shape_BcsTpl.a7'
-    A7RefPath               = 'LIB/TEMPLATES/Human/Shape/'+A7R
-    myG                     = 'F_'+cat+'.inkGraph'
-    myGraph                 = 'MODELING/CHARS/MODTECH/'+myG
-    myGraphLocal            = LOCALPATH+'F_'+cat+'.inkGraph' # for test
+    # catFamily = []
+    # if _cat != None :
+    #   cat = _cat[0]
+    #   for a in _catFamily:
+    #     catFamily.append(a)
+    # if _cat == None :
+    #     catFamily.append(cat)
+    #     cat = cat
+
+    # A7R                     = 'Human-Shape_BcsTpl.a7'
+    # A7RefPath               = 'LIB/TEMPLATES/Human/Shape/'+A7R
+    # myG                     = 'F_'+cat+'.inkGraph'
+    # myGraph                 = 'MODELING/CHARS/MODTECH/'+myG
+    # myGraphLocal            = LOCALPATH+'F_'+cat+'.inkGraph' # for test
     autoLoadA7ref           = False
     if autoload == 'True':
         autoLoadA7ref       = True # in 2 variables because this script can be call external  
+
+    # Functions ###################################################################################################
 
     def showStream(protoGraph,assetProto,typeStreams,catFamily,A7posRef=None):
         ''' show a7 streams '''
@@ -424,109 +388,136 @@ def AK03_LAYOUT_BuildHumanShape(autoload='True',autosave='True',save_private='Fa
 
     # End Functions ################################################################################################  
 
+    #=========
 
-    #======================================================================
-    #========= Declare protograph
-    #======================================================================
-    protoGraph  = ink.proto.Graph( graphs.DEFAULT )
-    layout      = protoGraph.GetLayout()
+    cat_array = []  # for external request
 
-    #======================================================================
-    #========= Add Get Ref A7
-    #======================================================================
-    if autoLoadA7ref == True:
-        __PIPEIN_GRAPH.add_A7('dirPath',A7RefPath,True) # _type, A7(str,list,dic), A7Select[optional], A7position[optional]
-        protoGraph.Show()
-        protoGraph.Apply()
-        protoGraph.SelectAll()
+    catFamily = []
+    if _cat != None :
+      cat = _cat[0]
+      for a in _catFamily:
+        catFamily.append(a)
+    if _cat == None :
+        catFamily.append(cat)
+        cat = cat
 
-    if autoLoadA7ref == False:
+    cat_array.append(cat)
+
+    if all_cats == 'True':
+        cat_array = ['MAIN', 'SECONDARY', 'TERTIARY']
+
+    for cat_in_Array in cat_array:
+
+        A7R                     = 'Human-Shape_BcsTpl.a7'
+        A7RefPath               = 'LIB/TEMPLATES/Human/Shape/'+A7R
+        myG                     = 'F_'+cat_in_Array+'.inkGraph'
+        myGraph                 = 'MODELING/CHARS/MODTECH/'+myG
+        myGraphLocal            = LOCALPATH+'F_'+cat_in_Array+'.inkGraph' # for test
+        catFamily = []
+        catFamily.append(cat_in_Array)
+        
+        #======================================================================
+        #========= Declare protograph
+        #======================================================================
+        protoGraph  = ink.proto.Graph( graphs.DEFAULT )
         layout      = protoGraph.GetLayout()
-        selection   = protoGraph.GetSelection()
-        if not selection:
-            raise Exception('Please select '+A7R+' !')
-    #======================================================================
-    #========= Get Selection and move to center graph
-    #======================================================================
-    layout      = protoGraph.GetLayout()
-    selection   = protoGraph.GetSelection()
-    layout.SetPos(A7RefPath, (0,0) )
-    protoGraph.Show()
-    protoGraph.Apply()
-    protoGraph.SelectAll()
-    #======================================================================
-    #========= Retrieve a7 Pos
-    #======================================================================
-    for pa in selection: 
-        A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
-        nm_asset      = A7_infos['nm_asset']
-        a_types       = A7_infos['a_types']   
-        if str(pa) == str(A7RefPath):
-            ProtoA7 = pa
-    #======================================================================
-    #========= get  Refa7 position
-    #======================================================================
-            A7refPos = __PIPEIN_GRAPH.getPosition(pa,layout)
-    #======================================================================
-    #========= show .a7 Downstreams
-    #======================================================================  
-            StreamProtoList = showStream(protoGraph,ProtoA7,'GetDownstreams',catFamily)
-    #========= apply and refresh graph
+
+        #======================================================================
+        #========= Add Get Ref A7
+        #======================================================================
+        if autoLoadA7ref == True:
+            __PIPEIN_GRAPH.add_A7('dirPath',A7RefPath,True) # _type, A7(str,list,dic), A7Select[optional], A7position[optional]
             protoGraph.Show()
             protoGraph.Apply()
             protoGraph.SelectAll()
-    #======================================================================
-    #========= set position .a7 Downstreams
-    #======================================================================
 
-    #========= R&D for auto-ecart, check longest name for ecart optimal
-    if str(ecart_a7_X).upper() == 'AUTO': 
-        params = __PIPEIN_GRAPH.get_autoEcart_X(StreamProtoList,params)
+        if autoLoadA7ref == False:
+            layout      = protoGraph.GetLayout()
+            selection   = protoGraph.GetSelection()
+            if not selection:
+                raise Exception('Please select '+A7R+' !')
+        #======================================================================
+        #========= Get Selection and move to center graph
+        #======================================================================
+        layout      = protoGraph.GetLayout()
+        selection   = protoGraph.GetSelection()
+        layout.SetPos(A7RefPath, (0,0) )
+        protoGraph.Show()
+        protoGraph.Apply()
+        protoGraph.SelectAll()
+        #======================================================================
+        #========= Retrieve a7 Pos
+        #======================================================================
+        for pa in selection: 
+            A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
+            nm_asset      = A7_infos['nm_asset']
+            a_types       = A7_infos['a_types']   
+            if str(pa) == str(A7RefPath):
+                ProtoA7 = pa
+        #======================================================================
+        #========= get  Refa7 position
+        #======================================================================
+                A7refPos = __PIPEIN_GRAPH.getPosition(pa,layout)
+        #======================================================================
+        #========= show .a7 Downstreams
+        #======================================================================  
+                StreamProtoList = showStream(protoGraph,ProtoA7,'GetDownstreams',catFamily)
+        #========= apply and refresh graph
+                protoGraph.Show()
+                protoGraph.Apply()
+                protoGraph.SelectAll()
+        #======================================================================
+        #========= set position .a7 Downstreams
+        #======================================================================
 
-    #========= set position .a7 Downstreams   
-    n_streams = len(StreamProtoList)
-    __PIPEIN_GRAPH.move_StreamProtoList(n_streams,StreamProtoList,layout,A7refPos,params)
-    #========= apply and refresh graph
-    protoGraph.Show()
-    protoGraph.Apply()
-    protoGraph.SelectAll()
-    #======================================================================
-    #========= show childrens Skin Upstreams
-    #====================================================================== 
-    longestName = []  
-    selection   = protoGraph.GetSelection()
+        #========= R&D for auto-ecart, check longest name for ecart optimal
+        if str(ecart_a7_X).upper() == 'AUTO': 
+            params = __PIPEIN_GRAPH.get_autoEcart_X(StreamProtoList,params)
 
-    #========= R&D for auto-ecart, check longest name for ecart optimal
-    # to do for upstreams ? 
+        #========= set position .a7 Downstreams   
+        n_streams = len(StreamProtoList)
+        __PIPEIN_GRAPH.move_StreamProtoList(n_streams,StreamProtoList,layout,A7refPos,params)
+        #========= apply and refresh graph
+        protoGraph.Show()
+        protoGraph.Apply()
+        protoGraph.SelectAll()
+        #======================================================================
+        #========= show childrens Skin Upstreams
+        #====================================================================== 
+        longestName = []  
+        selection   = protoGraph.GetSelection()
 
-    for pa in selection: 
-        A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
-        nm_asset      = A7_infos['nm_asset']
-        nm_path       = A7_infos['nm_path']
-        A7posRef      = []
-        position      = __PIPEIN_GRAPH.getPosition(pa,layout)
-        A7posRef.append(position[0])
-        A7posRef.append(position[1])
-        if str(nm_asset) != str(A7RefPath):
-            result = showStream(protoGraph,pa,'GetUpstreams',catFamily,A7posRef)  # protoGraph,assetProto,typeStreams,catFamily,A7posRef=None
+        #========= R&D for auto-ecart, check longest name for ecart optimal
+        # to do for upstreams ? 
 
-    #========= apply and refresh graph
-    protoGraph.Show()
-    protoGraph.Apply()
-    #========= save Graph
-    # myGraph = myGraphLocal
-    if str(save_private) == 'True':
-        myGraph = myGraphLocal        
-    if str(autosave) == 'True' and str(save_private) == 'True':
-        # __PIPEIN_GRAPH.SaveGraph(myGraph) # to do , to debug
-        protoGraph.Write(myG, private=True)
-        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
-    if str(autosave) == 'True' and str(save_private) == 'False':
-        # __PIPEIN_GRAPH.SaveGraph(myGraph) # to do , to debug
-        protoGraph.Write(str(myGraph), private=False)
-        print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
-    if str(autosave) == 'False':
-        print '[ OK ] You can save : ' + myG
+        for pa in selection: 
+            A7_infos      = __PIPEIN_GRAPH.getA7_infos(pa)
+            nm_asset      = A7_infos['nm_asset']
+            nm_path       = A7_infos['nm_path']
+            A7posRef      = []
+            position      = __PIPEIN_GRAPH.getPosition(pa,layout)
+            A7posRef.append(position[0])
+            A7posRef.append(position[1])
+            if str(nm_asset) != str(A7RefPath):
+                result = showStream(protoGraph,pa,'GetUpstreams',catFamily,A7posRef)  # protoGraph,assetProto,typeStreams,catFamily,A7posRef=None
+
+        #========= apply and refresh graph
+        protoGraph.Show()
+        protoGraph.Apply()
+        #========= save Graph
+        # myGraph = myGraphLocal
+        if str(save_private) == 'True':
+            myGraph = myGraphLocal        
+        if str(autosave) == 'True' and str(save_private) == 'True':
+            # __PIPEIN_GRAPH.SaveGraph(myGraph) # to do , to debug
+            protoGraph.Write(myG, private=True)
+            print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
+        if str(autosave) == 'True' and str(save_private) == 'False':
+            # __PIPEIN_GRAPH.SaveGraph(myGraph) # to do , to debug
+            protoGraph.Write(str(myGraph), private=False)
+            print '[ OK ] ' + myG + ' have been saved -> ' + myGraph
+        if str(autosave) == 'False':
+            print '[ OK ] You can save : ' + myG
 
 
 # #=========================== UI
@@ -538,5 +529,6 @@ AK03_LAYOUT_BuildHumanShape.__paramsType__        = {
 'autoload'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'autosave'                :  ( 'bool', 'True' , ['True', 'False']  ),
 'save_private'            :  ( 'bool', 'False' , ['True', 'False']  ),
-'cat'                     :  ( 'enum', 'MAIN',['MAIN', 'SECONDARY', 'TERTIARY'] )
+'cat'                     :  ( 'enum', 'MAIN',['MAIN', 'SECONDARY', 'TERTIARY'] ),
+'all_cats'                :  ( 'bool', 'True' , ['True', 'False']  )
 }
