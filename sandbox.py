@@ -5,7 +5,7 @@
 # MG ILLUMINATION                                                                  #
 # First Crazy Debroussailleur : jDepoortere                                        #
 # Author : cPOTTIER                                                                #
-# Last Update : 21-06-2016                                                         #
+# Last Update : 28-06-2016                                                         #
 # ##################################################################################
 
 #================================================================================================================================== PRIMARY CLASS
@@ -200,20 +200,20 @@ class __ORGANIZER__():
 
 
 
-    def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower):
+    def retrieve_pathInfos(self,__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,PROJECT_LOWER):
         ''' retrieve information for path if USECASE or specials cases '''
 
         A7_infos         = __PIPEIN_GRAPH.getA7_infos(a7)
         a_catFamily      = A7_infos['a_catFamily']
 
         if type_layout == 'Usecase' and check_actor_ok.upper() in str(a7).upper():       
-            pathGraphSave        = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+            pathGraphSave        = '/u/'+PROJECT_LOWER+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+a_catFamily+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
 
         if str(myFilm) == 'MLUN' or str(myFilm) == 'SLUN':
             if type_layout == 'Layout':
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+                pathGraphSave    = '/u/'+PROJECT_LOWER+'/Users/COM/Presets/Graphs/RLO/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
             if type_layout == 'Anim':
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+                pathGraphSave    = '/u/'+PROJECT_LOWER+'/Users/COM/Presets/Graphs/ANIM/'+myFilm+'/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
         try:
             return pathGraphSave
         except:
@@ -333,7 +333,7 @@ def AA00_MYTOOLZ():
 
         ( locked A7 could be checked, please accept waiting a little bit ... thx)
 
-        - last update : 10-06-2016 
+        - last update : 28-06-2016 
     '''
     # print 'T4'
     import sys, ink.proto
@@ -809,11 +809,11 @@ def K10_SAVE_GRAPH():
 
     protoGraphName = 'mySample1'
     # will save 
-    # /u/'+projectLower+'/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
+    # /u/'+PROJECT_LOWER+'/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(str(protoGraphName), private=True)
 
-    graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    graphPath = '/u/'+PROJECT_LOWER+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     if os.path.isfile(graphPath):
         print 'Private mySample1 [OK]'
         print graphPath , 'Have been saved !!!'
@@ -823,9 +823,9 @@ def K10_SAVE_GRAPH():
 
 
     protoGraphName = 'mySample2'
-    graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    graphPath = '/u/'+PROJECT_LOWER+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     # will save 
-    # /u/'+projectLower+'/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
+    # /u/'+PROJECT_LOWER+'/Users/myaccount/Presets/Graphs/mySample1.inkGraph 
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(graphPath, private=True)
 
@@ -861,7 +861,7 @@ def K11_SAVE_SELECTION_IN_NEW_GRAPH():
     protoGraph.GetSelection(withLayout=True)     # withLayout est à False par defaut
     protoGraph.Write(str(protoGraphName), private=True)
 
-    graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+    graphPath = '/u/'+PROJECT_LOWER+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
     if os.path.isfile(graphPath):
         print 'Private sample_select [OK]'
         print graphPath , 'Have been saved !!!'
@@ -907,7 +907,7 @@ def K12_SAVE_SEVERAL_A7_IN_SEVERAL_GRAPH():
     for pa in assetList:
         n += 1
         protoGraphName = 'mySampleK12_several_'+str(n)
-        graphPath = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
+        graphPath = '/u/'+PROJECT_LOWER+'/Users/'+USER+'/Presets/Graphs/'+protoGraphName+'.inkGraph'
 
         protoGraph.SetSelection([pa])
         layout.SetPos(pa, (0,0) ) # optional
@@ -1276,6 +1276,8 @@ def K84_MULTI_THREAD(n_Boucle_Functions,Sample1='True',Sample2='False'):
       - Sample 1 will print n time each letter from Words 'minuscule|MAJUSCULE' in parallele
       - Sample 2 will print n time each letter from Words 'minuscule|MAJUSCULE' in parallele, 
         but with condition to finish writing the complete Word !
+
+        to see another more complex sample -> karlovaboardzatorMain.py.py
     '''
 
     mot_min = 'minuscule'
@@ -1423,7 +1425,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
     # ecart           = 2
     # ecartClip_Y     = 1
     #========= MODIFIABLE , optional
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph' # for debug/tests
+    pathGraphLocal = '/u/'+PROJECT_LOWER+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph' # for debug/tests
 
     #==============================================================================================================
     __ORGANIZER = __ORGANIZER__() # local class for organize .a7
@@ -1460,7 +1462,7 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
 
         #========= determine cases
         try:
-            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
+            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,PROJECT_LOWER,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
@@ -1506,12 +1508,12 @@ def AK01_GRAPH_Organizer(show_neighbours='True',organize_Upstreams='True',organi
                 a_name           = A7_infos_us['a_name']   
 
         #========= retrieve information for path if USECASE or specials cases 
-            result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
+            result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,us,myFilm,mySeq,myShot,mySHOT,check_actor_ok,PROJECT_LOWER)
             if result != None:
                 pathGraphSave = result   
         #========= Patch special case, no cat , to do better
         if 'NONE' in str(pathGraphSave).upper() and str(type_layout) == 'Usecase':
-            pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+            pathGraphSave    = '/u/'+PROJECT_LOWER+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
      
     #========= set position layout.a7 Upstreams
         __ORGANIZER.moveClipA7s(__PIPEIN_GRAPH,protoGraph,'Upstreams',assetClips,layout,layA7Pos_Y)
@@ -1596,7 +1598,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
     # ecart           = 2
     # ecartClip_Y     = 1
     #========= MODIFIABLE , optional
-    pathGraphLocal = '/u/'+projectLower+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph' # for debug/tests
+    pathGraphLocal = '/u/'+PROJECT_LOWER+'/Users/'+USER+'/Presets/Graphs/_organizer_toto.inkGraph' # for debug/tests
 
     #==============================================================================================================
     __ORGANIZER = __ORGANIZER__() # local class for organize .a7
@@ -1665,7 +1667,7 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
 
         #========= determine cases
         try:
-            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,projectLower,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
+            result = __PIPEIN_GRAPH.getTypeLayout(pa,a_types,nm_asset,PROJECT_LOWER,myFilm,myShot,myCat,mySeq,mySHOT,False) # verbose true false , optional
             type_layout      = result[0]
             check_clips      = result[1]
             pathGraphSave    = result[2]
@@ -1720,12 +1722,12 @@ def AK01_MULTIGRAPH_Organizer(SaveGraph='False'):
                     a_catFamily      = A7_infos['a_catFamily']
                     a_name           = A7_infos['a_name']   
         #========= retrieve information for path if USECASE or specials cases 
-                result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,projectLower)
+                result = __ORGANIZER.retrieve_pathInfos(__PIPEIN_GRAPH,type_layout,a7,myFilm,mySeq,myShot,mySHOT,check_actor_ok,PROJECT_LOWER)
                 if result != None:
                     pathGraphSave = result  
         #========= Patch special case, no cat , to do better
             if 'NONE' in str(pathGraphSave).upper():
-                pathGraphSave    = '/u/'+projectLower+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
+                pathGraphSave    = '/u/'+PROJECT_LOWER+'/Users/COM/Presets/Graphs/ANIM/USECASE/'+mySeq+'/'+mySeq+'_'+mySHOT+'.inkGraph'
         #======================================================================
         #========= add EDIT a7s 
         #======================================================================
@@ -2325,7 +2327,7 @@ def AK04_PATCHZATOR(SaveGraph='True'):
 
             protoGraphName = a_name+'.inkGraph'
             # print protoGraphName
-            pathGraphSave = '/u/'+projectLower+'/Users/COM/Presets/Graphs/SHADING/PROPS/'+a_catFamily+'/'+protoGraphName
+            pathGraphSave = '/u/'+PROJECT_LOWER+'/Users/COM/Presets/Graphs/SHADING/PROPS/'+a_catFamily+'/'+protoGraphName
             # print pathGraphSave
 
 
