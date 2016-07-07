@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 28-06-2016                                                                #
+# Date : 07-07-2016                                                                #
 # ##################################################################################
 
 
@@ -681,13 +681,20 @@ class __QT_KBZ__(QtGui.QDialog):
 				# we re write tmp file
 				self.on_BT_LOCKEDFILE_Local_clicked('BT_CLEAR_LOCKEDFILE_Local')		
 				# time.sleep(0.8)			
-				for line in matches:
-					time.sleep(0.1)	
-					# self.printSTD(line)
-					a7 = str(line)+'\n'
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
-					f.write(line+'\n') # python will convert \n to os.linesep
-					f.close()
+				# for line in matches: # to do better
+				# 	time.sleep(0.1)	
+				# 	# self.printSTD(line)
+				# 	a7 = str(line)+'\n'
+				# 	f = open(self.TMP_PATH_FILE_LOCKED,'a')
+				# 	f.write(line+'\n') # python will convert \n to os.linesep
+				# 	f.close()
+
+				f = open(self.TMP_PATH_FILE_LOCKED, 'w')
+				# mylist = [1, 2 ,6 ,56, 78]
+				f.write("\n".join(map(lambda x: str(x), matches)))
+				f.close()
+
+
 
 				# update textarea
 				self.update_TMP_PATH_FILE_LOCKED()
@@ -1069,28 +1076,10 @@ class __QT_KBZ__(QtGui.QDialog):
 			self.lockedOutputBottom.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
 
-			
-
 			# to mutu 
 			self.update_TMP_PATH_FILE_LOCKED()
 
 
-			# BottomContent = self.lockedOutputBottom.toPlainText()
-			# lines = [line.rstrip('\n') for line in open(self.TMP_PATH_FILE_LOCKED)]
-
-			# if len(lines[0])>10: # 10 is path lenght, arbitrary
-
-			# 	self.lockedOutputBottom.setVisible(True)
-			# 	self.CHKCP_CLIPBRD.setVisible(True)
-
-			# 	for line in lines:
-			# 		# to mutu 
-			# 		if str(line) not in str(BottomContent):	
-
-			# 			self.lockedOutputBottomCursor.movePosition(QtGui.QTextCursor.End)
-			# 			self.lockedOutputBottom.insertPlainText(str(line)+'\n')
-
-			# 	self.BT_SEE_LOCKEDFILE_Local.setVisible(False)
 
 
 	#======================================================================================================
@@ -1339,10 +1328,18 @@ class Thread_Instance():
 		t.start()
 		self.threads.append(t)
 
+		# Wait for all threads to complete to test
+		# for t in self.threads:
+		# 	t.join()
+		# print "Exiting Main Thread"
+
+
 	def __del__(self):
 		for t in self.threads:
 			running 	= t.running()
+			# t.join() # Python QT QNetworkRequest exits with (process:3265): GLib-ERROR : Creating pipes for GWakeup: Too many open files
 			t.stop()
+			# print "Exiting Main Thread"
 			if not t.finished():
 				t.wait()
 
@@ -1423,12 +1420,22 @@ class Thread_Worker(QtCore.QThread):
 				content=['.']
 				pass
 
+			f = open(self.TMP_PATH_FILE_LOCKED,'a')
+
 			for line in matches:
 				a7 = str(line)+'\n'
 				if a7 not in content:         
-					f = open(self.TMP_PATH_FILE_LOCKED,'a')
+					# f = open(self.TMP_PATH_FILE_LOCKED,'a')
 					f.write('\n' +line+'\n') # python will convert \n to os.linesep
-					f.close()
+					# f.close()
+
+			f.close()
+
+			# f = open(self.TMP_PATH_FILE_LOCKED, 'a')
+			# # mylist = [1, 2 ,6 ,56, 78]
+			# f.write("\n".join(map(lambda x: str(x), matches)))
+			# f.close()
+
 
 		#====== verbose mode
 		msg = ' '   
