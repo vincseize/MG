@@ -14,13 +14,13 @@ import random
 from random import randint
 
 import sys,os
-if '__Thread__class2' in sys.modules:
-    del(sys.modules["__Thread__class2"])
-    import __Thread__class2
-    from __Thread__class2 import * 
+if '__Thread__class' in sys.modules:
+    del(sys.modules["__Thread__class"])
+    import __Thread__class
+    from __Thread__class import * 
 else:
-    import __Thread__class2
-    from __Thread__class2 import *
+    import __Thread__class
+    from __Thread__class import *
 #===================================================================================================
 
 
