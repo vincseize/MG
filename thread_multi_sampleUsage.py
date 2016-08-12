@@ -3,33 +3,52 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 05-08-2016                                                                #
+# Date : 12-08-2016                                                                #
 # Thread Sample Usage                                                              #
 # ##################################################################################
 
 
-#=========================================================================================================================== threads CLASSES
+#=================================================================================== threads CLASSES
+import sys, os, time 
+import random
+from random import randint
+
 import sys,os
-if '__Thread__class' in sys.modules:
-    del(sys.modules["__Thread__class"])
-    import __Thread__class
-    from __Thread__class import * 
+if '__Thread__class2' in sys.modules:
+    del(sys.modules["__Thread__class2"])
+    import __Thread__class2
+    from __Thread__class2 import * 
 else:
-    import __Thread__class
-    from __Thread__class import *
-#===========================================================================================================================================
+    import __Thread__class2
+    from __Thread__class2 import *
+#===================================================================================================
 
 
-class run_myFunction_toThread():
+class __FUNCTIONS__TOTHREAD__():
+  
     def __init__(self, args):
         self.args = args
+        self.run()
 
-    def myFunction_toThread(self):
-	'''  '''
-	msg = self.args[0]
-	print msg
+    def run(self):
+	'''Your Code'''
+	
+	print self.args[0]
+	print self.args[1]
+	
+        i = 0
+        while i < 2:
+	    for arg in self.args:
+		for lettre in arg:
+		    # sys.stdout.write(lettre)
+		    # sys.stdout.flush()
+		    print lettre
+		    attente = 0.2
+		    attente += random.randint(1, 60) / 100
+		    time.sleep(attente)
+		i += 1
 
 
 
-# __Thread__class.__THREAD__INSTANCE__('test4')
-__Thread__class.__THREAD__INSTANCE__('test44')
+
+
