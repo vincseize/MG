@@ -3,17 +3,16 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 12-08-2016                                                                #
+# Date : 16-08-2016                                                                #
 # Thread Sample Usage                                                              #
 # ##################################################################################
 
 
-#=================================================================================== threads CLASSES
+#======================================================================= threads CLASSES dont touch
 import sys, os, time 
 import random
 from random import randint
 
-import sys,os
 if '__Thread__class' in sys.modules:
     del(sys.modules["__Thread__class"])
     import __Thread__class
@@ -21,6 +20,8 @@ if '__Thread__class' in sys.modules:
 else:
     import __Thread__class
     from __Thread__class import *
+    
+verrou = RLock()
 #===================================================================================================
 
 
@@ -28,27 +29,36 @@ class __FUNCTIONS__TOTHREAD__():
   
     def __init__(self, args):
         self.args = args
+        self.with_verrou = True # True forced process ending before to execute the next
         self.run()
 
     def run(self):
-	'''Your Code'''
+	'''Dont Touch'''
 	
-	print self.args[0]
-	print self.args[1]
+	# print self.args # for debug
 	
         i = 0
         while i < 2:
-	    for arg in self.args:
+	  if self.with_verrou == True:
+	    with verrou: 
+		self.your_function()
+	    i += 1
+
+	  else:
+	    self.your_function()
+	    i += 1
+	    
+	  
+
+    def your_function(self):
+	'''Your Code'''
+	for arg in self.args:
 		for lettre in arg:
-		    # sys.stdout.write(lettre)
-		    # sys.stdout.flush()
 		    print lettre
-		    attente = 0.2
-		    attente += random.randint(1, 60) / 100
-		    time.sleep(attente)
-		i += 1
-
-
+		    delay = 0.05
+		    delay += random.randint(1, 60) / 100
+		    time.sleep(delay)
+		
 
 
 
