@@ -21,15 +21,16 @@ else:
     import __Thread__class
     from __Thread__class import *
     
-verrou = RLock()
+# locked = RLock()
+# workQueue = Queue.Queue(10)
 #===================================================================================================
 
 
 class __FUNCTIONS__TOTHREAD__():
   
-    def __init__(self, args):
+    def __init__(self, args, with_locked=True):
         self.args = args
-        self.with_verrou = True # True forced process ending before to execute the next
+        self.with_locked = with_locked # True forced process ending before to execute the next
         self.run()
 
     def run(self):
@@ -39,8 +40,8 @@ class __FUNCTIONS__TOTHREAD__():
 	
         i = 0
         while i < 2:
-	  if self.with_verrou == True:
-	    with verrou: 
+	  if self.with_locked == True:
+	    with locked: 
 		self.your_function()
 	    i += 1
 
