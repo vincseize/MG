@@ -25,6 +25,7 @@ from PyQt4.QtCore import QThread
 import threading
 from threading import *
 import Queue
+from Queue import Queue
 from multiprocessing import Pool, Process, Pipe, Lock, Value, Array, Manager, TimeoutError
 
 #================================ Thread Instance ( container )
@@ -40,6 +41,10 @@ else:
     #from thread_multi_sampleUsage import __FUNCTIONS__TOTHREAD__
     from thread_multi_sampleUsage import *
     #import thread_multi_sampleUsage.__FUNCTIONS__TOTHREAD__
+    
+locked = RLock()
+# workQueue = Queue.Queue(10)
+
 #===================================================================================================
 
 
@@ -47,19 +52,25 @@ else:
 class __THREAD__INSTANCE__():
 
 	def __init__(self, *args): 
-		type_process = None
+		# self.locked = RLock()
+		self.type_process = None
+		self.with_locked  = None
 		try:
-		    type_process = args[1]
+		    self.type_process = args[1]
+		except:
+		  pass
+		try:
+		    self.with_locked = args[2]
 		except:
 		  pass
 		self.threads  	= []
 		arguments     	= []
 		for arg in args[0]:
 			arguments.append(arg)
-		t = __THREAD__WORKER__(arguments, self) # self very Important
+		t = __THREAD__WORKER__(arguments, self.with_locked, self) # self very Important
 		t.start()
 		self.threads.append(t)
-		if 'type_process' == 'stack':
+		if self.type_process == 'stack':
 			for t in self.threads:
 				t.join()
 
@@ -75,18 +86,19 @@ class __THREAD__INSTANCE__():
 
 class __THREAD__WORKER__(threading.Thread): # If QT, no threading.Thread
 
-	def __init__(self,args , receiver):
+	def __init__(self,args ,with_locked, receiver):
 	  
 		# QtCore.QThread.__init__(self) # if in QT
 		threading.Thread.__init__(self)
-		self.args     			= args	
-		self.receiver   		= receiver # receiver ( self ) very Important
+		self.args     		= args
+		self.with_locked	= with_locked
+		self.receiver   	= receiver # receiver ( self ) very Important
 
 		self.Terminated 	= 0
 
 	def run(self):
 		try:
-			FUNCTIONS__TOTHREAD = thread_multi_sampleUsage.__FUNCTIONS__TOTHREAD__(self.args)
+			FUNCTIONS__TOTHREAD = thread_multi_sampleUsage.__FUNCTIONS__TOTHREAD__(self.args,self.with_locked)
 		except AttributeError:
 		    print AttributeError
 		    return None
