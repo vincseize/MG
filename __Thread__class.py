@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 12-08-2016                                                                #
+# Date : 16-08-2016                                                                #
 # ##################################################################################
 
 
@@ -23,6 +23,7 @@ from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import QThread
 
 import threading
+from threading import *
 import Queue
 from multiprocessing import Pool, Process, Pipe, Lock, Value, Array, Manager, TimeoutError
 
@@ -45,14 +46,22 @@ else:
 
 class __THREAD__INSTANCE__():
 
-	def __init__(self, *args):  
+	def __init__(self, *args): 
+		type_process = None
+		try:
+		    type_process = args[1]
+		except:
+		  pass
 		self.threads  	= []
 		arguments     	= []
-		for arg in args[1]:
+		for arg in args[0]:
 			arguments.append(arg)
 		t = __THREAD__WORKER__(arguments, self) # self very Important
 		t.start()
 		self.threads.append(t)
+		if 'type_process' == 'stack':
+			for t in self.threads:
+				t.join()
 
 	def __del__(self):
 		for t in self.threads:
