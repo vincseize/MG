@@ -157,6 +157,7 @@ class __FUNCTIONS__TOTHREAD__():
 	self.INCLUDE_EXT_LOCKED		= args[4]
 	self.TMP_PATH_FILE_LOCKED	= args[5]
 	self.n_users_tot		= args[6]
+	self.start_time			= args[7]
 	# print self.USER_TO_SEARCH
 	
 
@@ -167,20 +168,10 @@ class __FUNCTIONS__TOTHREAD__():
 	print '===================================> ' + str(self.directory) + ' search in progress, please wait ...'
 	print ' '
 
-	#msg = '\n----- Search [ ' + self.USER_TO_SEARCH + ' ] Locked-UnPublished Files, Work in Progress! Please wait ...\n'
-	#print >> sys.__stderr__, msg
-	#randwait = ['.','..','...'] # for deco
-
-
-	# print matches
-	#startTimeAll = datetime.now()
-	#print startTimeAll
-
 	matches = []
 
 	path = os.path.normpath(self.source)
 
-	
 	for root, dirnames, filenames in os.walk(self.source, topdown=False, onerror=None, followlinks=True):
 
 	    if not dirnames:   
@@ -193,154 +184,50 @@ class __FUNCTIONS__TOTHREAD__():
 		    ext = None
 		    try:
 			ext = os.path.splitext(filename)[1][1:]
-			#print ext
+
 		    except:
 			pass  
 		    try:
 			
-			filePath  = os.path.join(root, filename)
-			# print filePath
-			'''
-			if str(self.USER_TO_SEARCH[0]) in str(filePath):
-			    chain = str(self.USER_TO_SEARCH[0])
-			    #tmp = filePath.split(chain)[0]
-			    #chain = '/Assets/'
-			    #filePath = tmp.split(chain)[1]
-			    print filePath
-			    matches.append(filePath)
-			    break
-			'''  
-			#chain = 'mdata'
-			#if str(chain) in str(filename):
-			# if ext.upper() in self.INCLUDE_EXT_LOCKED:
-			#print ext
-			filePath  = os.path.join(root, filename)
-			#filePath = '/u/gri/Users/COM/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'
-			#filePath = '/u/gri/Users/cpottier/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'
-			#filePath = '/u/gri/Users/cpottier/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Refs.a7'
-			# filePath = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0015_EDIT-NasK_Casting.a7'
-			
-			'''
-			print filename
-			sleep(2)
-			if str(filename)=='.mdaData':
-			    print filename
-			    break
-			
-			
-			# print filename
-			result    = self.get_fileInfo(filePath)
-			infoWrite   = result[0]
-			infoOwner   = result[1]
-			print infoWrite
-			print infoOwner
-			# matches.append(os.path.join(root, filename))
-			'''
-			
-			
-			#time.sleep(1)
-			
-		
-			
-			
-			result_array = self.splitall(filePath)
-			'''
-			result_array = self.splitall(filePath)
-			#print result
-			#print self.USER_TO_SEARCH
-			chain1 = '.mdu'
-			chain2 = '.mda'
-			#if self.USER_TO_SEARCH[0] in result_array and chain1 in result_array and chain2 not in result_array:
-			
-			# if chain1 in result_array and chain2 not in result_array:
-			
-			path1 = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/.mda/.mdaData'
-			#path1 = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0015_EDIT-NasK_Casting.a7'
-			os.path.normpath(path1)
-			if filePath == path1:
-			'''
-			#print self.USER_TO_SEARCH[0]
-			
-			
-			
-			sa = set(self.USER_TO_SEARCH)
-			sb = set(result_array)
-			c = list(sa & sb)
-			# print c
-			
-			
-			
-			
-			if len(c)==1:
-			    # print len(c)
-			#if self.USER_TO_SEARCH[0] in result_array:
-			    #filePath = '/u/gri/Users/cpottier/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'
-			    #os.path.normpath(path2)
-			    #ln = os.readlink(path2)
-			    #print ln
-			    
-			    #os.path.normpath(os.path.normpath(filePath))
-			    ln = os.readlink(filePath)
-			    ln_array = self.splitall(ln)
-			    #print ln_array
-			
-			    result    = self.get_fileInfo(filePath)
-			    infoWrite   = result[0]
-			    infoOwner   = result[1]
-			    #print infoWrite
-			    #print infoOwner
-			    #if 'OFF' in ln_array:
-				#print ln_array
+			pathA7  = os.path.join(root, filename)
+			#filePath_conf = os.path.dirname(os.path.dirname(pathA7))
+			#filePath = os.path.split(filePath_conf)[3] 	
+			filePath = "/".join(pathA7.split('/')[6:])
+			#print filePath
+			#ass = ink.query.Asset(nomen.Cut('GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'))
+			ass = ink.query.Asset(nomen.Cut(filePath))
+			res = ass.GetLockInfos()
+			# print res[3]
+			# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
+			# (True, True, True, 'cpottier', True, 'cpottier', False, False, False, False)
 
-			    
-			    if str(infoWrite) == 'True' and str(infoOwner) in str(self.USER_TO_SEARCH) and ln_array[4]=='OFF':
-				test = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0015_EDIT-NasK_Casting.a7'
+			if res[3]==res[5]:
+			    if res[3] in str(self.USER_TO_SEARCH):    
+				#test = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0015_EDIT-NasK_Casting.a7'
 				# 410866586 4 -rw-r----- 1 cpottier users  649 Aug 22 19:03 GRI_S0015_EDIT-NasK_Casting.a7
 				# test = '/u/gri/Users/OFF/Assets/GRI/S0200/EDIT/NasK/GRI_S0200_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0200_EDIT-NasK_Casting.a7'
 				
 				# /u/gri/Users/cpottier/Assets/GRI/S0200/EDIT/NasK/GRI_S0200_EDIT-NasK_Casting.a7
 				# 3382844215 4 -r--r----- 1 cpottier users  648 Mar  8 10:47 GRI_S0200_EDIT-NasK_Casting.a7
-				
-				os.path.normpath(test)
-				result    = self.get_fileInfo(test)
-				print infoWrite
-				print infoOwner
-				
-				
-				if str(infoWrite) == 'True':	
-				    matches.append(filePath)
-				    msg = '\n' + filePath + ' [ LOCKED ]'
-				    print msg
-			    
-			'''
-			# if str(infoWrite) == 'True' and str(infoOwner) in str(self.USER_TO_SEARCH):
-			if str(infoOwner) in str(self.USER_TO_SEARCH):
-			    matches.append(filePath)     
-			    #matches.append(os.path.join(root, filename))
-			    msg = '\n' + filePath + ' [ LOCKED ]\n'
-			    print msg
-			'''
-			      
-			  
-			  
+	    
+				matches.append(filePath)
+				msg = '\n' + filePath + ' [ LOCKED ]'
+				print msg
+
+
 			  
 		    except:
-			# print 'error'
+			print 'error'
 			pass
 
-
-		    #break 
-	    
-		#break
-	    
-	    
 	    
 	matches = list(set(matches))
 
 	print ' '
 	print '===================================> ' + str(self.directory) + ' search DONE in  '
-	startTimeAll = datetime.now()
-	print startTimeAll	
+	endTime = datetime.now()
+	totTime = endTime - self.start_time
+	print totTime	
 	print str(len(matches)) + ' a7 Locked'
 	print matches
 	print ' '
@@ -477,12 +364,13 @@ def search_lockedA7():
     print msg
 
     for directory in INCLUDE_DIR_LOCKED:
-	print directory
+	#print directory
 	startTimeAll = datetime.now()
 	print startTimeAll
+	# start_time = time.time()
 	#START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
-	START_DIR = '/u/gri/Users/cpottier/Assets/' + directory
-	args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,n_users_tot]
+	START_DIR = START_DIR_LOCAL_LOCKED_A7+'/' + directory
+	args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,n_users_tot,startTimeAll]
 	__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
       
       
@@ -514,19 +402,21 @@ if CURRENT_PROJECT 		== 'DM3':
     HOME_COLOR = ALL_PROJECTS['dm3']
 if CURRENT_PROJECT 		== 'MAX':
     HOME_COLOR = ALL_PROJECTS['max']
-START_DIR_PUBLIC 		= '/u/'+CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
-# START_DIR_LOCAL_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
-# START_DIR_LOCAL_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/COM/Assets/'
-START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'		
-START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Assets/GRI/S0015'	
-# START_DIR_OFF_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/OFF/Assets/'+CURRENT_PROJECT+'/'
-START_DIR_OFF_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/OFF/Assets'
+    
+START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'	    
+START_DIR_PUBLIC 		= START_DIR_USERS+'COM/Presets/Graphs/'
+# START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Files/etc'
+START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
+	
+# START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Assets'	
+# START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets/'+CURRENT_PROJECT+'/'
+START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 #PATH_EXEMPLES			= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 #CURRENT_SCRIPTS_PATH		= '/u/'+CURRENT_PROJECT_lower+PATH_EXEMPLES
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','dm3_contrats']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-#INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT]
+# INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT]
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 
 CHK_SEARCH_ALL  		= False
@@ -556,13 +446,6 @@ search_lockedA7()
 
 
 
-
-import nomen
-ass = ink.query.Asset(nomen.Cut('GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'))
-res = ass.GetLockInfos()
-print res[3]
-
-# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
 
 
 
