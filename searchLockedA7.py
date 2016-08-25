@@ -12,6 +12,9 @@ from os import stat
 from pwd import getpwuid
 
 import ink
+import nomen
+import ink.proto
+import ink.query
 import ink.io
 import glob, random
 from random import randint
@@ -257,7 +260,20 @@ class __FUNCTIONS__TOTHREAD__():
 			if filePath == path1:
 			'''
 			#print self.USER_TO_SEARCH[0]
-			if self.USER_TO_SEARCH[0] in result_array:
+			
+			
+			
+			sa = set(self.USER_TO_SEARCH)
+			sb = set(result_array)
+			c = list(sa & sb)
+			# print c
+			
+			
+			
+			
+			if len(c)==1:
+			    # print len(c)
+			#if self.USER_TO_SEARCH[0] in result_array:
 			    #filePath = '/u/gri/Users/cpottier/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'
 			    #os.path.normpath(path2)
 			    #ln = os.readlink(path2)
@@ -278,9 +294,23 @@ class __FUNCTIONS__TOTHREAD__():
 
 			    
 			    if str(infoWrite) == 'True' and str(infoOwner) in str(self.USER_TO_SEARCH) and ln_array[4]=='OFF':
-				matches.append(filePath)
-				msg = '\n' + filePath + ' [ LOCKED ]'
-				print msg
+				test = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0015_EDIT-NasK_Casting.a7'
+				# 410866586 4 -rw-r----- 1 cpottier users  649 Aug 22 19:03 GRI_S0015_EDIT-NasK_Casting.a7
+				# test = '/u/gri/Users/OFF/Assets/GRI/S0200/EDIT/NasK/GRI_S0200_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0200_EDIT-NasK_Casting.a7'
+				
+				# /u/gri/Users/cpottier/Assets/GRI/S0200/EDIT/NasK/GRI_S0200_EDIT-NasK_Casting.a7
+				# 3382844215 4 -r--r----- 1 cpottier users  648 Mar  8 10:47 GRI_S0200_EDIT-NasK_Casting.a7
+				
+				os.path.normpath(test)
+				result    = self.get_fileInfo(test)
+				print infoWrite
+				print infoOwner
+				
+				
+				if str(infoWrite) == 'True':	
+				    matches.append(filePath)
+				    msg = '\n' + filePath + ' [ LOCKED ]'
+				    print msg
 			    
 			'''
 			# if str(infoWrite) == 'True' and str(infoOwner) in str(self.USER_TO_SEARCH):
@@ -418,7 +448,7 @@ def deleteContent(fName):
 	with open(fName, "w"):
 	    pass
 	  
-def get_AllUsers(CURRENT_USER,START_DIR_USERS,EXCLUDE_DIR_USERS_LOCKED,CHK_SEARCH_ALL):
+def get_AllUsers():
     ALL_USERS = [] # GLOBVAR
     for user in os.listdir(START_DIR_USERS):
 	if str(user) not in EXCLUDE_DIR_USERS_LOCKED:
@@ -436,80 +466,11 @@ def get_AllUsers(CURRENT_USER,START_DIR_USERS,EXCLUDE_DIR_USERS_LOCKED,CHK_SEARC
     return ALL_USERS		
 		
 		
-		
-		
-		
 # #########################################################################################################################
 # METHOD                                                                                                                  #
 # #########################################################################################################################
 
-#============================= type of sharing ressources process | optional ( default stack ) 
-# type_process = 'stack' 	# thread are executed in order
-type_process = 'parallel'	# thread are executed simultaneous
-
-#=========================================== lock process | optional ( default True (longer) )
-with_locked = False		# lock and wait end of run threading process function
-
-#============================================================== var(s) for threading process 1
-
-
-CURRENT_USER 			= os.getenv('USER')
-ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
-CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
-CURRENT_PROJECT 		= CURRENT_PROJECT_lower.upper()
-START_DIR_PUBLIC 		= '/u/'+CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
-# START_DIR_LOCAL_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
-# START_DIR_LOCAL_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/COM/Assets/'
-START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'		
-START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Assets/GRI/S0015'	
-
-# START_DIR_OFF_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/OFF/Assets/'+CURRENT_PROJECT+'/'
-START_DIR_OFF_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/OFF/Assets'
-				  #/u/gri/Users/OFF/Assets/
-
-#PATH_EXEMPLES			= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
-#CURRENT_SCRIPTS_PATH		= '/u/'+CURRENT_PROJECT_lower+PATH_EXEMPLES
-TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
-
-
-if CURRENT_PROJECT 	== 'GRI':
-    HOME_COLOR = ALL_PROJECTS['gri']
-if CURRENT_PROJECT 	== 'LUN':
-    HOME_COLOR = ALL_PROJECTS['lun']
-if CURRENT_PROJECT 	== 'DM3':
-    HOME_COLOR = ALL_PROJECTS['dm3']
-if CURRENT_PROJECT 	== 'MAX':
-    HOME_COLOR = ALL_PROJECTS['max']
-
-EXCLUDE_DIR_USERS_LOCKED = ['COM','OFF','dm3_contrats']
-INCLUDE_DIR_LOCKED = [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-#INCLUDE_DIR_LOCKED = [CURRENT_PROJECT]
-INCLUDE_EXT_LOCKED = ['CSV','XML','INKGRAPH','A7']
-
-CHK_SEARCH_ALL  = False
-
-# CURRENT_USER = 'cpottier'
-
-ALL_USERS = get_AllUsers(CURRENT_USER,START_DIR_USERS,EXCLUDE_DIR_USERS_LOCKED,CHK_SEARCH_ALL)
-n_users_tot        	= len(ALL_USERS)
-make_lockedA7dirs()
-
-print ALL_USERS
-
-#CURRENT_PROJECT_lower   = CURRENT_PROJECT_lower
-#INCLUDE_DIR_LOCKED    	= INCLUDE_DIR_LOCKED
-#INCLUDE_EXT_LOCKED     	= INCLUDE_EXT_LOCKED
-#TMP_PATH_FILE_LOCKED   	= TMP_PATH_FILE_LOCKED
-#CHK_SEARCH_ALL       	= CHK_SEARCH_ALL
-#n_user           	= n_user
-#n_users_real       	= n_users_real
-
-curPath = os.path.abspath('.')
-TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED)
-deleteContent(TMP_FILE_LOCKED)	
-
-
-#=====================================================  
+#====================================================================================================== Functions to thread
 
 def search_lockedA7():
     msg = '\n----- Search Locked-UnPublished Files, Work in Progress! Please wait ...\n'
@@ -530,13 +491,78 @@ def search_lockedA7():
 	#msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + str(totTime) + ' ] \n'    
 	#print msg
 
-#==========================================================================================================================  
-	
+# ############################################################################################################### Variables
 
-	
+#================================================ type of sharing ressources process | optional ( default stack ) 
+# type_process = 'stack' 	# thread are executed in order
+type_process = 'parallel'	# thread are executed simultaneous
+
+#================================================ lock process | optional ( default True (longer) )
+with_locked = False		# lock and wait end of run threading process function
+
+#================================================
+
+CURRENT_USER 			= os.getenv('USER')
+ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
+CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
+CURRENT_PROJECT 		= CURRENT_PROJECT_lower.upper()
+if CURRENT_PROJECT 		== 'GRI':
+    HOME_COLOR = ALL_PROJECTS['gri']
+if CURRENT_PROJECT 		== 'LUN':
+    HOME_COLOR = ALL_PROJECTS['lun']
+if CURRENT_PROJECT 		== 'DM3':
+    HOME_COLOR = ALL_PROJECTS['dm3']
+if CURRENT_PROJECT 		== 'MAX':
+    HOME_COLOR = ALL_PROJECTS['max']
+START_DIR_PUBLIC 		= '/u/'+CURRENT_PROJECT_lower+'/Users/COM/Presets/Graphs/'
+# START_DIR_LOCAL_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/cpottier/Files/etc'
+# START_DIR_LOCAL_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/COM/Assets/'
+START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'		
+START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Assets/GRI/S0015'	
+# START_DIR_OFF_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/OFF/Assets/'+CURRENT_PROJECT+'/'
+START_DIR_OFF_LOCKED_A7 	= '/u/'+CURRENT_PROJECT_lower+'/Users/OFF/Assets'
+#PATH_EXEMPLES			= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
+#CURRENT_SCRIPTS_PATH		= '/u/'+CURRENT_PROJECT_lower+PATH_EXEMPLES
+TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
+EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','dm3_contrats']
+INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
+#INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT]
+INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
+
+CHK_SEARCH_ALL  		= False
+
+# CURRENT_USER = 'cpottier'
+ALL_USERS = get_AllUsers()
+n_users_tot        	= len(ALL_USERS)
+make_lockedA7dirs()
+
+curPath = os.path.abspath('.')
+TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED)
+deleteContent(TMP_FILE_LOCKED)	
+
+
+# ############################################################################################################### RUN  
 	
 search_lockedA7()
 
+
+# import nomen
+# ass = ink.query.Asset(nomen.Cut('LIB/CHARS/CMDM3/BobMDM3/Ok/BobMDM3-Actor-Ok.a7'))
+# ass.GetLockInfos()
+
+# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
+
+
+
+
+
+
+import nomen
+ass = ink.query.Asset(nomen.Cut('GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'))
+res = ass.GetLockInfos()
+print res[3]
+
+# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
 
 
 
