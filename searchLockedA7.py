@@ -11,6 +11,7 @@
 import argparse
 parser = argparse.ArgumentParser(description='login is optional | default is current login')
 parser.add_argument('login',nargs='?')
+parser.add_argument('brokenA7',nargs='?')
 args = parser.parse_args()
 #======================================================================================================================================================
 
@@ -163,8 +164,9 @@ class __FUNCTIONS__TOTHREAD__():
 	self.DIR_LOCKED			= args[3]
 	self.INCLUDE_EXT_LOCKED		= args[4]
 	self.TMP_PATH_FILE_LOCKED	= args[5]
-	self.n_users_tot		= args[6]
-	self.start_time			= args[7]
+	self.BROKENA7			= args[6]
+	self.n_users_tot		= args[7]
+	self.start_time			= args[8]
 	# print self.USER_TO_SEARCH
 	
 
@@ -195,25 +197,41 @@ class __FUNCTIONS__TOTHREAD__():
 		    try:
 			if str(ext).upper() in self.INCLUDE_EXT_LOCKED:
 			    pathA7  = os.path.join(root, filename)
+			    # pathA7 = '/u/gri/Users/COM/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7'
 			    result = self.get_fileInfo(pathA7)	# ln link -> 
 			    # /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
 			    infoWrite = result[0]
 			    infoOwner = result[1]
-			   
-			    if infoOwner in str(self.USER_TO_SEARCH):
-				filePath = "/".join(pathA7.split('/')[6:])
-				ass = ink.query.Asset(nomen.Cut(filePath))
-				res = ass.GetLockInfos()
+			    
+			    # if infoOwner in str(self.USER_TO_SEARCH):
+			      
+			    filePath = "/".join(pathA7.split('/')[6:])
+			    ass = ink.query.Asset(nomen.Cut(filePath))
+			    res = ass.GetLockInfos()
 
-				# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
-				# (True, True, True, 'cpottier', True, 'cpottier', False, False, False, False)
+			    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
+			    # (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) => Grabbed
+			    # (False, False, True, 'gamin'   , False, 'nobody', False, False, False, False) => locked
 
+			    if self.BROKENA7 == False:
+			      
 				if res[3]==res[5]:
 				    if res[3] in str(self.USER_TO_SEARCH):    
 					matches.append(filePath)
+					msg = '\n' + filePath + ' [ GRABBED by '+str(res[3])+' ]'
+					print msg
+				if res[3] in str(self.USER_TO_SEARCH):  
+				    if res[2] == True:
+					matches.append(filePath)
 					msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
 					print msg
-			    
+					
+			    if self.BROKENA7 == True:
+				  if res[6] == True:
+				      matches.append(filePath)
+				      msg = '\n' + filePath + ' [ BROCKEN ]'
+				      print msg
+
 		    except:
 			print 'error'
 			pass
@@ -240,8 +258,6 @@ class __FUNCTIONS__TOTHREAD__():
 	    
 	    try:
 		TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(self.CURRENT_PROJECT_lower)+'/'+str(self.TMP_PATH_FILE_LOCKED)
-		#self.deleteContent(TMP_FILE_LOCKED)
-		# print TMP_FILE_LOCKED
 		with open(TMP_FILE_LOCKED) as f:
 		    content = f.readlines()
 	    except:
@@ -255,7 +271,6 @@ class __FUNCTIONS__TOTHREAD__():
 		if a7 not in content:         
 		    f = open(TMP_FILE_LOCKED,'a')
 		    f.write(line+'\n') # python will convert \n to os.linesep
-		    # f.close()
 
 	    f.close()
 	  
@@ -341,7 +356,11 @@ def get_AllUsers():
 #====================================================================================================== Functions to thread
 
 def search_lockedA7():
-    msg = '\n----- Search Locked-UnPublished Files, Work in Progress! Please wait ...\n'
+    tps = 'Locked-UnPublished'
+    if BROKENA7 == True:
+	tps = 'Broken'
+
+    msg = '\n----- Search '+tps+' Files, Work in Progress! Please wait ...\n'
     print msg
     print ALL_USERS
 
@@ -352,7 +371,7 @@ def search_lockedA7():
 	# start_time = time.time()
 	#START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
 	START_DIR = START_DIR_LOCAL_LOCKED_A7+'/' + directory
-	args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,n_users_tot,startTimeAll]
+	args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,BROKENA7,n_users_tot,startTimeAll]
 	__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
       
       
@@ -373,11 +392,16 @@ with_locked = False		# lock and wait end of run threading process function
 #================================================
 
 CURRENT_USER 			= os.getenv('USER')
+BROKENA7			= False
 try:
     print sys.argv[1]
-    CURRENT_USER 		= sys.argv[1]
+    if str(sys.argv[1])	== 'brokenA7':
+	BROKENA7		= True
+    else:
+      CURRENT_USER 		= sys.argv[1]
 except:
     pass
+ 
 ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 CURRENT_PROJECT 		= CURRENT_PROJECT_lower.upper()
@@ -403,7 +427,7 @@ START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','dm3_contrats']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-INCLUDE_DIR_LOCKED 		= ['USECASE']
+#INCLUDE_DIR_LOCKED 		= ['USECASE']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 
 CHK_SEARCH_ALL  		= False
@@ -422,3 +446,35 @@ deleteContent(TMP_FILE_LOCKED)
 	
 search_lockedA7()
 
+
+def get_fileInfo(source):
+    # fileInfo   = getpwuid(stat(source).st_uid).pw_name
+    # st = os.stat(source)
+    infoWrite = os.access(source, os.R_OK)
+    infoOwner = getpwuid(stat(source).st_uid).pw_name
+    #print infoWrite
+    #print infoOwner	
+    return infoWrite, infoOwner
+
+
+
+
+
+
+'''
+
+filePath = '/u/gri/Users/COM/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7'
+# (False, False, True, 'gamin', False, 'nobody', False, False, False, False) => LOCKED
+
+
+result = get_fileInfo(filePath)	# ln link -> 
+# /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
+infoWrite = result[0]
+infoOwner = result[1]
+
+filePath = 'USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7'
+ass = ink.query.Asset(nomen.Cut(filePath))
+res = ass.GetLockInfos()
+print res
+print res[3]
+'''
