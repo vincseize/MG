@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 25-08-2016                                                                #
+# Date : 26-08-2016                                                                #
 # Search Locked A7                                                                 #
 # ##################################################################################
 
@@ -211,7 +211,7 @@ class __FUNCTIONS__TOTHREAD__():
 				# 3382844215 4 -r--r----- 1 cpottier users  648 Mar  8 10:47 GRI_S0200_EDIT-NasK_Casting.a7
 	    
 				matches.append(filePath)
-				msg = '\n' + filePath + ' [ LOCKED ]'
+				msg = '\n' + filePath + ' [ LOCKED by '+self.USER_TO_SEARCH+' ]'
 				print msg
 
 
@@ -224,7 +224,9 @@ class __FUNCTIONS__TOTHREAD__():
 	matches = list(set(matches))
 
 	print ' '
-	print '===================================> ' + str(self.directory) + ' search DONE in  '
+	print '===================================\ '
+	print '====================================| ' + str(self.directory) + ' search DONE in  '
+	print '===================================/ '
 	endTime = datetime.now()
 	totTime = endTime - self.start_time
 	print totTime	
@@ -391,6 +393,11 @@ with_locked = False		# lock and wait end of run threading process function
 #================================================
 
 CURRENT_USER 			= os.getenv('USER')
+try:
+    print sys.argv[1]
+    CURRENT_USER 		= sys.argv[1]
+except:
+    pass
 ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 CURRENT_PROJECT 		= CURRENT_PROJECT_lower.upper()
@@ -416,12 +423,12 @@ START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','dm3_contrats']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-# INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT]
+# INCLUDE_DIR_LOCKED 		= ['LINUP']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 
 CHK_SEARCH_ALL  		= False
 
-# CURRENT_USER = 'cpottier'
+
 ALL_USERS = get_AllUsers()
 n_users_tot        	= len(ALL_USERS)
 make_lockedA7dirs()
@@ -434,15 +441,6 @@ deleteContent(TMP_FILE_LOCKED)
 # ############################################################################################################### RUN  
 	
 search_lockedA7()
-
-
-# import nomen
-# ass = ink.query.Asset(nomen.Cut('LIB/CHARS/CMDM3/BobMDM3/Ok/BobMDM3-Actor-Ok.a7'))
-# ass.GetLockInfos()
-
-# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
-
-
 
 
 
