@@ -7,6 +7,13 @@
 # Search Locked A7                                                                 #
 # ##################################################################################
 
+
+import argparse
+parser = argparse.ArgumentParser(description='login is optional | default is current login')
+parser.add_argument('login')
+args = parser.parse_args()
+#======================================================================================================================================================
+
 import os, sys
 from os import stat
 from pwd import getpwuid
@@ -423,7 +430,7 @@ START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','dm3_contrats']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-# INCLUDE_DIR_LOCKED 		= ['LINUP']
+#INCLUDE_DIR_LOCKED 		= ['LINUP']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 
 CHK_SEARCH_ALL  		= False
@@ -442,10 +449,3 @@ deleteContent(TMP_FILE_LOCKED)
 	
 search_lockedA7()
 
-
-
-
-
-
-
-	
