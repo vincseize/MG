@@ -10,7 +10,7 @@
 
 import argparse
 parser = argparse.ArgumentParser(description='login is optional | default is current login')
-parser.add_argument('login')
+parser.add_argument('login',nargs='?')
 args = parser.parse_args()
 #======================================================================================================================================================
 
@@ -194,34 +194,40 @@ class __FUNCTIONS__TOTHREAD__():
 			pass  
 		    try:
 			if str(ext).upper() in self.INCLUDE_EXT_LOCKED:
-			    pathA7  = os.path.join(root, filename)	
-			    filePath = "/".join(pathA7.split('/')[6:])
-			    ass = ink.query.Asset(nomen.Cut(filePath))
-			    res = ass.GetLockInfos()
+			    pathA7  = os.path.join(root, filename)
+			    result = self.get_fileInfo(pathA7)	# ln link -> 
+			    # /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
+			    infoWrite = result[0]
+			    infoOwner = result[1]
+			   
+			    if infoOwner in str(self.USER_TO_SEARCH):
+				filePath = "/".join(pathA7.split('/')[6:])
+				ass = ink.query.Asset(nomen.Cut(filePath))
+				res = ass.GetLockInfos()
 
-			    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
-			    # (True, True, True, 'cpottier', True, 'cpottier', False, False, False, False)
+				# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
+				# (True, True, True, 'cpottier', True, 'cpottier', False, False, False, False)
 
-			    if res[3]==res[5]:
-				if res[3] in str(self.USER_TO_SEARCH):    
-				    matches.append(filePath)
-				    msg = '\n' + filePath + ' [ LOCKED by '+self.USER_TO_SEARCH+' ]'
-				    print msg
-
+				if res[3]==res[5]:
+				    if res[3] in str(self.USER_TO_SEARCH):    
+					matches.append(filePath)
+					msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
+					print msg
+			    
 		    except:
-			# print 'error'
+			print 'error'
 			pass
 
 	    
 	matches = list(set(matches))
 
-	print ' '
-	print '===================================\ '
-	print '====================================| ' + str(self.directory) + ' search DONE in  '
-	print '===================================/ '
 	endTime = datetime.now()
 	totTime = endTime - self.start_time
-	print totTime	
+
+	print ' '
+	print '===================================\ '
+	print '====================================|> ' + str(self.directory) + ' search DONE in ' + str(totTime)
+	print '===================================/ '	
 	print str(len(matches)) + ' a7 Locked'
 	print matches
 	print ' '
@@ -253,25 +259,6 @@ class __FUNCTIONS__TOTHREAD__():
 
 	    f.close()
 	  
-
-
-
-	#====== verbose mode
-	'''
-	msg = ' '   
-	print >> sys.__stderr__, msg    
-	msg = '\n--------------------------------- ' + self.source + ' [ DONE ] \n'
-	print >> sys.__stderr__, msg
-	msg = str(self.n_user) + ' | ' + str(self.n_users_tot) + '\n'
-	print >> sys.__stderr__, msg
-	totTime = datetime.now() - startTimeAll
-	print >> sys.__stderr__, totTime
-
-	if str(self.n_user) == str(self.n_users_tot):
-	    msg = '\n--------------------------------- [ CHECK PUBLISHED AND LOCKED FILE DONE in : ' + totTime + ' ] \n'
-	    print >> sys.__stderr__, msg
-	'''
-
 
     def get_fileInfoQT(self,source):
 	fileInfo   = QtCore.QFileInfo(source)
@@ -356,6 +343,7 @@ def get_AllUsers():
 def search_lockedA7():
     msg = '\n----- Search Locked-UnPublished Files, Work in Progress! Please wait ...\n'
     print msg
+    print ALL_USERS
 
     for directory in INCLUDE_DIR_LOCKED:
 	#print directory
@@ -415,7 +403,7 @@ START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','dm3_contrats']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-#INCLUDE_DIR_LOCKED 		= ['LINUP']
+INCLUDE_DIR_LOCKED 		= ['USECASE']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 
 CHK_SEARCH_ALL  		= False
