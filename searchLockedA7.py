@@ -187,44 +187,29 @@ class __FUNCTIONS__TOTHREAD__():
 		# print depth
 		
 		for filename in filenames:
-		    #print filename
 		    ext = None
 		    try:
 			ext = os.path.splitext(filename)[1][1:]
-
 		    except:
 			pass  
 		    try:
-			
-			pathA7  = os.path.join(root, filename)
-			#filePath_conf = os.path.dirname(os.path.dirname(pathA7))
-			#filePath = os.path.split(filePath_conf)[3] 	
-			filePath = "/".join(pathA7.split('/')[6:])
-			#print filePath
-			#ass = ink.query.Asset(nomen.Cut('GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7'))
-			ass = ink.query.Asset(nomen.Cut(filePath))
-			res = ass.GetLockInfos()
-			# print res[3]
-			# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
-			# (True, True, True, 'cpottier', True, 'cpottier', False, False, False, False)
+			if str(ext).upper() in self.INCLUDE_EXT_LOCKED:
+			    pathA7  = os.path.join(root, filename)	
+			    filePath = "/".join(pathA7.split('/')[6:])
+			    ass = ink.query.Asset(nomen.Cut(filePath))
+			    res = ass.GetLockInfos()
 
-			if res[3]==res[5]:
-			    if res[3] in str(self.USER_TO_SEARCH):    
-				#test = '/u/gri/Users/OFF/Assets/GRI/S0015/EDIT/NasK/GRI_S0015_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0015_EDIT-NasK_Casting.a7'
-				# 410866586 4 -rw-r----- 1 cpottier users  649 Aug 22 19:03 GRI_S0015_EDIT-NasK_Casting.a7
-				# test = '/u/gri/Users/OFF/Assets/GRI/S0200/EDIT/NasK/GRI_S0200_EDIT-NasK_Casting.a7/.mdu/cpottier/GRI_S0200_EDIT-NasK_Casting.a7'
-				
-				# /u/gri/Users/cpottier/Assets/GRI/S0200/EDIT/NasK/GRI_S0200_EDIT-NasK_Casting.a7
-				# 3382844215 4 -r--r----- 1 cpottier users  648 Mar  8 10:47 GRI_S0200_EDIT-NasK_Casting.a7
-	    
-				matches.append(filePath)
-				msg = '\n' + filePath + ' [ LOCKED by '+self.USER_TO_SEARCH+' ]'
-				print msg
+			    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
+			    # (True, True, True, 'cpottier', True, 'cpottier', False, False, False, False)
 
+			    if res[3]==res[5]:
+				if res[3] in str(self.USER_TO_SEARCH):    
+				    matches.append(filePath)
+				    msg = '\n' + filePath + ' [ LOCKED by '+self.USER_TO_SEARCH+' ]'
+				    print msg
 
-			  
 		    except:
-			print 'error'
+			# print 'error'
 			pass
 
 	    
