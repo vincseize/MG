@@ -3,17 +3,10 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 26-08-2016                                                                #
+# Date : 30-08-2016                                                                #
 # Search Locked A7                                                                 #
 # ##################################################################################
 
-
-import argparse
-parser = argparse.ArgumentParser(description='login is optional | default is current login')
-parser.add_argument('login',nargs='?')
-parser.add_argument('brokenA7',nargs='?')
-args = parser.parse_args()
-#======================================================================================================================================================
 
 import os, sys
 from os import stat
@@ -41,6 +34,12 @@ import Queue
 from Queue import Queue
 from multiprocessing import Pool, Process, Pipe, Lock, Value, Array, Manager, TimeoutError
 
+#======================================================================================================================================================
+import argparse
+parser = argparse.ArgumentParser(description='login is optional | default is current login')
+parser.add_argument('login',nargs='?')
+parser.add_argument('brokenA7',nargs='?')
+args = parser.parse_args()
 #====================================================================================================================================================== 
 
 locked = RLock()
@@ -169,6 +168,7 @@ class __FUNCTIONS__TOTHREAD__():
 	self.start_time			= args[8]
 	# print self.USER_TO_SEARCH
 	
+	#self.USER_TO_SEARCH.append('nobody')
 
 	#result_array = self.splitall(source)
 	self.directory = self.splitall(self.source)[-1]
@@ -190,50 +190,131 @@ class __FUNCTIONS__TOTHREAD__():
 		
 		for filename in filenames:
 		    ext = None
+		    ext = 'a7'
+		    '''
+		    print filename
 		    try:
 			ext = os.path.splitext(filename)[1][1:]
 		    except:
-			pass  
+			pass 
+		    ''' 
 		    try:
-			if str(ext).upper() in self.INCLUDE_EXT_LOCKED:
-			    pathA7  = os.path.join(root, filename)
-			    # pathA7 = '/u/gri/Users/COM/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7'
-			    result = self.get_fileInfo(pathA7)	# ln link -> 
-			    # /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
-			    infoWrite = result[0]
-			    infoOwner = result[1]
-			    
-			    # if infoOwner in str(self.USER_TO_SEARCH):
-			      
-			    filePath = "/".join(pathA7.split('/')[6:])
-			    ass = ink.query.Asset(nomen.Cut(filePath))
-			    res = ass.GetLockInfos()
+ 
+			#print ext
+			#if str(ext).upper() in self.INCLUDE_EXT_LOCKED :
 
-			    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
-			    # (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) => Grabbed
-			    # (False, False, True, 'gamin'   , False, 'nobody', False, False, False, False) => locked
+		      
+			#print self.USER_TO_SEARCH[0]
+			#print ext
+			  
+			  
+			  
+			pathA7  = os.path.join(root, filename)
+			#print pathA7
+		      
+		      
+		      
+			filePath = os.path.join(root, filename)
+			result_array = self.splitall(filePath)
+			#print result_array
+			#if self.USER_TO_SEARCH[0] in result_array:
+			    #print pathA7
+			'''
+			if '.mdu' in result_array and 'CINDYLOU' in result_array:
+			    if self.USER_TO_SEARCH[0] in result_array:
+				print pathA7	
+			    '''
+			  
+			  
+			# /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
+			# ['/', 'u', 'gri', 'Users', 'OFF', 'Assets', 'USECASE', 'GROOPERT', 'Test111', 'Anim', 'USECASE_GROOPERT_Test111-Anim_Clip.a7', '0001', '.mda', '.mdaData']
+			if self.USER_TO_SEARCH[0] in result_array:		#  	   and str(ext).upper() in str(result_array).upper()
+			    #print pathA7
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			    # if str(ext).upper() in self.INCLUDE_EXT_LOCKED:
+				
+				#pathA7  = os.path.join(root, filename)
+				# pathA7 = '/u/gri/Users/COM/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7'
+				
+				
+				
+				
+			    if '.mdu' in result_array: 
+				
+				# print pathA7	
+				
 
-			    if self.BROKENA7 == False:
-			      
-				if res[3]==res[5]:
-				    if res[3] in str(self.USER_TO_SEARCH):    
-					matches.append(filePath)
-					msg = '\n' + filePath + ' [ GRABBED by '+str(res[3])+' ]'
-					print msg
-				if res[3] in str(self.USER_TO_SEARCH):  
-				    if res[2] == True:
-					matches.append(filePath)
-					msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
-					print msg
+				
+				
+				
+				
+				
+				
+				
+				result = None
+				result = self.get_fileInfo(pathA7)	# ln link -> 
+				# /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
+				infoWrite = result[0]
+				infoOwner = result[1]
+				#print result[0]
+				#print result[1]
+
+				# GRI_S0025_P0231-L-Occ_Render.a7
+
+				if infoWrite == True and str(infoOwner) in str(self.USER_TO_SEARCH):				
+				    
+				    res = None
+				      
+				    # /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
+				    filePath = "/".join(pathA7.split('/')[6:]) 
+				    #print filePath
+				    #print ext
+				    tmp =  filePath.split(ext)
+				    #print tmp
+				    filePath = str(tmp[0])+str(ext)
+				    #print filePath
+				    # normalize name for Ink API => /USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
+				    
+				    ass = ink.query.Asset(nomen.Cut(filePath))
+				    res = ass.GetLockInfos()
+				    #print res
+
+				    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
+				    # (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) => Grabbed
+				    # (False, False, True, 'gamin'   , False, 'nobody', False, False, False, False) => locked
+
+				    
+
+
+				    if self.BROKENA7 == False:
 					
-			    if self.BROKENA7 == True:
-				  if res[6] == True:
-				      matches.append(filePath)
-				      msg = '\n' + filePath + ' [ BROCKEN ]'
-				      print msg
+					if res[3]==res[5]:
+					    if res[3] in str(self.USER_TO_SEARCH):    
+						matches.append(filePath)
+						msg = '\n' + filePath + ' [ GRABBED by '+str(res[3])+' ]'
+						print msg
+					if res[3] in str(self.USER_TO_SEARCH):  
+					    if res[2] == True:
+						matches.append(filePath)
+						msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
+						print msg
+						
+				    if self.BROKENA7 == True:
+					  if res[6] == True:
+					      matches.append(filePath)
+					      msg = '\n' + filePath + ' [ BROCKEN ]'
+					      print msg
 
 		    except:
-			print 'error'
+			# print 'error'
 			pass
 
 	    
@@ -369,8 +450,8 @@ def search_lockedA7():
 	startTimeAll = datetime.now()
 	print startTimeAll
 	# start_time = time.time()
-	#START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
-	START_DIR = START_DIR_LOCAL_LOCKED_A7+'/' + directory
+	START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory # first filter
+	# START_DIR = START_DIR_LOCAL_LOCKED_A7+'/' + directory # for api Ink
 	args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,BROKENA7,n_users_tot,startTimeAll]
 	__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
       
