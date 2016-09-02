@@ -175,14 +175,18 @@ class __FUNCTIONS__TOTHREAD__():
 	print ' '
 
 	self.startTimeInt = datetime.now()
-
+	#exclude = set(self.EXCLUDE_DIR_USERS_LOCKED)
 	matches = []
-
 	path = os.path.normpath(self.source)
 
 	for root, dirnames, filenames in os.walk(self.source, topdown=True, onerror=None, followlinks=False):
-	    # intersect = list(set(self.EXCLUDE_DIR_USERS_LOCKED) & set(dirnames))
-	    # print intersect
+
+	    '''
+	    if len(intersect)>0:
+		print 'intersect#######################################################################################################3'
+		print intersect
+		break
+	    '''
 	    if not dirnames:   #  and len(intersect) == 0
 		# print dirnames
 		depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
@@ -229,19 +233,19 @@ class __FUNCTIONS__TOTHREAD__():
 					if res[3]==res[5]:
 					    if res[3] in str(self.USER_TO_SEARCH):    
 						matches.append(filePath)
-						msg = '\n' + filename + ' [ LOCKED by '+str(res[3])+' ]'
+						msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
 						print msg
 						'''
 					if res[3] in str(self.USER_TO_SEARCH):  
 					    if res[2] == True:
 						matches.append(filePath)
-						msg = '\n' + filename + ' [ LOCKED by '+str(res[3])+' ]'
+						msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
 						print msg
 						'''
 				    if self.BROKENA7 == True:
 					  if res[6] == True:
 					      matches.append(filePath)
-					      msg = '\n' + filename + ' [ BROCKEN ]'
+					      msg = '\n' + filePath + ' [ BROCKEN ]'
 					      print msg
 
 		    except:
@@ -258,10 +262,11 @@ class __FUNCTIONS__TOTHREAD__():
 	print ' '
 	print '=================================================\ '
 	print '=================================================|> ' + str(self.directory) + ' search DONE in ' + str(totTimeInt) + ' / '+ str(totTime)
-	print '=================================================/ '	
-	print ' > ' + str(len(matches)) + ' a7 Locked'
-	print matches
-	print ' '
+	print '=================================================/ '
+	if len(matches)>0:
+	    print ' > ' + str(len(matches)) + ' a7 Locked'
+	    print matches
+	    print ' '
 
 	curPath = os.path.abspath('.')
 	
@@ -370,7 +375,7 @@ def search_lockedA7():
     msg = '\n----- Search '+tps+' Files, Work in Progress! Please wait ...\n'
     print msg
     print ALL_USERS
-
+    exclude = set(EXCLUDE_DIR_USERS_LOCKED)
     for directory in INCLUDE_DIR_LOCKED:
 	startTimeAll = datetime.now()
 	print startTimeAll
@@ -388,6 +393,13 @@ def search_lockedA7():
 	'''
 	START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
 	for root, dirnames, filenames in os.walk(START_DIR):
+	  
+	    #intersect = list(set(self.EXCLUDE_DIR_USERS_LOCKED) & set(dirnames))
+	    dirnames[:] = [d for d in dirnames if d not in exclude]
+	    '''
+	    if 'SETS' in dirnames:
+		dirnames.remove('SETS')	  
+	    '''
 	    for dirname in dirnames:
 		#startTimeInt = datetime.now()
 		START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
@@ -442,7 +454,7 @@ START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 #PATH_EXEMPLES			= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
 #CURRENT_SCRIPTS_PATH		= '/u/'+CURRENT_PROJECT_lower+PATH_EXEMPLES
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
-EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD']
+EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','SETS']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
 #INCLUDE_DIR_LOCKED 		= ['USECASE']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
