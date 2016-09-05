@@ -437,8 +437,7 @@ with_locked = False		# lock and wait end of run threading process function
 CURRENT_USER 			= os.getenv('USER')
 BROKENA7			= False
 try:
-    # print sys.argv[1]
-    #CURRENT_USER 		= sys.argv[1]
+    CURRENT_USER 		= sys.argv[1]
     if str(sys.argv[1])	== 'brokenA7' or str(sys.argv[2]) == 'brokenA7':
 	BROKENA7		= True
 	if str(sys.argv[2])	== 'brokenA7':
@@ -479,11 +478,11 @@ n_users_tot = len(ALL_USERS)
 make_lockedA7dirs()
 deleteContent(TMP_FILE_LOCKED)
 
-if CHK_SEARCH_ALL == True:
-    USERS = ALL_USERS
+if CURRENT_USER=='all':
+    CHK_SEARCH_ALL = True
+    USERS = get_AllUsers()
 else:
     USERS = [CURRENT_USER]
-    #TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED) 
     f = open(TMP_FILE_LOCKED,'a')
     f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
     f.close()
