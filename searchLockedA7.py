@@ -39,6 +39,7 @@ import argparse
 parser = argparse.ArgumentParser(description='login, brokenA7 are optional | default is current login')
 parser.add_argument('login',nargs='?')
 parser.add_argument('brokenA7',nargs='?')
+parser.add_argument('-all',nargs='?')
 args = parser.parse_args()
 #====================================================================================================================================================== 
 
@@ -164,10 +165,11 @@ class __FUNCTIONS__TOTHREAD__():
 	self.EXCLUDE_DIR_USERS_LOCKED	= args[4]
 	self.INCLUDE_EXT_LOCKED		= args[5]
 	self.TMP_PATH_FILE_LOCKED	= args[6]
-	self.BROKENA7			= args[7]
-	self.n_users_tot		= args[8]
-	self.start_time			= args[9]
-	# self.startTimeInt		= args[10]
+	self.TMP_PATH_FILE_BROKEN	= args[7]
+	self.BROKENA7			= args[8]
+	self.CURRENT_USER               = args[9]
+	self.n_users_tot		= args[10]
+	self.start_time			= args[11]
 	self.directory = self.splitall(self.source)[-1]
 
 	print ' '
@@ -228,11 +230,16 @@ class __FUNCTIONS__TOTHREAD__():
 
 				    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
 				    # (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) => Grabbed
-
+	    
+				    com = ''
+				    if str(self.CURRENT_USER) == '-all':
+					com = ' | ' + str(res[3])
 				    if self.BROKENA7 == False:
+					TMP_FILE_LOCKED = self.TMP_PATH_FILE_LOCKED
 					if res[3]==res[5]:
-					    if res[3] in str(self.USER_TO_SEARCH):    
-						matches.append(filePath)
+					    if res[3] in str(self.USER_TO_SEARCH): 
+						line = str(filePath) + str(com)
+						matches.append(line)
 						msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
 						print msg
 						'''
@@ -243,6 +250,7 @@ class __FUNCTIONS__TOTHREAD__():
 						print msg
 						'''
 				    if self.BROKENA7 == True:
+					  TMP_FILE_LOCKED = self.TMP_PATH_FILE_BROKEN
 					  if res[6] == True:
 					      line = str(filePath) +' | ' + str(self.USER_TO_SEARCH[0])
 					      matches.append(line)
@@ -268,14 +276,12 @@ class __FUNCTIONS__TOTHREAD__():
 	    print ' > ' + str(len(matches)) + ' a7 Locked'
 	print matches
 	print ' '
-
-	curPath = os.path.abspath('.')
 	
 	if len(matches) > 0 :
 	    
 	    try:
-		TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(self.CURRENT_PROJECT_lower)+'/'+str(self.TMP_PATH_FILE_LOCKED)
-		with open(TMP_FILE_LOCKED) as f:
+		
+		with open(self.TMP_PATH_FILE_LOCKED) as f:
 		    content = f.readlines()
 	    except:
 		content=['']
@@ -298,14 +304,11 @@ class __FUNCTIONS__TOTHREAD__():
 	infoOwner = fileInfo.owner()
 	return infoWrite, infoOwner
 
-
     def get_fileInfo(self,source):
 	# fileInfo   = getpwuid(stat(source).st_uid).pw_name
 	# st = os.stat(source)
 	infoWrite = os.access(source, os.R_OK)
-	infoOwner = getpwuid(stat(source).st_uid).pw_name
-	#print infoWrite
-	#print infoOwner	
+	infoOwner = getpwuid(stat(source).st_uid).pw_name	
 	return infoWrite, infoOwner
 
     def splitall(self,path):
@@ -323,25 +326,13 @@ class __FUNCTIONS__TOTHREAD__():
 		allparts.insert(0, parts[1])
 	return allparts
 
-
-
 #=============================================================================================== end __FUNCTIONS__TOTHREAD__
 
 # #########################################################################################################################
 # Some Functions                                                                                                          #
 # #########################################################################################################################
 
-#========================================================================================================================== 		
-		
-def make_lockedA7dirs():		
-  directory = 'LOCKEDA7'
-  if not os.path.exists(directory):
-      os.makedirs(directory)
-
-  for project in ALL_PROJECTS:
-      dp = directory + '/'+project
-      if not os.path.exists(dp):
-	  os.makedirs(dp)
+#========================================================================================================================== 	
 	  
 def deleteContent(fName):
     if os.path.exists(fName):
@@ -380,50 +371,21 @@ def search_lockedA7():
     for directory in INCLUDE_DIR_LOCKED:
 	startTimeAll = datetime.now()
 	print startTimeAll
-	#print directory
-	'''
-	if str(directory).upper()== str(CURRENT_PROJECT):
-	    DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory # first filter
-	    for START_DIR in DIR:
-		args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,BROKENA7,n_users_tot,startTimeAll]
-		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)	    
-	else:
-	    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
-	    args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,BROKENA7,n_users_tot,startTimeAll]
-	    __THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-	'''
 	START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
 	for root, dirnames, filenames in os.walk(START_DIR):
 	  
-	    #intersect = list(set(self.EXCLUDE_DIR_USERS_LOCKED) & set(dirnames))
 	    dirnames[:] = [d for d in dirnames if d not in exclude]
-	    '''
-	    if 'SETS' in dirnames:
-		dirnames.remove('SETS')	  
-	    '''
+
 	    for dirname in dirnames:
-		#startTimeInt = datetime.now()
 		START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
-		# print START_DIR
-		args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,BROKENA7,n_users_tot,startTimeAll]
+		args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
 		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
 		
 	    break
 
-'''
-def get_fileInfo(source):
-    # fileInfo   = getpwuid(stat(source).st_uid).pw_name
-    # st = os.stat(source)
-    infoWrite = os.access(source, os.R_OK)
-    infoOwner = getpwuid(stat(source).st_uid).pw_name
-    #print infoWrite
-    #print infoOwner	
-    return infoWrite, infoOwner
-'''
+
 
 # ############################################################################################################### Variables
-
-curPath = os.path.abspath('.')
 
 #================================================ type of sharing ressources process | optional ( default stack ) 
 # type_process = 'stack' 	# thread are executed in order
@@ -437,16 +399,16 @@ with_locked = False		# lock and wait end of run threading process function
 CURRENT_USER 			= os.getenv('USER')
 BROKENA7			= False
 try:
-    CURRENT_USER 		= sys.argv[1]
-    if str(sys.argv[1])	== 'brokenA7' or str(sys.argv[2]) == 'brokenA7':
-	BROKENA7		= True
-	if str(sys.argv[2])	== 'brokenA7':
-	    CURRENT_USER 	= sys.argv[1]
+    if str(sys.argv[1])	== 'brokenA7':
+	BROKENA7 = True
 except:
     pass
- 
-print CURRENT_USER
-print BROKENA7
+try:
+    if str(sys.argv[2])	== 'brokenA7':
+	BROKENA7	= True
+	CURRENT_USER 	= sys.argv[1]
+except:
+    pass
  
 ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
@@ -464,35 +426,46 @@ START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'
 START_DIR_PUBLIC 		= START_DIR_USERS+'COM/Presets/Graphs/'
 START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
 START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
-TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
+TMP_FILE_LOCKED			= CURRENT_PROJECT+'A7LockedBy.tmp'
+TMP_FILE_BROKEN			= CURRENT_PROJECT+'A7BrokenBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','SETS']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
 #INCLUDE_DIR_LOCKED 		= ['USECASE']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
-TMP_FILE_LOCKED 		= str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED)
+#TMP_FILE_LOCKED 		= str(curPath)+'/LOCKEDA7/'+str(TMP_PATH_FILE_LOCKED)
+TMP_PATH_FILE_LOCKED 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_LOCKED)
+TMP_PATH_FILE_BROKEN 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_BROKEN)
 
 CHK_SEARCH_ALL  		= False
 
 ALL_USERS = get_AllUsers()
 n_users_tot = len(ALL_USERS)
-make_lockedA7dirs()
-deleteContent(TMP_FILE_LOCKED)
+deleteContent(TMP_PATH_FILE_LOCKED)
+deleteContent(TMP_PATH_FILE_BROKEN)
 
-if CURRENT_USER=='all':
+if CURRENT_USER=='-all':
     CHK_SEARCH_ALL = True
     USERS = get_AllUsers()
 else:
     USERS = [CURRENT_USER]
-    f = open(TMP_FILE_LOCKED,'a')
+    f = open(TMP_PATH_FILE_LOCKED,'a')
     f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
     f.close()
-
+    f = open(TMP_PATH_FILE_BROKEN,'a')
+    f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
+    f.close()
 # ############################################################################################################### RUN  
 
 for user in USERS:
-  ALL_USERS=[user]
-  search_lockedA7()
+    print user
+    ALL_USERS=[user]
+    search_lockedA7()
 
+if BROKENA7 == False:
+    TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
+if BROKENA7 == True:
+    TMP_FILE_LOCKED = TMP_PATH_FILE_BROKEN
 
-
+#cmd = 'nedit '+str(TMP_FILE_LOCKED)
+#os.system( cmd )
 
