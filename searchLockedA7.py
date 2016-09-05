@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 02-10-2016                                                                #
+# Date : 05-10-2016                                                                #
 # Search Locked A7                                                                 #
 # ##################################################################################
 
@@ -244,7 +244,8 @@ class __FUNCTIONS__TOTHREAD__():
 						'''
 				    if self.BROKENA7 == True:
 					  if res[6] == True:
-					      matches.append(filePath)
+					      line = str(filePath) +' | ' + str(self.USER_TO_SEARCH[0])
+					      matches.append(line)
 					      msg = '\n' + filePath + ' [ BROCKEN ]'
 					      print msg
 
@@ -265,8 +266,8 @@ class __FUNCTIONS__TOTHREAD__():
 	print '=================================================/ '
 	if len(matches)>0:
 	    print ' > ' + str(len(matches)) + ' a7 Locked'
-	    print matches
-	    print ' '
+	print matches
+	print ' '
 
 	curPath = os.path.abspath('.')
 	
@@ -409,7 +410,20 @@ def search_lockedA7():
 		
 	    break
 
+'''
+def get_fileInfo(source):
+    # fileInfo   = getpwuid(stat(source).st_uid).pw_name
+    # st = os.stat(source)
+    infoWrite = os.access(source, os.R_OK)
+    infoOwner = getpwuid(stat(source).st_uid).pw_name
+    #print infoWrite
+    #print infoOwner	
+    return infoWrite, infoOwner
+'''
+
 # ############################################################################################################### Variables
+
+curPath = os.path.abspath('.')
 
 #================================================ type of sharing ressources process | optional ( default stack ) 
 # type_process = 'stack' 	# thread are executed in order
@@ -423,13 +437,17 @@ with_locked = False		# lock and wait end of run threading process function
 CURRENT_USER 			= os.getenv('USER')
 BROKENA7			= False
 try:
-    print sys.argv[1]
-    if str(sys.argv[1])	== 'brokenA7':
+    # print sys.argv[1]
+    #CURRENT_USER 		= sys.argv[1]
+    if str(sys.argv[1])	== 'brokenA7' or str(sys.argv[2]) == 'brokenA7':
 	BROKENA7		= True
-    else:
-      CURRENT_USER 		= sys.argv[1]
+	if str(sys.argv[2])	== 'brokenA7':
+	    CURRENT_USER 	= sys.argv[1]
 except:
     pass
+ 
+print CURRENT_USER
+print BROKENA7
  
 ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
@@ -445,43 +463,37 @@ if CURRENT_PROJECT 		== 'MAX':
     
 START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'	    
 START_DIR_PUBLIC 		= START_DIR_USERS+'COM/Presets/Graphs/'
-# START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Files/etc'
 START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
-	
-# START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+CURRENT_USER+'/Assets'	
-# START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets/'+CURRENT_PROJECT+'/'
 START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
-#PATH_EXEMPLES			= '/Users/COM/InK/Scripts/Python/proj/pipe/ink/exemples'
-#CURRENT_SCRIPTS_PATH		= '/u/'+CURRENT_PROJECT_lower+PATH_EXEMPLES
 TMP_PATH_FILE_LOCKED 		= CURRENT_PROJECT+'A7LockedBy.tmp'
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','SETS']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
 #INCLUDE_DIR_LOCKED 		= ['USECASE']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
+TMP_FILE_LOCKED 		= str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED)
 
 CHK_SEARCH_ALL  		= False
 
-
 ALL_USERS = get_AllUsers()
-n_users_tot        	= len(ALL_USERS)
+n_users_tot = len(ALL_USERS)
 make_lockedA7dirs()
+deleteContent(TMP_FILE_LOCKED)
 
-curPath = os.path.abspath('.')
-TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED)
-deleteContent(TMP_FILE_LOCKED)	
-
+if CHK_SEARCH_ALL == True:
+    USERS = ALL_USERS
+else:
+    USERS = [CURRENT_USER]
+    #TMP_FILE_LOCKED = str(curPath)+'/LOCKEDA7/'+str(CURRENT_PROJECT_lower)+'/'+str(TMP_PATH_FILE_LOCKED) 
+    f = open(TMP_FILE_LOCKED,'a')
+    f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
+    f.close()
 
 # ############################################################################################################### RUN  
-	
-search_lockedA7()
+
+for user in USERS:
+  ALL_USERS=[user]
+  search_lockedA7()
 
 
-def get_fileInfo(source):
-    # fileInfo   = getpwuid(stat(source).st_uid).pw_name
-    # st = os.stat(source)
-    infoWrite = os.access(source, os.R_OK)
-    infoOwner = getpwuid(stat(source).st_uid).pw_name
-    #print infoWrite
-    #print infoOwner	
-    return infoWrite, infoOwner
+
 
