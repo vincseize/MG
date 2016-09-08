@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 05-10-2016                                                                #
+# Date : 08-10-2016                                                                #
 # Search Locked A7                                                                 #
 # ##################################################################################
 
@@ -28,6 +28,7 @@ import string
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import QThread
 
+import socket
 import threading
 from threading import *
 import Queue
@@ -42,7 +43,7 @@ parser.add_argument('brokenA7',nargs='?')
 parser.add_argument('-all',nargs='?')
 args = parser.parse_args()
 #====================================================================================================================================================== 
-
+# my_queue = Queue.Queue()
 locked = RLock()
 # workQueue = Queue.Queue(10)
 
@@ -98,10 +99,13 @@ class __THREAD__INSTANCE__():
 		for arg in args[1]:
 			arguments.append(arg)
 		t = __THREAD__WORKER__(arguments, self.with_locked, self) # self very Important
-		t.start()
 		self.threads.append(t)
+		# t.setDaemon(True)
+		t.start()
+		
 		if self.type_process == 'stack':
 			for t in self.threads:
+				t.setDaemon(True)
 				t.join()
 				
 	def __del__(self):
@@ -118,6 +122,10 @@ class __THREAD__WORKER__(threading.Thread): # If QT, no threading.Thread
 	def __init__(self,args ,with_locked, receiver):
 		# QtCore.QThread.__init__(self) # if in QT
 		threading.Thread.__init__(self)
+		
+		# self.setDaemon(True) # Daemonize thread
+		# self.daemon = True
+		
 		self.args     		= args
 		self.with_locked	= with_locked
 		self.receiver   	= receiver # receiver ( self ) very Important
@@ -176,12 +184,14 @@ class __FUNCTIONS__TOTHREAD__():
 	print '===================================> ' + str(self.directory) + ' search in progress, please wait ...'
 	print ' '
 
+	print threading.currentThread().getName()
+
 	self.startTimeInt = datetime.now()
 	#exclude = set(self.EXCLUDE_DIR_USERS_LOCKED)
 	matches = []
 	path = os.path.normpath(self.source)
 
-	for root, dirnames, filenames in os.walk(self.source, topdown=True, onerror=None, followlinks=False):
+	for root, dirnames, filenames in os.walk(self.source, topdown=True, onerror=None, followlinks=False): # topdown=False moins efficient que True + break 1min38/59s
 
 	    '''
 	    if len(intersect)>0:
@@ -231,36 +241,37 @@ class __FUNCTIONS__TOTHREAD__():
 				    # assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
 				    # (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) => Grabbed
 	    
-				    com = ''
+				    comBrokenFalse = ''
+				    comBrokenTrue = ''
 				    if str(self.CURRENT_USER) == '-all':
-					com = ' | ' + str(res[3])
+					comBrokenFalse = ' | ' + str(res[3])
+					comBrokenTrue = ' | ' + str(self.USER_TO_SEARCH[0])
+				    # case asset Locked
 				    if self.BROKENA7 == False:
 					TMP_FILE_LOCKED = self.TMP_PATH_FILE_LOCKED
 					if res[3]==res[5]:
 					    if res[3] in str(self.USER_TO_SEARCH): 
-						line = str(filePath) + str(com)
+						line = str(filePath) + str(comBrokenFalse)
 						matches.append(line)
 						msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
 						print msg
-						'''
-					if res[3] in str(self.USER_TO_SEARCH):  
-					    if res[2] == True:
-						matches.append(filePath)
-						msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
-						print msg
-						'''
+						break
+				    # case asset or file Broken 
 				    if self.BROKENA7 == True:
 					  TMP_FILE_LOCKED = self.TMP_PATH_FILE_BROKEN
-					  if res[6] == True:
-					      line = str(filePath) +' | ' + str(self.USER_TO_SEARCH[0])
+					  if res[6] == True or res[8] == True:
+					      line = str(filePath) + str(comBrokenTrue)
 					      matches.append(line)
-					      msg = '\n' + filePath + ' [ BROCKEN ]'
+					      msg = '\n' + filePath + ' [ BROKEN ]'
 					      print msg
-
+					      break
+				    # case asset unplished TODO 
+				    
 		    except:
 			# print 'error'
 			pass
 
+	# print self.TMP_PATH_FILE_LOCKED, self.TMP_PATH_FILE_BROKEN
 	    
 	matches = list(set(matches))
 
@@ -428,9 +439,9 @@ START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
 START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_FILE_LOCKED			= CURRENT_PROJECT+'A7LockedBy.tmp'
 TMP_FILE_BROKEN			= CURRENT_PROJECT+'A7BrokenBy.tmp'
-EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','SETS']
+EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','SETS','TEMPLATES','SHARED','Vfx']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-#INCLUDE_DIR_LOCKED 		= ['USECASE']
+# INCLUDE_DIR_LOCKED 		= ['USECASE']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 #TMP_FILE_LOCKED 		= str(curPath)+'/LOCKEDA7/'+str(TMP_PATH_FILE_LOCKED)
 TMP_PATH_FILE_LOCKED 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_LOCKED)
@@ -439,7 +450,7 @@ TMP_PATH_FILE_BROKEN 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_BROKEN)
 CHK_SEARCH_ALL  		= False
 
 ALL_USERS = get_AllUsers()
-n_users_tot = len(ALL_USERS)
+
 deleteContent(TMP_PATH_FILE_LOCKED)
 deleteContent(TMP_PATH_FILE_BROKEN)
 
@@ -454,12 +465,16 @@ else:
     f = open(TMP_PATH_FILE_BROKEN,'a')
     f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
     f.close()
+n_users_tot = len(ALL_USERS)
 # ############################################################################################################### RUN  
 
+u = 0
 for user in USERS:
+    u += 1
     print user
     ALL_USERS=[user]
     search_lockedA7()
+    # print n_users_tot
 
 if BROKENA7 == False:
     TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
