@@ -169,15 +169,17 @@ class __FUNCTIONS__TOTHREAD__():
 	self.source           		= args[0]
 	self.USER_TO_SEARCH		= args[1] # array
 	self.CURRENT_PROJECT_lower	= args[2]
-	self.DIR_LOCKED			= args[3]
-	self.EXCLUDE_DIR_USERS_LOCKED	= args[4]
-	self.INCLUDE_EXT_LOCKED		= args[5]
-	self.TMP_PATH_FILE_LOCKED	= args[6]
-	self.TMP_PATH_FILE_BROKEN	= args[7]
-	self.BROKENA7			= args[8]
-	self.CURRENT_USER               = args[9]
-	self.n_users_tot		= args[10]
-	self.start_time			= args[11]
+	self.START_DIR_LOCAL_LOCKED_A7	= args[3]
+	self.DIR_LOCKED			= args[4]
+	self.EXCLUDE_DIR_USERS_LOCKED	= args[5]
+	self.INCLUDE_EXT_LOCKED		= args[6]
+	self.TMP_PATH_FILE_LOCKED	= args[7]
+	self.TMP_PATH_FILE_BROKEN	= args[8]
+	self.TMP_PATH_FILE_UPB  	= args[9]
+	self.BROKENA7			= args[10]
+	self.CURRENT_USER               = args[11]
+	self.n_users_tot		= args[12]
+	self.start_time			= args[13]
 	self.directory = self.splitall(self.source)[-1]
 
 	print ' '
@@ -210,17 +212,23 @@ class __FUNCTIONS__TOTHREAD__():
 		    ext = None
 		    ext = 'a7' # to do
 		    filePath = os.path.join(root, filename)
-		    if str(self.BROKENA7) == 'unpublishedA7':
+		    if str(self.BROKENA7) == 'upb':
+			TMP_FILE_LOCKED = self.TMP_PATH_FILE_UPB
 			#print filePath
 			# tmp = filename.split('.')
 			#print tmp[1]
+			comPublishedFalse = ''
 			try:
 			    if filename.split('.')[1]=='xml':
 				published = self.get_symLinks(filePath,self.CURRENT_PROJECT_lower,self.USER_TO_SEARCH[0])
 				if published == False:
-				    print filePath
-				    comPublishedFalse  = ' | ' + str(self.USER_TO_SEARCH[0])
-				    line = str(filePath) + str(comPublishedFalse)
+				    # /u/dm3/Users/cpottier/Files/etc/LIB/PROPS/VEHICLE/EscapeMachineMinions/Model/EscapeMachineMinions-Model-Ok.xml
+				    # => LIB/PROPS/VEHICLE/EscapeMachineMinions/Ok/EscapeMachineMinions-Model-Ok.a7
+				    #    LIB/PROPS/VEHICLE/EscapeMachineMinions/Model/EscapeMachineMinions-Model-Ok.a7
+				    tmp = filePath.split('/etc/')
+				    tmp1 = tmp[1].split('.xml')
+				    a7 = tmp1[0] + '.a7'
+				    line = str(a7) + str(comPublishedFalse)
 				    matches.append(line)
 				    msg = '\n' + filePath + ' [ UNPUBLISHED ]'
 				    print msg
@@ -327,8 +335,6 @@ class __FUNCTIONS__TOTHREAD__():
 			except:
 			    print 'error'
 			    pass
-
-	# print self.TMP_PATH_FILE_LOCKED, self.TMP_PATH_FILE_BROKEN
 	    
 	matches = list(set(matches))
 
@@ -349,7 +355,7 @@ class __FUNCTIONS__TOTHREAD__():
 	    
 	    try:
 		
-		with open(self.TMP_PATH_FILE_LOCKED) as f:
+		with open(self.TMP_FILE_LOCKED) as f:
 		    content = f.readlines()
 	    except:
 		content=['']
@@ -440,7 +446,12 @@ def get_AllUsers():
 		    break        
     return ALL_USERS		
 		
-		
+def check_Path(source):
+    check = False
+    if os.path.exists(source):
+	check = True
+    return check
+    
 # #########################################################################################################################
 # METHOD                                                                                                                  #
 # #########################################################################################################################
@@ -452,38 +463,45 @@ def search_lockedA7():
     if BROKENA7 == True:
 	tps = 'Broken'
     tps = 'Locked-'
-    if BROKENA7 == 'unpublishedA7':
+    if BROKENA7 == 'upb':
 	tps = 'unpublishedA7'
 	
     msg = '\n----- Search '+tps+' Files, Work in Progress! Please wait ...\n'
     print msg
     print ALL_USERS
     startTimeAll = datetime.now()
-    if BROKENA7 == 'unpublishedA7':
-	START_DIR = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc/'
-	for directory in START_DIR:
-	    startTimeAll = datetime.now()
-	    print startTimeAll
-	    for root, dirnames, filenames in os.walk(directory):
-		args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,directory,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
-		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-		print directory
-	    print START_DIR
+    print startTimeAll
+    if BROKENA7 == 'upb':
+	#START_DIR = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc/'
+	START_DIR = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc/LIB/PROPS/VEHICLE'
+	check = check_Path(START_DIR)
+	if check == True:
+	    for directory in START_DIR:
+		START_DIR = START_DIR + directory
+		#START_DIR = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc/LIB/PROPS/VEHICLE/'
+		for root, dirnames, filenames in os.walk(START_DIR):
+		    print START_DIR
+		    args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,directory,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,TMP_PATH_FILE_UPB,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
+		    __THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
+		break
     else:
 	exclude = set(EXCLUDE_DIR_USERS_LOCKED)
 	for directory in INCLUDE_DIR_LOCKED:
 	    startTimeAll = datetime.now()
 	    print startTimeAll
-	    directory = directory + '/SETS/PRISON/'
+	    directory = directory
+	    # directory = directory + '/PROPS/VEHICLES/'
 	    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
-	    for root, dirnames, filenames in os.walk(START_DIR):
-		dirnames[:] = [d for d in dirnames if d not in exclude]
-		for dirname in dirnames:
-		    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
-		    args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
-		    __THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-		    
-		break
+	    check = check_Path(START_DIR)
+	    if check == True:
+	      for root, dirnames, filenames in os.walk(START_DIR):
+		  dirnames[:] = [d for d in dirnames if d not in exclude]
+		  for dirname in dirnames:
+		      START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
+		      args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,TMP_PATH_FILE_UPB,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
+		      __THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
+		      
+		  break
 
 
 # ############################################################################################################### Variables
@@ -512,13 +530,13 @@ except:
     pass
  
 try:
-    if str(sys.argv[1])	== 'unpublishedA7':
-	BROKENA7 = 'unpublishedA7'
+    if str(sys.argv[1])	== 'upb':
+	BROKENA7 = 'upb'
 except:
     pass
 try:
-    if str(sys.argv[2])	== 'unpublishedA7':
-	BROKENA7	= 'unpublishedA7'
+    if str(sys.argv[2])	== 'upb':
+	BROKENA7	= 'upb'
 	CURRENT_USER 	= sys.argv[1]
 except:
     pass
@@ -542,20 +560,24 @@ START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
 START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_FILE_LOCKED			= CURRENT_PROJECT+'A7LockedBy.tmp'
 TMP_FILE_BROKEN			= CURRENT_PROJECT+'A7BrokenBy.tmp'
-EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','SETS','TEMPLATES','SHARED','Vfx']
+TMP_PATH_FILE_UNPUBLISHED	= CURRENT_PROJECT+'A7unPublishedBy.tmp'
+EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','TEMPLATES','SHARED','Vfx']
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINUP']
-INCLUDE_DIR_LOCKED 		= ['LIB']
+# INCLUDE_DIR_LOCKED 		= ['LIB']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
-#TMP_FILE_LOCKED 		= str(curPath)+'/LOCKEDA7/'+str(TMP_PATH_FILE_LOCKED)
 TMP_PATH_FILE_LOCKED 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_LOCKED)
 TMP_PATH_FILE_BROKEN 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_BROKEN)
+TMP_PATH_FILE_UPB 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_PATH_FILE_UNPUBLISHED)
 
 CHK_SEARCH_ALL  		= False
 
 ALL_USERS = get_AllUsers()
+n_users_tot = len(ALL_USERS)
+
 
 deleteContent(TMP_PATH_FILE_LOCKED)
 deleteContent(TMP_PATH_FILE_BROKEN)
+deleteContent(TMP_PATH_FILE_UPB)
 
 if CURRENT_USER=='-all':
     CHK_SEARCH_ALL = True
@@ -568,21 +590,31 @@ else:
     f = open(TMP_PATH_FILE_BROKEN,'a')
     f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
     f.close()
-n_users_tot = len(ALL_USERS)
+    f = open(TMP_PATH_FILE_UPB,'a')
+    f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
+    f.close()
+
+
+if BROKENA7 == False:
+    TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
+if BROKENA7 == True:
+    TMP_FILE_LOCKED = TMP_PATH_FILE_BROKEN
+if BROKENA7 == 'upb':
+    TMP_FILE_LOCKED = TMP_PATH_FILE_UPB
+
 # ############################################################################################################### RUN  
-BROKENA7	= 'unpublishedA7'
+
+
+
 u = 0
 for user in USERS:
     u += 1
     # print user
     ALL_USERS=[user]
     search_lockedA7()
-    # print n_users_tot
 
-if BROKENA7 == False:
-    TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
-if BROKENA7 == True:
-    TMP_FILE_LOCKED = TMP_PATH_FILE_BROKEN
+
+
 
 #cmd = 'nedit '+str(TMP_FILE_LOCKED)
 #os.system( cmd )
