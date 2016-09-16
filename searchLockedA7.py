@@ -3,8 +3,8 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 15-10-2016                                                                #
-# Search Locked A7                                                                 #
+# Date : 16-10-2016                                                                #
+# Search Locked Unpublished Broken A7                                              #
 # ##################################################################################
 
 
@@ -37,11 +37,17 @@ from multiprocessing import Pool, Process, Pipe, Lock, Value, Array, Manager, Ti
 
 #======================================================================================================================================================
 import argparse
-parser = argparse.ArgumentParser(description='login, brokenA7 are optional | default is current login')
-parser.add_argument('login',nargs='?')
-parser.add_argument('brokenA7',nargs='?')
-parser.add_argument('-all',nargs='?')
+
+parser = argparse.ArgumentParser(description='Search locked (default), unpublished or brocken a7')
+# parser = argparse.ArgumentParser(description='login, bck for searching blocked A7 are optional | default search : current user -> search locked A7 ')
+
+parser.add_argument('login',nargs='?',help='Default is current user', default=os.getenv('USER'))
+
+parser.add_argument('a',nargs='?',help='Search for all users')
+parser.add_argument('upb',nargs='?',help='Search Unpublished a7')
+parser.add_argument('bck',nargs='?',help='Search brocken a7')
 args = parser.parse_args()
+
 #====================================================================================================================================================== 
 # my_queue = Queue.Queue()
 locked = RLock()
@@ -281,7 +287,7 @@ class __FUNCTIONS__TOTHREAD__():
 					# =================================================
 					comBrokenFalse = ''
 					comBrokenTrue = ''
-					if str(self.CURRENT_USER) == '-all':
+					if str(self.CURRENT_USER) == '-a':
 					    comBrokenFalse = ' | ' + str(res[3])
 					    comBrokenTrue  = ' | ' + str(self.USER_TO_SEARCH[0])
 					# case asset Locked
@@ -431,8 +437,8 @@ def check_Path(source):
 
 #====================================================================================================== Functions to thread
 
-def searchA7():
-  
+def searchA7(type_process,with_locked):
+    
     def search_unpublished():
 	for directory in INCLUDE_DIR_LOCKED:
 	    #startTimeAll = datetime.now()
@@ -450,37 +456,10 @@ def searchA7():
 			START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
 			args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,TMP_PATH_FILE_UPB,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
 			__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-			print BROKENA7
-			print 'search_unpublished'
+			#print BROKENA7
+			# print 'search_unpublished'
 		    #break  
-  
-  
-    def search_locked_brocken1(): 
-	START_DIR_LOCAL_A7 = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc'
-	#START_DIR = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc/LIB/PROPS/VEHICLE'
-	check = check_Path(START_DIR_LOCAL_A7)
-	if check == True:
-	    for directory in INCLUDE_DIR_LOCKED:
-		directory = directory
-		# print directory
-		START_DIR = START_DIR_LOCAL_A7  + '/' +  directory
-		#START_DIR = '/u/'+CURRENT_PROJECT_lower+'/Users/'+CURRENT_USER+'/Files/etc/LIB/PROPS/VEHICLE/'
-		
-		check = check_Path(START_DIR)
-		if check == True:
-		
-		    for root, dirnames, filenames in os.walk(START_DIR):
-			dirnames[:] = [d for d in dirnames if d not in exclude]
-			for dirname in dirnames:
-			    print dirname
-			    START_DIR = START_DIR_LOCAL_A7 + '/' + directory + '/' + dirname
-			    #print START_DIR
-			    args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,directory,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,BROKENA7,CURRENT_USER,n_users_tot,startTimeAll]
-			    #__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-
-		    #break  
-  
-  
+		    
     def search_locked_brocken():  
   	exclude = set(EXCLUDE_DIR_USERS_LOCKED)
 	for directory in INCLUDE_DIR_LOCKED:
@@ -501,17 +480,13 @@ def searchA7():
 		      __THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
 		  break
   
-  
-  
-  
-  
     tps = 'Locked'
     TMP_PATH_FILE = TMP_PATH_FILE_LOCKED
     if BROKENA7 == True:
 	tps = 'Broken'
 	TMP_PATH_FILE = TMP_PATH_FILE_BROKEN
     if BROKENA7 == 'upb':
-	tps = 'unpublishedA7'
+	tps = 'unpublished a7'
 	TMP_PATH_FILE = TMP_PATH_FILE_UNPUBLISHED
 	
     msg = '\n----- Search '+tps+' Files, Work in Progress! Please wait ...\n'
@@ -519,7 +494,6 @@ def searchA7():
     print ALL_USERS
     startTimeAll = datetime.now()
     print startTimeAll
-    
     
     exclude = set(EXCLUDE_DIR_USERS_LOCKED)
     
@@ -529,59 +503,70 @@ def searchA7():
 	search_locked_brocken()
 
 
+def run(type_process,with_locked):
+    u = 0
+    for user in USERS:
+	u += 1
+	# print user
+	ALL_USERS=[user]
+	searchA7(type_process,with_locked)
 
 
-
-# ############################################################################################################### Variables
-
-#================================================ type of sharing ressources process | optional ( default stack ) 
-# type_process = 'stack' 	# thread are executed in order
-type_process = 'parallel'	# thread are executed simultaneous
-
-#================================================ lock process | optional ( default True (longer) )
-with_locked = False		# lock and wait end of run threading process function
-
-#================================================
-
+# ############################################################################################################### VARS DONT TOUCH
+print sys.argv
 CURRENT_USER 		= os.getenv('USER')
 BROKENA7		= False
-try:
-    if str(sys.argv[1])	== 'brokenA7':
+if 'bck' in sys.argv or 'upb' in sys.argv:
+    try:
+      if str(sys.argv[1])	== 'bck':
+	  CURRENT_USER 	= sys.argv[2]
+	  BROKENA7 = True
+    except:
+	pass
+    try:
+	if str(sys.argv[2])	== 'bck':
+	    CURRENT_USER 	= sys.argv[1]    
+	    BROKENA7	= True
+
+    except:
+      pass
+    try:
+      if str(sys.argv[1])	== 'upb':
+	  CURRENT_USER 	= sys.argv[2]
+	  BROKENA7 = 'upb'
+    except:
+      pass
+    try:
+      if str(sys.argv[2])	== 'upb':
+	  CURRENT_USER 	= sys.argv[1]
+	  BROKENA7	= 'upb'	  
+    except:
+	pass
+
+else:
+    try:
+	CURRENT_USER 	= sys.argv[1]
 	BROKENA7 = True
-except:
-    pass
-try:
-    if str(sys.argv[2])	== 'brokenA7':
-	BROKENA7	= True
-	CURRENT_USER 	= sys.argv[1]
-except:
-    pass
- 
-try:
-    if str(sys.argv[1])	== 'upb':
-	BROKENA7 = 'upb'
-except:
-    pass
-try:
-    if str(sys.argv[2])	== 'upb':
-	BROKENA7	= 'upb'
-	CURRENT_USER 	= sys.argv[1]
-except:
-    pass
- 
- 
-ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [100, 50, 0] }		
+    except:
+	pass
+
+
+print CURRENT_USER
+print BROKENA7
+
+
+ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [255, 51, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 CURRENT_PROJECT 		= CURRENT_PROJECT_lower.upper()
 if CURRENT_PROJECT 		== 'GRI':
-    HOME_COLOR = ALL_PROJECTS['gri']
+  HOME_COLOR = ALL_PROJECTS['gri']
 if CURRENT_PROJECT 		== 'LUN':
-    HOME_COLOR = ALL_PROJECTS['lun']
+  HOME_COLOR = ALL_PROJECTS['lun']
 if CURRENT_PROJECT 		== 'DM3':
-    HOME_COLOR = ALL_PROJECTS['dm3']
+  HOME_COLOR = ALL_PROJECTS['dm3']
 if CURRENT_PROJECT 		== 'MAX':
-    HOME_COLOR = ALL_PROJECTS['max']
-    
+  HOME_COLOR = ALL_PROJECTS['max']
+  
 START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'	    
 START_DIR_PUBLIC 		= START_DIR_USERS+'COM/Presets/Graphs/'
 START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
@@ -607,41 +592,45 @@ deleteContent(TMP_PATH_FILE_LOCKED)
 deleteContent(TMP_PATH_FILE_BROKEN)
 deleteContent(TMP_PATH_FILE_UPB)
 
-if CURRENT_USER=='-all':
-    CHK_SEARCH_ALL = True
-    USERS = get_AllUsers()
+if CURRENT_USER=='a':
+  CHK_SEARCH_ALL = True
+  USERS = get_AllUsers()
 else:
-    USERS = [CURRENT_USER]
-    f = open(TMP_PATH_FILE_LOCKED,'a')
-    f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
-    f.close()
-    f = open(TMP_PATH_FILE_BROKEN,'a')
-    f.write(CURRENT_USER+'\n')
-    f.close()
-    f = open(TMP_PATH_FILE_UPB,'a')
-    f.write(CURRENT_USER+'\n')
-    f.close()
+  USERS = [CURRENT_USER]
+  f = open(TMP_PATH_FILE_LOCKED,'a')
+  f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
+  f.close()
+  f = open(TMP_PATH_FILE_BROKEN,'a')
+  f.write(CURRENT_USER+'\n')
+  f.close()
+  f = open(TMP_PATH_FILE_UPB,'a')
+  f.write(CURRENT_USER+'\n')
+  f.close()
 
 
 if BROKENA7 == False:
-    TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
+  TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
 if BROKENA7 == True:
-    TMP_FILE_LOCKED = TMP_PATH_FILE_BROKEN
+  TMP_FILE_LOCKED = TMP_PATH_FILE_BROKEN
 if BROKENA7 == 'upb':
-    TMP_FILE_LOCKED = TMP_PATH_FILE_UPB
-
-# ############################################################################################################### RUN  
+  TMP_FILE_LOCKED = TMP_PATH_FILE_UPB
 
 
+# ############################################################################################################### THREADING PROCESSES VARIABLES  
 
-u = 0
-for user in USERS:
-    u += 1
-    # print user
-    ALL_USERS=[user]
-    searchA7()
+#================================================ type of sharing ressources process | optional ( default stack ) 
+# type_process = 'stack' 	# thread are executed in order
+type_process = 'parallel'	# thread are executed simultaneous
+
+#================================================ lock process | optional ( default True (longer) )
+with_locked = False		# lock and wait end of run threading process function
+
+#================================================
+
+# ############################################################################################################### RUN 
 
 
+# run(type_process,with_locked)
 
 
 #cmd = 'nedit '+str(TMP_FILE_LOCKED)
