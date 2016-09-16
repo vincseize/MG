@@ -551,10 +551,6 @@ else:
 	pass
 
 
-print CURRENT_USER
-print BROKENA7
-
-
 ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [255, 51, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
 CURRENT_PROJECT 		= CURRENT_PROJECT_lower.upper()
@@ -630,7 +626,7 @@ with_locked = False		# lock and wait end of run threading process function
 # ############################################################################################################### RUN 
 
 
-# run(type_process,with_locked)
+run(type_process,with_locked)
 
 
 #cmd = 'nedit '+str(TMP_FILE_LOCKED)
