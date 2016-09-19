@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 16-10-2016                                                                #
+# Date : 19-10-2016                                                                #
 # Search Locked Unpublished Broken A7                                              #
 # ##################################################################################
 
@@ -266,7 +266,7 @@ class __FUNCTIONS__TOTHREAD__():
 			    if self.USER_TO_SEARCH[0] in result_array: # and str(ext).upper() in str(result_array).upper()
 				    
 				if '.mdu' in result_array: 
-				    print filePath
+				    # print filePath
 				    result = None
 				    result = self.get_fileInfo(filePath)	# ln link -> 
 				    # /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
@@ -283,19 +283,21 @@ class __FUNCTIONS__TOTHREAD__():
 					filePath = "/".join(filePath.split('/')[6:]) 
 					tmp =  filePath.split(ext)
 					filePath = str(tmp[0])+str(ext)
+					# filepath = 'LIB/TEMPLATES/Casting/NasK/Casting-NasK.a7'
 					# ================================================= InK Method
 					ass = ink.query.Asset(nomen.Cut(filePath))
 					res = ass.GetLockInfos()
+					#print res
 					# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
 					# (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) => Grabbed
 					# (False, False, False, 'nobody', False, 'nobody', False, False, False, False) => unpublished + ln => off
 					# =================================================
 					comBrokenFalse = ''
 					comBrokenTrue = ''
-					if str(self.CURRENT_USER) == '-a':
+					if str(self.CURRENT_USER) == 'a':
 					    comBrokenFalse = ' | ' + str(res[3])
 					    comBrokenTrue  = ' | ' + str(self.USER_TO_SEARCH[0])
-					# case asset Locked
+					###################################################################### case a7 LOCKED
 					if self.BROKENA7 == False:
 					    #TMP_FILE_LOCKED = self.TMP_PATH_FILE_LOCKED
 					    if res[3]==res[5]:
@@ -305,16 +307,24 @@ class __FUNCTIONS__TOTHREAD__():
 						    msg = '\n' + filePath + ' [ LOCKED by '+str(res[3])+' ]'
 						    print msg
 						    break
-					# case asset or file Broken 
+					###################################################################### case a7 or file BROCKEN 
 					if self.BROKENA7 == True:
 					      #TMP_FILE_LOCKED = self.TMP_PATH_FILE_BROKEN
-					      if res[6] == True or res[8] == True:
-						  line = str(filePath) + str(comBrokenTrue)
-						  matches.append(line)
-						  msg = '\n' + filePath + ' [ BROKEN ]'
-						  print msg
-						  break
-					# case asset unplished TODO 
+					      if self.USER_TO_SEARCH == os.getenv('USER'):
+						  if res[6] == True or res[8] == True:
+						      
+						      line = str(filePath) + str(comBrokenTrue)
+						      matches.append(line)
+						      msg = '\n' + filePath + ' [ BROKEN ]'
+						      print msg
+						      break
+					      else:
+						      # find a better solution
+						      line = str(filePath) + str(comBrokenTrue)
+						      matches.append(line)
+						      msg = '\n' + filePath + ' [ BROKEN ]'
+						      print msg
+						      break					
 					
 			except:
 			    # print 'error'
@@ -476,7 +486,7 @@ def searchA7(type_process,with_locked):
 	    else:
 		print 'Invalid folder:' + str(START_DIR)
 		    
-    def search_locked_brocken():  
+    def search_locked_brocken(): 
   	exclude = set(EXCLUDE_DIR_USERS_LOCKED)
 	for directory in INCLUDE_DIR_LOCKED:
 
@@ -530,7 +540,7 @@ def check_threads():
 	while threading.activeCount() > 2:
 	    # time.sleep(1)
 	    n = threading.activeCount()
-	    print n
+	    #print n
 
     except:
 	print 'error'
@@ -573,6 +583,12 @@ if 'bck' in sys.argv or 'upb' in sys.argv:
     except:
       pass
     try:
+	if str(sys.argv[1])	== 'bck':    
+	    BROKENA7	= True
+
+    except:
+      pass
+    try:
       if str(sys.argv[1])	== 'upb':
 	  CURRENT_USER 	= sys.argv[2]
 	  BROKENA7 = 'upb'
@@ -609,13 +625,13 @@ START_DIR_USERS 		= '/u/'+CURRENT_PROJECT_lower+'/Users/'
 START_DIR_PUBLIC 		= START_DIR_USERS+'COM/Presets/Graphs/'
 START_DIR_LOCAL_LOCKED_A7 	= START_DIR_USERS+'COM/Assets'
 START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
-TMP_FILE_LOCKED			= CURRENT_PROJECT+'A7LockedBy.tmp'
-TMP_FILE_BROKEN			= CURRENT_PROJECT+'A7BrokenBy.tmp'
-TMP_PATH_FILE_UNPUBLISHED	= CURRENT_PROJECT+'A7unPublishedBy.tmp'
+TMP_FILE_LOCKED			= CURRENT_PROJECT+'A7_lockedBy.tmp'
+TMP_FILE_BROKEN			= CURRENT_PROJECT+'A7_brokenBy.tmp'
+TMP_PATH_FILE_UNPUBLISHED	= CURRENT_PROJECT+'A7_unPublishedBy.tmp'
 #EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','TEMPLATES','SHARED','Vfx','Anim_Clip','Refs_Xml','.flags','mel','.mdaTrash']
 EXCLUDE_DIR_USERS_LOCKED 	= []
-# INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINEUP']
-INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT]
+INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINEUP']
+#INCLUDE_DIR_LOCKED 		= ['LIB/TEMPLATES/Casting']
 INCLUDE_EXT_LOCKED 		= ['CSV','XML','INKGRAPH','A7']
 TMP_PATH_FILE_LOCKED 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_LOCKED)
 TMP_PATH_FILE_BROKEN 		= '/u/'+os.getenv('USER')+'/Public/'+str(TMP_FILE_BROKEN)
@@ -669,9 +685,8 @@ with_locked = False		# lock and wait end of run threading process function
 
 # ############################################################################################################### RUN 
 
-
-
-
+#print BROKENA7
+#print CURRENT_USER
 run(type_process,with_locked)
 
 
