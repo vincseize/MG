@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 28-10-2016                                                                #
+# Date : 29-10-2016                                                                #
 # Search Locked Unpublished Broken A7                                              #
 # ##################################################################################
 
@@ -35,18 +35,24 @@ import Queue
 from Queue import Queue
 from multiprocessing import Pool, Process, Pipe, Lock, Value, Array, Manager, TimeoutError
 
-#======================================================================================================================================================
 import argparse
 
+#============================================================================================================================================== -help
+
 parser = argparse.ArgumentParser(description='Search locked (default), unpublished or broken a7')
-# parser = argparse.ArgumentParser(description='login, brk for searching blocked A7 are optional | default search : current user -> search locked A7 ')
-
-parser.add_argument('login',nargs='?',help='Default is current user', default=os.getenv('USER'))
-
-parser.add_argument('a',nargs='?',help='Search for all users')
+parser.add_argument('.....',nargs='?',help='')
+parser.add_argument('login',nargs='?',help='[optional] If None, Search for current login', default=os.getenv('USER'))
+parser.add_argument('login=a',nargs='?',help='Search for all users')
+parser.add_argument('.....',nargs='?',help='')
+parser.add_argument('lck',nargs='?',help='Search Locked a7')
 parser.add_argument('upb',nargs='?',help='Search Unpublished a7')
-parser.add_argument('brk',nargs='?',help='Search broken a7')
-parser.add_argument('lck',nargs='?',help='Search locked a7')
+parser.add_argument('brk',nargs='?',help='Search Broken a7')
+parser.add_argument('.....',nargs='?',help='')
+parser.add_argument('path',nargs='?',help='[optional] , Defaults are [CURRENT_PROJECT,LIB,LIBREF,MODELING,PREVIZ,USECASE,USECASEDEV,LINEUP,MLUN,SLUN]')
+parser.add_argument('.....',nargs='?',help='')
+parser.add_argument('usage sample 1 :',nargs='?',help='python searchStranges_a7.py lck')
+parser.add_argument('usage sample 2 :',nargs='?',help='python searchStranges_a7.py gamin brk')
+parser.add_argument('usage sample 3 :',nargs='?',help='python searchStranges_a7.py a brk /USECASEDEV/SUBFOLDER')
 args = parser.parse_args()
 
 #====================================================================================================================================================== 
@@ -171,10 +177,7 @@ class __FUNCTIONS__TOTHREAD__():
     # YOUR FUNCTION                                                                                                           #
     # #########################################################################################################################
     def run_myFunction(self,args):
-	'''  get fileList '''
-	# START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE_LOCKED,TMP_PATH_FILE_BROKEN,TMP_PATH_FILE_UNPUBLISHED,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll
-	# upb
-	# START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll
+	'''   '''
 	self.source           		= args[0]
 	self.USER_TO_SEARCH		= args[1] # array
 	self.CURRENT_PROJECT_lower	= args[2]
@@ -188,33 +191,30 @@ class __FUNCTIONS__TOTHREAD__():
 	self.n_users_tot		= args[10]
 	self.start_time			= args[11]
 	self.directory = self.splitall(self.source)[-1]
+
+	# print threading.currentThread().getName()
+
+	Usearch = '/'+self.CURRENT_USER+'/'
+	#print Usearch
+	matches = []
+	path = os.path.normpath(self.source)
+	searchName = self.USER_TO_SEARCH[0]
+	if str(self.CURRENT_USER) == 'a':
+	    searchName = 'all - ' + str(self.USER_TO_SEARCH[0])
+	
+	print ' '
+	print '===================================> [ ' + str(searchName) + ' ]  ' + str(self.directory) + ' search a7 [' + str(self.A7_typeSearch) + '] in progress, please wait ...'
+	print ' '
+
+	self.startTimeInt = datetime.now()
+
 	print '---------------------------------'
 	print type(self.start_time) 
 	print self.start_time
 	print '---------------------------------'
-	
-	print ' '
-	print '===================================> ' + str(self.directory) + ' search in progress, please wait ...'
-	print ' '
-
-	# print threading.currentThread().getName()
-
-	self.startTimeInt = datetime.now()
-	matches = []
-	path = os.path.normpath(self.source)
-	
-	comFalse = ''
-	comTrue = ''
-	if str(self.CURRENT_USER) == 'a':
-	    comFalse = ' | ' + str(res[3])
-	    comTrue  = ' | ' + str(self.USER_TO_SEARCH[0])
-
-	Usearch = '/'+CURRENT_USER+'/'
-
 
 	for root, dirnames, filenames in os.walk(self.source, topdown=False, onerror=None, followlinks=True): # topdown=False moins efficient que True
-	    #print self.A7_typeSearch
-	    dirnames[:] = [d for d in dirnames if d not in exclude]
+	    dirnames[:] = [d for d in dirnames if d not in self.EXCLUDE_DIR_USERS_LOCKED]
 	    if not dirnames:   #  and len(intersect) == 0
 		depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
 		#print depth
@@ -224,8 +224,6 @@ class __FUNCTIONS__TOTHREAD__():
 		    ext = 'a7' # to do
 		    filePath = os.path.join(root, filename)
 		    
-############### Usearch = '/'+CURRENT_USER+'/'
-		    
 		    #==========================================================================================================================================================  unpublished a7
 		    
 		    
@@ -234,8 +232,12 @@ class __FUNCTIONS__TOTHREAD__():
 		    #ass.GetScmInfos()
 		    #(False, False, True, True, True, False)
 		    
+		    comFalse = ''
+		    comTrue = ''
+		    res = None
+		    
 		    if str(self.A7_typeSearch) == 'upb':
-			#comPublishedFalse = ''
+
 			try:
 			    if filename.split('.')[1]=='xml':
 				#print filename
@@ -262,8 +264,11 @@ class __FUNCTIONS__TOTHREAD__():
 				    # InK Method
 				    ass = ink.query.Asset(nomen.Cut(filePath))
 				    res = ass.GetLockInfos()
-				    print res				    
-				    
+				    #print res				    
+				    if str(self.CURRENT_USER) == 'a':
+					comFalse = ' | ' + str(res[3])
+					comTrue  = ' | ' + str(self.USER_TO_SEARCH[0])
+					searchName = 'all - ' + str(self.USER_TO_SEARCH[0])
 				    # =================================================
 
 					
@@ -293,44 +298,26 @@ class __FUNCTIONS__TOTHREAD__():
 			    result_array = self.splitall(filePath)
 			    
 			    if self.USER_TO_SEARCH[0] in result_array and '.mdu' in result_array : 
-				print filePath
-				
-				#if '.mdu' in result_array: 
-				# print '.mdu'
+				# print filePath
 				result = None
-				result = self.get_fileInfo(filePath)	# ln link -> 
+				result = self.get_FileInfos(filePath)	# ln link -> 
 				# /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
 				infoWrite = result[0]
 				infoOwner = result[1]
 
+				# /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
+				# normalize name for Ink API => /USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
+				filePath = "/".join(filePath.split('/')[6:]) 
+				tmp =  filePath.split(ext)
+				filePath = str(tmp[0])+str(ext)
+				# print filePath
+				res = self.get_LockInfos(filePath)
+
 				if self.A7_typeSearch == 'lck': # ==============================================================================================================================  locked a7
 				    if infoWrite == True and str(infoOwner) in str(self.USER_TO_SEARCH):		
-					res = None
-					# /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
-					# normalize name for Ink API => /USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
-					filePath = "/".join(filePath.split('/')[6:]) 
-					tmp =  filePath.split(ext)
-					filePath = str(tmp[0])+str(ext)
-					# filepath = 'LIB/TEMPLATES/Casting/NasK/Casting-NasK.a7'
-					print filePath
-					# ================================================= InK Method
-					ass = ink.query.Asset(nomen.Cut(filePath))
-					res = ass.GetLockInfos()
-					#print res
-					# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen
-					# (True, True, True,   'xxx', True, 'xxx', True, False, True, False) 				=> Broken
-					# (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) 		=> Grabbed
-					# (False, False, False, 'nobody', False, 'nobody', False, False, False, False) 			=> unpublished + ln => off
-					
-					# (False, False, False, 'nobody', False, 'nobody', False, False, False, False) 			=> unpublished
-					
-					#==========================================================================================================================================================  locked a7
-				    #if self.A7_typeSearch == 'lck':
-					
-					#TMP_FILE_LOCKED = self.TMP_PATH_FILE_LOCKED
 					if res[3] == res[5]:
-					    print 'lck' + filePath
-					    print str(res[3]) + str(self.USER_TO_SEARCH)
+					    #print filePath
+					    #print res
 					    if res[3] in str(self.USER_TO_SEARCH): 
 						line = str(filePath) + str(comFalse)
 						matches.append(line)
@@ -339,42 +326,15 @@ class __FUNCTIONS__TOTHREAD__():
 						break
 				#==========================================================================================================================================================  broken a7 or broken file
 				if self.A7_typeSearch == 'brk':
-				    #print filePath
-				    
-				    
-				    
-				    res = None
-				    # /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
-				    # normalize name for Ink API => /USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
-				    filePath = "/".join(filePath.split('/')[6:]) 
-				    tmp =  filePath.split(ext)
-				    filePath = str(tmp[0])+str(ext)
-				    # filepath = 'LIB/TEMPLATES/Casting/NasK/Casting-NasK.a7'
-				    # print 'brk' + filePath
-				    # ================================================= InK Method
-				    ass = ink.query.Asset(nomen.Cut(filePath))
-				    res = ass.GetLockInfos() 
-				    print res + filePath
-				    
-				    
-				    #TMP_FILE_LOCKED = self.TMP_PATH_FILE_BROKEN
-				    #if os.getenv('USER') in self.USER_TO_SEARCH:
+				    res = self.get_LockInfos(filePath)
 				    if res[6] == True or res[8] == True: # (True, True, True,   'xxx', True, 'xxx', True, False, True, False) 				=> Broken
-					print 'brk' + filePath
+					#print filePath
+					#print res
 					line = str(filePath) + str(comTrue)
 					matches.append(line)
 					msg = '\n' + filePath + ' [ BROKEN by '+str(self.USER_TO_SEARCH[0])+'  ]'
 					print msg
 					break
-				    '''
-				    else:
-					    # find a better solution
-					    line = str(filePath) + str(comTrue)
-					    matches.append(line)
-					    msg = '\n' + filePath + ' [ BROKEN by '+str(self.USER_TO_SEARCH[0])+'  ]'
-					    print msg
-					    break	
-				    '''
 				      
 			except:
 			    # print 'error'
@@ -386,12 +346,10 @@ class __FUNCTIONS__TOTHREAD__():
 	totTimeInt = endTime - self.startTimeInt
 	#totTime = endTime - self.start_time
 	
-	search = self.USER_TO_SEARCH[0]
-	if search == 'a':
-	    search = 'all - ' + str(self.USER_TO_SEARCH[0])
+
 	print ' '
 	print '=================================================\ '
-	print '=================================================|> [ ' + str(search) + ' ]  ' + str(self.directory) + ' search [' + str(self.A7_typeSearch) + '] DONE in ' + str(totTimeInt)
+	print '=================================================|> [ ' + str(searchName) + ' ]  ' + str(self.directory) + ' search a7 [' + str(self.A7_typeSearch) + '] DONE in ' + str(totTimeInt)
 	print '=================================================/ '
 
 	print ' '	
@@ -399,7 +357,7 @@ class __FUNCTIONS__TOTHREAD__():
 	if len(matches) > 0 :
 	    print ' > ' + str(len(matches)) + ' a7 ' + str(self.A7_typeSearch)
 	    print matches
-	        
+	    #print self.TMP_PATH_FILE
 	    try:
 		
 		with open(self.TMP_PATH_FILE) as f:
@@ -430,13 +388,13 @@ class __FUNCTIONS__TOTHREAD__():
 	      
 	      
 
-    def get_fileInfoQT(self,source):
+    def get_FileInfosQT(self,source):
 	fileInfo   = QtCore.QFileInfo(source)
 	infoWrite = fileInfo.isWritable()
 	infoOwner = fileInfo.owner()
 	return infoWrite, infoOwner
 
-    def get_fileInfo(self,source):
+    def get_FileInfos(self,source):
 	# fileInfo   = getpwuid(stat(source).st_uid).pw_name
 	# st = os.stat(source)
 	infoWrite = os.access(source, os.R_OK)
@@ -464,14 +422,20 @@ class __FUNCTIONS__TOTHREAD__():
 
 
 
-    def get_LockInfos(self,source,project,user):
-	published = True
-	pathSymLink = os.readlink(source)
-	# print pathSymLink
-	if '/COM/' not in str(pathSymLink):
-	    published = False
+    def get_LockInfos(self,filePath):
+	''' Ink API Method '''
+	# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen <= return
 	
-	return published
+	# (True, True, True,   'xxx', True, 'xxx', True, False, True, False) 				=> Broken
+	
+	# (True, True, True,   'cpottier', True, 'cpottier', False, False, False, False) 		=> Grabbed
+	
+	# (False, False, False, 'nobody', False, 'nobody', False, False, False, False) 			=> unpublished + ln => off
+	# (False, False, False, 'nobody', False, 'nobody', False, False, False, False) 			=> unpublished
+	res = None
+	ass = ink.query.Asset(nomen.Cut(filePath))
+	res = ass.GetLockInfos()
+	return res
 
 
     def get_ScmInfos(self,source,project,user):
@@ -520,13 +484,8 @@ def get_AllUsers():
     ALL_USERS = [] # GLOBVAR
     for user in os.listdir(START_DIR_USERS):
 	if str(user) not in EXCLUDE_DIR_USERS_LOCKED:
-	    path = os.path.join(START_DIR_USERS, user)
-	    if os.path.isdir(path):
-		if CHK_SEARCH_ALL == True:
-		    ALL_USERS.append(user)
-		if CHK_SEARCH_ALL == False:
-		    ALL_USERS.append(CURRENT_USER)
-		    break        
+	    ALL_USERS.append(user)
+		            
     return ALL_USERS		
 		
 def check_Path(source):
@@ -541,22 +500,32 @@ def check_Path(source):
 
 #====================================================================================================== Functions to thread
 
-def searchA7(type_process,with_locked):
+def searchA7(type_process,with_locked,user):
     startTimeAll = datetime.now()
     print startTimeAll
-    print type(startTimeAll)
+    #print type(startTimeAll)
+    ALL_USERS = [user]
+    CURRENT_USER = ALL_USERS[0]
+    #print ALL_USERS    
     
     def search_unpublished():
 	for directory in INCLUDE_DIR_LOCKED:
-	    print '#upb'
+	    #print '#upb'
 	    #directory = directory
 	    START_DIR_UPB = START_DIR_USERS+str(ALL_USERS[0])+'/Files/etc/'+ directory
 	    #START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
+	    #START_DIR_UPB = START_DIR_USERS+str(ALL_USERS[0])+'/Files/etc/LIB/PROPS/PROPSLOOKDEV/ChairGrinch'
 	    check = check_Path(START_DIR_UPB)
 	    print START_DIR_UPB
 	    if check == True:
-		for root, dirnames, filenames in os.walk(START_DIR_UPB, topdown=False, onerror=None, followlinks=False):
+		for root, dirnames, filenames in os.walk(START_DIR_UPB, topdown=True, onerror=None, followlinks=False):
 		    dirnames[:] = [d for d in dirnames if d not in exclude]
+		    
+		    
+
+		 
+		    
+		    
 		    for dirname in dirnames:
 			dirnames[:] = [d for d in dirnames if d.upper() not in EXCLUDE_DIR_USERS_LOCKED]
 			#print dirname
@@ -564,9 +533,11 @@ def searchA7(type_process,with_locked):
 			START_DIR = START_DIR_UPB + '/' + dirname
 			print START_DIR
 			args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll]
-			__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
+			#__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
 		    #break
-		#check_threads()    
+		#check_threads()  
+
+		
 	    else:
 		print 'Invalid folder:' + str(START_DIR_UPB)
 		    
@@ -579,46 +550,15 @@ def searchA7(type_process,with_locked):
 	    # directory = directory + '/PROPS/VEHICLES/'
 	    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
 	    check = check_Path(START_DIR)
+	    # print START_DIR
+	    
 	    if check == True:
-		for root, dirnames, filenames in os.walk(START_DIR, topdown=True, onerror=None, followlinks=False):
-		    dirnames[:] = [d for d in dirnames if d not in exclude]
-		    print root
-		    args = [root,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll]
-		    __THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-		    break
-		'''
-		    #START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
-		    #print START_DIR		    
-		    
-		    
-		    
-		    
-		    for dirname in dirnames:
-			#dirnames[:] = [d for d in dirname if d.upper() not in EXCLUDE_DIR_USERS_LOCKED]
-			if root.endswith('/.mdu') and dirname==CURRENT_USER:
-			    filePath = os.path.join(root, dirname)
-			    print filePath
-			    
-			    
-			    
-			    
-			    
-			    print 'searching...'
-			    break
-
-			if dirname != '.mda':    
-			    
-			    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory + '/' + dirname
-			    print START_DIR
-			    args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll]
-			    #__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-				#return_val = __THREAD__INSTANCE__.get()
-				
-			    #break
-			#check_threads()
-	    '''
+		args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll]	    
+		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
+		
 	    else:
 		print 'Invalid folder:' + str(START_DIR)
+	  
   
   
     tps = ''
@@ -634,7 +574,7 @@ def searchA7(type_process,with_locked):
 	
     msg = '\n----- Search '+tps+' Files, Work in Progress! Please wait ...\n'
     print msg
-    print ALL_USERS
+    print CURRENT_USER
     startTimeAll = datetime.now()
     print startTimeAll
     
@@ -701,10 +641,10 @@ def run(type_process,with_locked):
   
     u = 0
     for user in USERS:
-	u += 1
-	# print user
-	ALL_USERS=[user]
-	searchA7(type_process,with_locked)
+	#print user
+	#ALL_USERS=[]
+	#ALL_USERS=[user]
+	searchA7(type_process,with_locked,user)
     check_threads()
     
     #endTime = datetime.now()
@@ -800,6 +740,7 @@ EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IM
 
 #EXCLUDE_DIR_USERS_LOCKED 	= []
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINEUP','MLUN','SLUN']
+#INCLUDE_DIR_LOCKED 		= ['LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINEUP','MLUN','SLUN']
 # INCLUDE_DIR_LOCKED 		= ['LIB']
 # INCLUDE_DIR_LOCKED 		= ['LIB/PROPS/PROPSLOOKDEV/Pillow'] # LIB/PROPS/PROPSLOOKDEV/Pillow/Shading/Pillow-Light1-Shading_Compo.a7
 
@@ -815,6 +756,8 @@ CHK_SEARCH_ALL  		= False
 
 ALL_USERS = get_AllUsers()
 n_users_tot = len(ALL_USERS)
+#print ALL_USERS
+
 
 '''
 deleteContent(TMP_PATH_FILE_LOCKED)
@@ -864,147 +807,6 @@ with_locked = False		# lock and wait end of run threading process function
 
 
 run(type_process,with_locked)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def test():
-    startTime = datetime.now()
-    print startTime
-    for root, dirnames, filenames in os.walk(START_DIR_LOCAL_LOCKED_A7, topdown=True, onerror=None, followlinks=False):
-	dirnames[:] = [d for d in dirnames if d.upper() not in EXCLUDE_DIR_USERS_LOCKED]
-	for dirname in dirnames:
-	    dirnames[:] = [d for d in dirnames if d.upper() not in EXCLUDE_DIR_USERS_LOCKED]
-	    print root, dirnames, dirname
-    print '--------------------------------------------------'
-    print startTime
-    endTime = datetime.now()
-    totTime = endTime - startTime
-    print totTime
-
-    #0:06:37.529702
-    #0:00:13.844612
-
-#test()
-
-
-
-#cmd = 'nedit '+str(TMP_FILE_LOCKED)
-#os.system( cmd )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Use the built-in version of scandir/walk if possible, otherwise
-# use the scandir module version
-'''
-try:
-    from os import scandir, walk
-except ImportError:
-    from scandir import scandir, walk
-'''    
-    
-def subdirs(path):
-    startTime = datetime.now()
-    Usearch = '/.mdu/'+CURRENT_USER
-    Usearch = '/.mdu/frantzy'
-    print Usearch
-    '''
-    i = 0
-    for (root, dirs, files) in os.walk(path, topdown=False, onerror=None, followlinks=False):
-	print root
-	#print dirs
-	#print files
-	#print "----"
-
-	if '.mdu' in root and Usearch in root:
-	    for file in files:
-		if file.endswith(".a7"):
-		    print(os.path.join(root, file))
-		    print files
-		    break
-	'''
-
-    for root, dirnames, filenames in os.walk(path, topdown=True, onerror=None, followlinks=False):
-	dirnames[:] = [d for d in dirnames if d.upper() not in EXCLUDE_DIR_USERS_LOCKED]
-	for dirname in dirnames:
-	    dirnames[:] = [d for d in dirnames if d.upper() not in EXCLUDE_DIR_USERS_LOCKED]
-	    #print type(root)
-	    #if '.mdu/frantzy/' in root:
-	    if root.endswith(Usearch):
-		# print root
-		for file in filenames:
-		    if file.endswith(".a7"):
-			print(os.path.join(root, file))
-			#print file
-			break
-
-		    '''
-		    if file.endswith(".a7"):
-			print(os.path.join(root, file))
-			print files
-			break
-		    '''
-	    #print root, dirnames, dirname
-
-	
-
-    print startTime 
-    endTime = datetime.now()
-    print endTime
-    totTime = endTime - startTime
-    print totTime
-
-
-
-#subdirs(START_DIR_OFF_LOCKED_A7)
-
-
-
-
-
 
 
 
