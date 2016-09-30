@@ -46,13 +46,19 @@ parser.add_argument('login=a',nargs='?',help='Search for all users')
 parser.add_argument('.....',nargs='?',help='')
 parser.add_argument('lck',nargs='?',help='Search Locked a7')
 parser.add_argument('upb',nargs='?',help='Search Unpublished a7')
-parser.add_argument('brk',nargs='?',help='Search Broken a7')
+parser.add_argument('brk',nargs='?',help='Search Broken a7 in /LIBREF')
 parser.add_argument('.....',nargs='?',help='')
 parser.add_argument('path',nargs='?',help='[optional] , Defaults are [CURRENT_PROJECT,LIB,LIBREF,MODELING,PREVIZ,USECASE,USECASEDEV,LINEUP,MLUN,SLUN]')
 parser.add_argument('.....',nargs='?',help='')
 parser.add_argument('usage sample 1 :',nargs='?',help='python searchStranges_a7.py lck')
 parser.add_argument('usage sample 2 :',nargs='?',help='python searchStranges_a7.py gamin brk')
 parser.add_argument('usage sample 3 :',nargs='?',help='python searchStranges_a7.py a brk /USECASEDEV/SUBFOLDER')
+parser.add_argument('.....',nargs='?',help='')
+parser.add_argument('usage context  :',nargs='?',help='open a NEW !!! terminal')
+parser.add_argument('.....',nargs='?',help='')
+parser.add_argument('usage nedit .tmp :',nargs='?',help='ls /u/cpottier/Public')
+parser.add_argument('sample .tmp file :',nargs='?',help='A7_GRI_unPublishedBy.tmp | A7_GRI_lockedBy.tmp | A7_GRI_brokenBy.tmp')
+parser.add_argument('.....',nargs='?',help='')
 args = parser.parse_args()
 
 #====================================================================================================================================================== 
@@ -200,7 +206,6 @@ class __FUNCTIONS__TOTHREAD__():
 	if str(self.CURRENT_USER) == 'a':
 	    searchName = 'all - ' + str(self.USER_TO_SEARCH[0])
 	
-	
 	# ------------------------------------------------------------------------------- 
 	self.start_Msg(searchName,self.directory,self.A7_typeSearch)
 	# -------------------------------------------------------------------------------	
@@ -224,7 +229,7 @@ class __FUNCTIONS__TOTHREAD__():
 		    
 		    #==========================================================================================================================================================  locked or broken a7
 		    if str(self.A7_typeSearch) == 'lck' or str(self.A7_typeSearch) == 'brk' or str(self.A7_typeSearch) == 'upb':
-
+			print filePath_toWrite
 			try:
 			    
 			    # /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
@@ -237,9 +242,18 @@ class __FUNCTIONS__TOTHREAD__():
 				infoWrite = result[0]
 				infoOwner = result[1]
 				
+				# we search both
+				#==========================================================================================================================================================  unpublished a7
+				if self.A7_typeSearch == 'upb' or self.A7_typeSearch == 'lck':				      
+				    if res[0] == False and res[1] == False and res[2] == False  and res[3] == 'nobody' and res[4] == False and res[5] == 'nobody' and res[6] == False and res[7] == False and res[8] == False and res[9] == False:
+					# (False, False, False, 'nobody', False, 'nobody', False, False, False, False)  		=> Unpublished
+					line = str(filePath_toWrite) + str(comTrue)
+					matches.append(line)
+					msg = '\n' + filePath_toWrite + ' [ UNPUBLISHED by '+str(self.USER_TO_SEARCH[0])+'  ]'
+					print msg
+					break				      
 
-
-				if self.A7_typeSearch == 'lck': # ==============================================================================================================================  locked a7
+				if self.A7_typeSearch == 'lck' or self.A7_typeSearch == 'upb': # ===============================================================================================  locked a7
 				    if infoWrite == True and str(infoOwner) in str(self.USER_TO_SEARCH):		
 					if res[3] == res[5]: 
 					    # (xxx, xxx, xxx, 'login', xxx, 'login', xxx, xxx, xxx, xxx) 				=> Locked
@@ -249,6 +263,8 @@ class __FUNCTIONS__TOTHREAD__():
 						msg = '\n' + filePath_toWrite + ' [ LOCKED by '+str(self.USER_TO_SEARCH[0])+' ]'
 						print msg
 						break
+				
+				# we search only
 				#================================================================================================================================================  broken a7 or broken file
 				if self.A7_typeSearch == 'brk':
 				    if res[6] == True or res[8] == True: 
@@ -260,16 +276,7 @@ class __FUNCTIONS__TOTHREAD__():
 					break
 				      
 				      
-				#==========================================================================================================================================================  unpublished a7
-				if self.A7_typeSearch == 'upb':				      
-				    if res[0] == False and res[1] == False and res[2] == False  and res[3] == 'nobody' and res[4] == False and res[5] == 'nobody' and res[6] == False and res[7] == False and res[8] == False and res[9] == False:
-					# (False, False, False, 'nobody', False, 'nobody', False, False, False, False)  		=> Unpublished
-					line = str(filePath_toWrite) + str(comTrue)
-					matches.append(line)
-					msg = '\n' + filePath_toWrite + ' [ UNPUBLISHED by '+str(self.USER_TO_SEARCH[0])+'  ]'
-					print msg
-					break
-				      
+
 			except:
 			    # print 'error'
 			    pass
@@ -433,39 +440,13 @@ def check_Path(source):
 #====================================================================================================== Functions to thread
 
 def searchA7(type_process,with_locked,user):
+    '''   '''
     startTimeAll = datetime.now()
     print startTimeAll
-    #print type(startTimeAll)
     ALL_USERS = [user]
-    CURRENT_USER = ALL_USERS[0]
-    #print ALL_USERS    
+    CURRENT_USER = ALL_USERS[0]   
     
-    def search_unpublished():
-	for directory in INCLUDE_DIR_LOCKED:
-	    directory = directory
-	    START_DIR_UPB = START_DIR_OFF_LOCKED_A7 + '/' + directory
-	    check = check_Path(START_DIR_UPB)
-	    if check == True:
-		args = [START_DIR_UPB,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll]	    
-		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-	    else:
-		print 'Invalid folder:' + str(START_DIR_UPB)
-		    
-    def search_locked_broken(): 
-  	# exclude = set(EXCLUDE_DIR_USERS_LOCKED)
-	for directory in INCLUDE_DIR_LOCKED:
-	    directory = directory
-	    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
-	    check = check_Path(START_DIR)
-	    if check == True:
-		args = [START_DIR,ALL_USERS,CURRENT_PROJECT_lower,START_DIR_LOCAL_LOCKED_A7,INCLUDE_DIR_LOCKED,EXCLUDE_DIR_USERS_LOCKED,INCLUDE_EXT_LOCKED,TMP_PATH_FILE,A7_typeSearch,CURRENT_USER,n_users_tot,startTimeAll]	    
-		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
-	    else:
-		print 'Invalid folder:' + str(START_DIR)
-	  
-  
     def search_A7(): 
-  	# exclude = set(EXCLUDE_DIR_USERS_LOCKED)
 	for directory in INCLUDE_DIR_LOCKED:
 	    directory = directory
 	    START_DIR = START_DIR_OFF_LOCKED_A7 + '/' + directory
@@ -475,7 +456,6 @@ def searchA7(type_process,with_locked,user):
 		__THREAD__INSTANCE__(os.path.basename(__file__),args,type_process,with_locked)
 	    else:
 		print 'Invalid folder:' + str(START_DIR)
-  
   
     tps = ''
     if A7_typeSearch == 'lck':
@@ -494,21 +474,12 @@ def searchA7(type_process,with_locked,user):
     startTimeAll = datetime.now()
     print startTimeAll
     
-    # exclude = set(EXCLUDE_DIR_USERS_LOCKED)
-    
-    '''
-    if A7_typeSearch == 'upb':
-	search_unpublished()	
-    else:
-	search_locked_broken()
-    '''
-	
     search_A7()
 	
 	
 	
 def check_threads():
-    # print 'check_threads'
+    '''   '''
     try:
 	while threading.activeCount() > 2:
 	    # time.sleep(1)
@@ -520,14 +491,12 @@ def check_threads():
 	pass
 
 def run(type_process,with_locked):
-  
+    '''   '''
+    startTime = datetime.now()
+    
     deleteContent(TMP_PATH_FILE_LOCKED)
     deleteContent(TMP_PATH_FILE_BROKEN)
     deleteContent(TMP_PATH_FILE_UNPUBLISHED)
-  
-  
-  
-  
   
     if CURRENT_USER=='a':
       CHK_SEARCH_ALL = True
@@ -544,7 +513,6 @@ def run(type_process,with_locked):
       f.write(CURRENT_USER+'\n')
       f.close()
 
-
     if A7_typeSearch == 'lck':
       TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
     if A7_typeSearch == 'brk':
@@ -552,36 +520,23 @@ def run(type_process,with_locked):
     if A7_typeSearch == 'upb':
       TMP_FILE_LOCKED = TMP_PATH_FILE_UNPUBLISHED  
     
-  
-  
-  
-  
-  
-  
-    #print A7_typeSearch
-    startTime = datetime.now()
-  
-    u = 0
     for user in USERS:
-	#print user
-	#ALL_USERS=[]
-	#ALL_USERS=[user]
 	searchA7(type_process,with_locked,user)
+	
     check_threads()
     
-    #endTime = datetime.now()
-    #totTime = endTime - startTime
-    #time.sleep(10)
-    # print '###################################### DONE in ' + str(totTime)
-
 
 # ############################################################################################################### VARS DONT TOUCH
 
-CURRENT_USER = os.getenv('USER')
+CURRENT_USER 	= os.getenv('USER')
+A7_typeSearch	= 'None'
+check_run 	= False
+path_search 	= 'Default'
 
 # ##################################################################### type search
-A7_typeSearch	= 'lck'
+
 if 'brk' in sys.argv or 'upb' in sys.argv or 'lck' in sys.argv:
+    check_run 	= True
     #============================== brk search
     try:
       if str(sys.argv[1])	== 'brk':
@@ -622,17 +577,23 @@ if 'brk' in sys.argv or 'upb' in sys.argv or 'lck' in sys.argv:
 	    A7_typeSearch	= 'lck'	  
     except:
 	pass
+if str(A7_typeSearch) == 'None':
+    print ''
+    print '-----------------------------------------------------------------------------------'
+    print '!!! Please choose an search type : upb, lck or brk | script.py -h for more help !!!'
+    print '-----------------------------------------------------------------------------------'
+    print ''
+    check_run = False
+    
+# ##################################################################### own path search optional
 
-# ##################################################################### path search optional
-path_search = 'Default'
 try:
     if '/' in  str(sys.argv[-1]):
 	path_search = str(sys.argv[-1])[1:]
 except:
     pass
 
-
-# ##################################################################### other var
+# ##################################################################### other vars
 
 ALL_PROJECTS	 		= {"gri": [71, 209, 71], "lun": [0, 153, 255], "dm3": [204, 51, 255], "max": [139, 0, 0], "pets2": [255, 51, 0] }		
 CURRENT_PROJECT_lower 		= ink.io.ConnectUserInfo()[2]		
@@ -673,38 +634,6 @@ CHK_SEARCH_ALL  		= False
 
 ALL_USERS = get_AllUsers()
 n_users_tot = len(ALL_USERS)
-#print ALL_USERS
-
-
-'''
-deleteContent(TMP_PATH_FILE_LOCKED)
-deleteContent(TMP_PATH_FILE_BROKEN)
-deleteContent(TMP_PATH_FILE_UNPUBLISHED)
-
-
-if CURRENT_USER=='a':
-  CHK_SEARCH_ALL = True
-  USERS = get_AllUsers()
-else:
-  USERS = [CURRENT_USER]
-  f = open(TMP_PATH_FILE_LOCKED,'a')
-  f.write(CURRENT_USER+'\n') # python will convert \n to os.linesep
-  f.close()
-  f = open(TMP_PATH_FILE_BROKEN,'a')
-  f.write(CURRENT_USER+'\n')
-  f.close()
-  f = open(TMP_PATH_FILE_UNPUBLISHED,'a')
-  f.write(CURRENT_USER+'\n')
-  f.close()
-
-
-if A7_typeSearch == 'lck':
-  TMP_FILE_LOCKED = TMP_PATH_FILE_LOCKED
-if A7_typeSearch == 'brk':
-  TMP_FILE_LOCKED = TMP_PATH_FILE_BROKEN
-if A7_typeSearch == 'upb':
-  TMP_FILE_LOCKED = TMP_PATH_FILE_UNPUBLISHED
-'''
 
 # ############################################################################################################### VARIABLES  
 
@@ -722,8 +651,8 @@ with_locked = False		# lock and wait end of run threading process function
 # ############################################################################################################### RUN 
 
 
-
-run(type_process,with_locked)
+if (check_run == True):
+    run(type_process,with_locked)
 
 
 
