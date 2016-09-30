@@ -3,7 +3,7 @@
 # ##################################################################################
 # MG ILLUMINATION                                                                  #
 # Author : cPOTTIER                                                                #
-# Date : 29-10-2016                                                                #
+# Date : 30-10-2016                                                                #
 # Search Locked Unpublished Broken A7                                              #
 # ##################################################################################
 
@@ -194,24 +194,19 @@ class __FUNCTIONS__TOTHREAD__():
 
 	# print threading.currentThread().getName()
 
-	Usearch = '/'+self.CURRENT_USER+'/'
-	#print Usearch
 	matches = []
 	path = os.path.normpath(self.source)
 	searchName = self.USER_TO_SEARCH[0]
 	if str(self.CURRENT_USER) == 'a':
 	    searchName = 'all - ' + str(self.USER_TO_SEARCH[0])
 	
-	print ' '
-	print '===================================> [ ' + str(searchName) + ' ]  ' + str(self.directory) + ' search a7 [' + str(self.A7_typeSearch) + '] in progress, please wait ...'
-	print ' '
+	
+	# ------------------------------------------------------------------------------- 
+	self.start_Msg(searchName,self.directory,self.A7_typeSearch)
+	# -------------------------------------------------------------------------------	
+	
 
 	self.startTimeInt = datetime.now()
-
-	print '---------------------------------'
-	print type(self.start_time) 
-	print self.start_time
-	print '---------------------------------'
 
 	for root, dirnames, filenames in os.walk(self.source, topdown=False, onerror=None, followlinks=True): # topdown=False moins efficient que True
 	    dirnames[:] = [d for d in dirnames if d not in self.EXCLUDE_DIR_USERS_LOCKED]
@@ -219,10 +214,10 @@ class __FUNCTIONS__TOTHREAD__():
 		depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
 		#print depth
 		for filename in filenames:
-		    # filename = .mdadata
 		    ext = None
 		    ext = 'a7' # to do
 		    filePath = os.path.join(root, filename)
+		    filePath_toWrite = self.normalize_Name(os.path.join(root, filename),ext)
 		    comFalse = ''
 		    comTrue = ''
 		    res = None
@@ -235,45 +230,32 @@ class __FUNCTIONS__TOTHREAD__():
 			    # /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
 			    result_array = self.splitall(filePath)
 			    
-			    if self.USER_TO_SEARCH[0] in result_array and '.mdu' in result_array : 
-				#print filePath
+			    if self.USER_TO_SEARCH[0] in result_array and '.mdu' in result_array :
+				res = self.get_LockInfos(filePath,ext)
 				result = None
 				result = self.get_FileInfos(filePath)	# ln link -> 
-				# /u/gri/Users/OFF/Assets/USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7/0003/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
 				infoWrite = result[0]
 				infoOwner = result[1]
+				
 
-				# /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
-				# normalize name for Ink API => /USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
-				filePath = "/".join(filePath.split('/')[6:]) 
-				tmp =  filePath.split(ext)
-				filePath = str(tmp[0])+str(ext)
-				# print filePath
-				res = self.get_LockInfos(filePath)
 
 				if self.A7_typeSearch == 'lck': # ==============================================================================================================================  locked a7
 				    if infoWrite == True and str(infoOwner) in str(self.USER_TO_SEARCH):		
 					if res[3] == res[5]: 
 					    # (xxx, xxx, xxx, 'login', xxx, 'login', xxx, xxx, xxx, xxx) 				=> Locked
-					    #print filePath
-					    #print res
 					    if res[3] in str(self.USER_TO_SEARCH): 
-						line = str(filePath) + str(comFalse)
+						line = str(filePath_toWrite) + str(comFalse)
 						matches.append(line)
-						msg = '\n' + filePath + ' [ LOCKED by '+str(self.USER_TO_SEARCH[0])+' ]'
+						msg = '\n' + filePath_toWrite + ' [ LOCKED by '+str(self.USER_TO_SEARCH[0])+' ]'
 						print msg
 						break
 				#================================================================================================================================================  broken a7 or broken file
 				if self.A7_typeSearch == 'brk':
-				    # res = self.get_LockInfos(filePath)
-				    #print res
 				    if res[6] == True or res[8] == True: 
 					# (xxx, xxx, xxx, xxx, True, xxx, True, xxx, True, xxx) 					=> Broken
-					#print filePath
-					#print res
-					line = str(filePath) + str(comTrue)
+					line = str(filePath_toWrite) + str(comTrue)
 					matches.append(line)
-					msg = '\n' + filePath + ' [ BROKEN by '+str(self.USER_TO_SEARCH[0])+'  ]'
+					msg = '\n' + filePath_toWrite + ' [ BROKEN by '+str(self.USER_TO_SEARCH[0])+'  ]'
 					print msg
 					break
 				      
@@ -282,38 +264,22 @@ class __FUNCTIONS__TOTHREAD__():
 				if self.A7_typeSearch == 'upb':				      
 				    if res[0] == False and res[1] == False and res[2] == False  and res[3] == 'nobody' and res[4] == False and res[5] == 'nobody' and res[6] == False and res[7] == False and res[8] == False and res[9] == False:
 					# (False, False, False, 'nobody', False, 'nobody', False, False, False, False)  		=> Unpublished
-					# print res
-					#print 'upb ' + filePath 
-					line = str(filePath) + str(comTrue)
+					line = str(filePath_toWrite) + str(comTrue)
 					matches.append(line)
-					msg = '\n' + filePath + ' [ UNPUBLISHED by '+str(self.USER_TO_SEARCH[0])+'  ]'
+					msg = '\n' + filePath_toWrite + ' [ UNPUBLISHED by '+str(self.USER_TO_SEARCH[0])+'  ]'
 					print msg
 					break
 				      
 			except:
 			    # print 'error'
 			    pass
-	    
-	matches = list(set(matches))
-
-	endTime = datetime.now()
-	totTimeInt = endTime - self.startTimeInt
-	#totTime = endTime - self.start_time
-	
-
-	print ' '
-	print '=================================================\ '
-	print '=================================================|> [ ' + str(searchName) + ' ]  ' + str(self.directory) + ' search a7 [' + str(self.A7_typeSearch) + '] DONE in ' + str(totTimeInt)
-	print '=================================================/ '
-
-	print ' '	
-	
+			  
+      #========================================================================================================== save result	    
+	matches = list(set(matches))	
 	if len(matches) > 0 :
 	    print ' > ' + str(len(matches)) + ' a7 ' + str(self.A7_typeSearch)
 	    print matches
-	    #print self.TMP_PATH_FILE
 	    try:
-		
 		with open(self.TMP_PATH_FILE) as f:
 		    content = f.readlines()
 	    except:
@@ -321,18 +287,20 @@ class __FUNCTIONS__TOTHREAD__():
 		pass
 
 	    f = open(self.TMP_PATH_FILE,'a')
-
 	    for line in matches:
 		a7 = str(line)+'\n'
 		if a7 not in content:         
 		    f = open(self.TMP_PATH_FILE,'a')
 		    f.write(line+'\n') # python will convert \n to os.linesep
-
 	    f.close()
-	 
-	# ------------------------------------------------------------------------- 
-	 
+
+	# ------------------------------------------------------------------------------- 
+	self.end_Msg(self.startTimeInt,searchName,self.directory,self.A7_typeSearch)
+	# -------------------------------------------------------------------------------
+	
 	return matches
+      
+      #======================================================================================================== end save result
 	      
     # #########################################################################################################################
     # END RUN FUNCTION                                                                                                        #
@@ -356,7 +324,7 @@ class __FUNCTIONS__TOTHREAD__():
 	#print infoWrite, infoOwner
 	return infoWrite, infoOwner
 
-    def get_SymLinks(self,source,project,user):
+    def get_SymLinks(self,source):
 	published = True
 	'''
 	print source 
@@ -371,12 +339,18 @@ class __FUNCTIONS__TOTHREAD__():
 	# print pathSymLink
 	if '/COM/' not in str(pathSymLink):
 	    published = False
-	
 	return published
 
+    def get_ScmInfos(self,source,project,user):
+	published = True
+	pathSymLink = os.readlink(source)
+	# print pathSymLink
+	if '/COM/' not in str(pathSymLink):
+	    published = False
+	return published
 
-
-    def get_LockInfos(self,filePath):
+    def get_LockInfos(self,filePath,ext):
+	filePath = self.normalize_Name(filePath,ext)
 	''' Ink API Method '''
 	# assetLockedByMe, filesLockedByMe, assetLocked, assetLockOwner, filesLocked, filesLockOwner, assetBroken, assetStolen, filesBroken, filesStolen <= return	
 	# (xxx, xxx, xxx, 'login', xxx, 'login', xxx, xxx, xxx, xxx)					=> Locked / Grabbed
@@ -387,20 +361,13 @@ class __FUNCTIONS__TOTHREAD__():
 	res = ass.GetLockInfos()
 	return res
 
-
-    def get_ScmInfos(self,source,project,user):
-	published = True
-	pathSymLink = os.readlink(source)
-	# print pathSymLink
-	if '/COM/' not in str(pathSymLink):
-	    published = False
-	
-	return published
-
-
-
-
-
+    def normalize_Name(self,filePath,ext):
+	# /U/GRI/USERS/OFF/ASSETS/USECASE/GROOPERT/TEST111/LAYOUT/USECASE_GROOPERT_TEST111-LAYOUT_PRE_CONFIG.A7/0001/.MDA/.MDADATA
+	# normalize name for Ink API => /USECASE/CINDYLOU/EDIT/NasK/USECASE_CINDYLOU_EDIT-NasK_Casting.a7
+	filePath = "/".join(filePath.split('/')[6:]) 
+	tmp =  filePath.split(ext)
+	filePath = str(tmp[0])+str(ext)
+	return filePath
 
     def splitall(self,path):
 	allparts = []
@@ -416,6 +383,21 @@ class __FUNCTIONS__TOTHREAD__():
 		path = parts[0]
 		allparts.insert(0, parts[1])
 	return allparts
+
+    def start_Msg(self,searchName,directory,A7_typeSearch):
+	print ' '
+	print '===================================> [ ' + str(searchName) + ' ]  ' + str(directory) + ' search a7 [' + str(A7_typeSearch) + '] in progress, please wait ...'
+	print ' '
+
+    def end_Msg(self,startTimeInt,searchName,directory,A7_typeSearch):
+	endTime = datetime.now()
+	totTimeInt = endTime - self.startTimeInt
+	#totTime = endTime - self.start_time
+	print ' '
+	print '=================================================\ '
+	print '=================================================|> [ ' + str(searchName) + ' ]  ' + str(directory) + ' search a7 [' + str(A7_typeSearch) + '] DONE in ' + str(totTimeInt)
+	print '=================================================/ '
+	print ' '
 
 #=============================================================================================== end __FUNCTIONS__TOTHREAD__
 
@@ -649,7 +631,6 @@ try:
 except:
     pass
 
-# print path_search
 
 # ##################################################################### other var
 
@@ -675,15 +656,11 @@ START_DIR_OFF_LOCKED_A7 	= START_DIR_USERS+'OFF/Assets'
 TMP_FILE_LOCKED			= 'A7_'+CURRENT_PROJECT+'_lockedBy.tmp'
 TMP_FILE_BROKEN			= 'A7_'+CURRENT_PROJECT+'_brokenBy.tmp'
 TMP_FILE_UPB			= 'A7_'+CURRENT_PROJECT+'_unPublishedBy.tmp'
-#EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','TEMPLATES','SHARED','CFX','VFX','Anim_Clip','Refs_Xml','.flags','mel','.mdaTrash']
 EXCLUDE_DIR_USERS_LOCKED 	= ['COM','OFF','TMP','SVN','.SVN','REFS','PLUGINS','IMAGES','THUMBNAILS','OLD','DESIGN','MAPS','GIF','PSD','GRINCH','TEMPLATES','SHARED','CFX','Anim_Clip','REFS_XML','.FLAGS','MAL','.MDATRASH','MATTE','TOOLS']
-
 #EXCLUDE_DIR_USERS_LOCKED 	= []
 INCLUDE_DIR_LOCKED 		= [CURRENT_PROJECT,'LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINEUP','MLUN','SLUN']
-#INCLUDE_DIR_LOCKED 		= ['LIB','LIBREF','MODELING','PREVIZ','USECASE','USECASEDEV','LINEUP','MLUN','SLUN']
-# INCLUDE_DIR_LOCKED 		= ['LIB']
-# INCLUDE_DIR_LOCKED 		= ['LIB/PROPS/PROPSLOOKDEV/Pillow'] # LIB/PROPS/PROPSLOOKDEV/Pillow/Shading/Pillow-Light1-Shading_Compo.a7
-
+if str(A7_typeSearch) == 'brk':
+    INCLUDE_DIR_LOCKED 		= ['LIBREF']
 if str(path_search) != 'Default':
     INCLUDE_DIR_LOCKED = [str(path_search)]
 
